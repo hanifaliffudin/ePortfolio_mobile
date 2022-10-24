@@ -13,9 +13,9 @@ class _FeedsState extends State<Feeds> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        children: [
-          FeedCard(),
-        ],
+        children: List.generate(7, (index) {
+          return FeedCard();
+        }),
       ),
     );
   }

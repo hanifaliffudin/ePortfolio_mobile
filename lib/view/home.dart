@@ -49,17 +49,16 @@ class _HomePageState extends State<HomePage> {
               onPressed: (){},
               icon: Icon(Icons.logout)
           )
-
         ],
         centerTitle: false,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: const [
             Text('FILKOM'),
             Text(
               'Student Dashboard',
               style: TextStyle(
-                fontSize: 16
+                  fontSize: 16
               ),
             ),
           ],

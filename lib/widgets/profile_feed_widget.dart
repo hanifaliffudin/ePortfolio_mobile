@@ -49,13 +49,13 @@ class _ProfileFeedState extends State<ProfileFeed> {
                   ),
                   TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.blue
+                        backgroundColor: Colors.blue
                     ),
                     onPressed: (){},
                     child: Text(
                       'Post',
                       style: TextStyle(
-                        color: Colors.white
+                          color: Colors.white
                       ),
                     ),
                   )
