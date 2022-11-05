@@ -1,8 +1,11 @@
+import 'package:eportfolio/widgets/feed/post_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:eportfolio/widgets/profile_header_widget.dart';
-import 'package:eportfolio/widgets/profile_feed_widget.dart';
-import 'package:eportfolio/widgets/profile_projects_widget.dart';
-import 'package:eportfolio/widgets/profile_certifications_widget.dart';
+import 'package:eportfolio/widgets/about_me_content.dart';
+import 'package:eportfolio/widgets/achivement_content.dart';
+import '../widgets/activities_content.dart';
+import '../widgets/box_add_post.dart';
+import '../widgets/feed/project_feed.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -37,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   tabs: [
                     Tab(
                       child: Text(
-                          'Feed',
+                          'About Me',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -45,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                          'Projects',
+                          'Activities',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -53,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                          'Certifications',
+                          'Achivements',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -67,17 +70,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         ListView(
                           children: [
-                            ProfileFeed(),
+                            AboutMeContent(),
                           ],
                         ),
                         ListView(
                           children: [
-                            ProfileProjects(),
+                            Activities()
+                            //ArticlesFeed()
                           ],
                         ),
                         ListView(
                           children: [
-                            ProfileCertifications(),
+                            AchivementContent(),
                           ],
                         ),
                       ]

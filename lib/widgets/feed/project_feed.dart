@@ -1,45 +1,18 @@
-import 'package:eportfolio/widgets/project_card_open.dart';
+import 'package:eportfolio/widgets/open_feed/project_card_open.dart';
 import 'package:flutter/material.dart';
-import 'package:eportfolio/view/add_project.dart';
 
-import 'feed_card_open.dart';
-
-class ProfileProjects extends StatefulWidget {
-  const ProfileProjects({Key? key}) : super(key: key);
+class ProjectFeed extends StatefulWidget {
+  const ProjectFeed({Key? key}) : super(key: key);
 
   @override
-  State<ProfileProjects> createState() => _ProfileProjectsState();
+  State<ProjectFeed> createState() => _ProjectFeedState();
 }
 
-class _ProfileProjectsState extends State<ProfileProjects> {
+class _ProjectFeedState extends State<ProjectFeed> {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          padding: EdgeInsets.all(10),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.blue,
-              minimumSize: const Size.fromHeight(50), // NEW
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const AddProject())
-              );
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Add new project',
-                  style: TextStyle(fontSize: 20),
-                ),
-                Icon(Icons.add)
-              ],
-            ),
-          ),
-        ),
         Container(
           padding: const EdgeInsets.all(10),
           child: Card(
@@ -85,7 +58,7 @@ class _ProfileProjectsState extends State<ProfileProjects> {
                     ),
                     const SizedBox(height: 10,),
                     const Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
-                      maxLines: 2,
+                    maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 10,),

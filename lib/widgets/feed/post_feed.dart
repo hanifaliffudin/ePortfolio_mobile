@@ -1,14 +1,14 @@
-import 'package:eportfolio/widgets/feed_card_open.dart';
+import 'package:eportfolio/widgets/open_feed/post_card_open.dart';
 import 'package:flutter/material.dart';
 
-class FeedCard extends StatefulWidget {
-  const FeedCard({Key? key}) : super(key: key);
+class PostFeed extends StatefulWidget {
+  const PostFeed({Key? key}) : super(key: key);
 
   @override
-  State<FeedCard> createState() => _FeedCardState();
+  State<PostFeed> createState() => _PostFeedState();
 }
 
-class _FeedCardState extends State<FeedCard> {
+class _PostFeedState extends State<PostFeed> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -16,7 +16,7 @@ class _FeedCardState extends State<FeedCard> {
       child: Card(
         child: InkWell(
           onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>FeedCardOpen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>PostCardOpen()));
           },
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -38,8 +38,8 @@ class _FeedCardState extends State<FeedCard> {
                             Text(
                               'Hanif Aliffudin',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18
                               ),
                             ),
                             Text('Teknik Informatika'),

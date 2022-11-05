@@ -1,15 +1,15 @@
-import 'package:eportfolio/widgets/certificate_card_open.dart';
+import 'package:eportfolio/widgets/open_feed/certificate_card_open.dart';
 import 'package:flutter/material.dart';
 import '../view/add_certificate.dart';
 
-class ProfileCertifications extends StatefulWidget {
-  const ProfileCertifications({Key? key}) : super(key: key);
+class AchivementContent extends StatefulWidget {
+  const AchivementContent({Key? key}) : super(key: key);
 
   @override
-  State<ProfileCertifications> createState() => _ProfileCertificationsState();
+  State<AchivementContent> createState() => _AchivementContentState();
 }
 
-class _ProfileCertificationsState extends State<ProfileCertifications> {
+class _AchivementContentState extends State<AchivementContent> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -19,18 +19,18 @@ class _ProfileCertificationsState extends State<ProfileCertifications> {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               primary: Colors.blue,
-              minimumSize: const Size.fromHeight(50), // NEW
+              minimumSize: const Size.fromHeight(35), // NEW
             ),
             onPressed: () {
               Navigator.push(context , MaterialPageRoute(builder: (context) => const AddCertificate()),
-              );
-            },
+            );
+              },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   'Add new certificate',
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 15),
                 ),
                 Icon(Icons.add)
               ],
@@ -96,7 +96,7 @@ class _ProfileCertificationsState extends State<ProfileCertifications> {
                     Text(
                       'AAD Certification',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                     Text('Earned: May 24, 2022 02:30:00')

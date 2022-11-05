@@ -23,14 +23,6 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-
-      // if (index == 0) {
-      //   _pageTitle = "Home";
-      // } else if (index == 1) {
-      //   _pageTitle = "Discover";
-      // } else if (index == 2) {
-      //   _pageTitle = "Profile";
-      // }
     });
   }
 
@@ -58,13 +50,14 @@ class _HomePageState extends State<HomePage> {
             Text(
               'Student Dashboard',
               style: TextStyle(
-                  fontSize: 16
+                fontSize: 16
               ),
             ),
           ],
         ),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,

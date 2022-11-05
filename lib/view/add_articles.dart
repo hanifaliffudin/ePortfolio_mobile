@@ -1,14 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AddCertificate extends StatefulWidget {
-  const AddCertificate({Key? key}) : super(key: key);
+class AddArticles extends StatefulWidget {
+  const AddArticles({Key? key}) : super(key: key);
 
   @override
-  State<AddCertificate> createState() => _AddCertificateState();
+  State<AddArticles> createState() => _AddArticlesState();
 }
 
-class _AddCertificateState extends State<AddCertificate> {
+class _AddArticlesState extends State<AddArticles> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +50,7 @@ class _AddCertificateState extends State<AddCertificate> {
                       border: OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.white,
-                      hintText: 'Certificate of',
+                      hintText: 'Heading',
                     ),
                   ),
                   SizedBox(
@@ -64,7 +63,7 @@ class _AddCertificateState extends State<AddCertificate> {
                       border: OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.white,
-                      hintText: 'Tell us your story',
+                      hintText: 'Write articles',
                     ),
                   ),
                   SizedBox(
@@ -76,8 +75,8 @@ class _AddCertificateState extends State<AddCertificate> {
                       Row(
                         children: [
                           IconButton(
-                              onPressed: (){},
-                              icon: Icon(Icons.image),
+                            onPressed: (){},
+                            icon: Icon(Icons.image),
                           ),
                           IconButton(
                               onPressed: () {},
@@ -100,6 +99,10 @@ class _AddCertificateState extends State<AddCertificate> {
               margin: EdgeInsets.all(5),
               child: Column(
                 children: [
+                  Align(
+                      alignment: Alignment.topLeft,
+                      child: Text('Add cover image')),
+                  SizedBox(height: 7,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,37 +121,7 @@ class _AddCertificateState extends State<AddCertificate> {
                         width: 295,
                         child: TextFormField(
                           decoration: new InputDecoration(
-                            hintText: 'yourfilename.pdf',
-                            contentPadding: EdgeInsets.all(8),
-                            filled: true,
-                            fillColor: Colors.white,
-                            isDense: true,
-                            border: new OutlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.grey)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        child: TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue
-                          ),
-                          child: Text('Date', style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(top: 6.5, left: 6),
-                        width: 295,
-                        child: TextFormField(
-                          decoration: new InputDecoration(
-                            hintText: '22 October 2022',
+                            hintText: 'yourfilename.jpg',
                             contentPadding: EdgeInsets.all(8),
                             filled: true,
                             fillColor: Colors.white,
