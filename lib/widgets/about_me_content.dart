@@ -1,4 +1,5 @@
 import 'package:eportfolio/widgets/block/about_me.dart';
+import 'package:eportfolio/widgets/block/add_skill.dart';
 import 'package:eportfolio/widgets/box_add_post.dart';
 import 'package:eportfolio/widgets/block/newest_activity.dart';
 import 'package:eportfolio/widgets/block/personal_information_block.dart';
@@ -59,6 +60,7 @@ void AddBlock(context){
                 style: ElevatedButton.styleFrom(
                 ),
                 onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSkill()));
                 },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
