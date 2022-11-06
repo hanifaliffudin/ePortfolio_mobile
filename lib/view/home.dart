@@ -2,6 +2,7 @@ import 'package:eportfolio/view/discover.dart';
 import 'package:eportfolio/view/feeds.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:flutter/material.dart';
+import '../widgets/custom_appBar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -35,27 +36,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.logout)
-          )
-        ],
-        centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('FILKOM'),
-            Text(
-              'Student Dashboard',
-              style: TextStyle(
-                fontSize: 16
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: _widgetOptions.elementAt(_selectedIndex),
 
       bottomNavigationBar: BottomNavigationBar(

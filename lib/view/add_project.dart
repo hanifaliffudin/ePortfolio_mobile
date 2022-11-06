@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_appBar.dart';
 
 class AddProject extends StatefulWidget {
   const AddProject({Key? key}) : super(key: key);
@@ -11,27 +12,7 @@ class _AddProjectState extends State<AddProject> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.logout)
-          )
-        ],
-        centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('FILKOM'),
-            Text(
-              'Student Dashboard',
-              style: TextStyle(
-                  fontSize: 16
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [

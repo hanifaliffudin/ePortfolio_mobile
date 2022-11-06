@@ -1,6 +1,8 @@
 import 'package:eportfolio/view/contributors.dart';
 import 'package:flutter/material.dart';
 
+import '../custom_appBar.dart';
+
 class ProjectCardOpen extends StatefulWidget {
   const ProjectCardOpen({Key? key}) : super(key: key);
 
@@ -14,20 +16,7 @@ class _ProjectCardOpenState extends State<ProjectCardOpen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.logout))],
-        centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('FILKOM'),
-            Text(
-              'Student Dashboard',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: Container(
           padding: const EdgeInsets.all(8),
           child: Card(

@@ -1,11 +1,8 @@
-import 'package:eportfolio/widgets/feed/post_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:eportfolio/widgets/profile_header_widget.dart';
 import 'package:eportfolio/widgets/about_me_content.dart';
 import 'package:eportfolio/widgets/achivement_content.dart';
 import '../widgets/activities_content.dart';
-import '../widgets/box_add_post.dart';
-import '../widgets/feed/project_feed.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);

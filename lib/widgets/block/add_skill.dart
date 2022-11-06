@@ -1,4 +1,5 @@
 import 'package:eportfolio/widgets/block/custom_block.dart';
+import 'package:eportfolio/widgets/custom_appBar.dart';
 import 'package:flutter/material.dart';
 
 class AddSkill extends StatefulWidget {
@@ -12,27 +13,7 @@ class _AddSkillState extends State<AddSkill> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.logout)
-          )
-        ],
-        centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('FILKOM'),
-            Text(
-              'Student Dashboard',
-              style: TextStyle(
-                  fontSize: 16
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: Container(
         child: CustomBlock(hintText: 'Skills', descriptionText: 'Write your Skill'),
       )

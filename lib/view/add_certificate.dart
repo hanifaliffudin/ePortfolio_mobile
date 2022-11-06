@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../widgets/custom_appBar.dart';
 
 class AddCertificate extends StatefulWidget {
   const AddCertificate({Key? key}) : super(key: key);
@@ -12,27 +13,7 @@ class _AddCertificateState extends State<AddCertificate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.logout)
-          )
-        ],
-        centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('FILKOM'),
-            Text(
-              'Student Dashboard',
-              style: TextStyle(
-                  fontSize: 16
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [

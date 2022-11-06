@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../custom_appBar.dart';
 
 class CertCardOpen extends StatefulWidget {
   const CertCardOpen({Key? key}) : super(key: key);
@@ -9,8 +10,7 @@ class _CertCardOpenState extends State<CertCardOpen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(10),

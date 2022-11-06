@@ -78,19 +78,6 @@ void AddBlock(context){
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Add Achivement Block'),
-                    Icon(Icons.add)
-                  ],
-                )
-            ),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                ),
-                onPressed: () {
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
                     Text('Add Interest Block'),
                     Icon(Icons.add)
                   ],
@@ -105,6 +92,19 @@ void AddBlock(context){
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Add Social Media Block'),
+                    Icon(Icons.add)
+                  ],
+                )
+            ),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                ),
+                onPressed: () {
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Add Custom Block'),
                     Icon(Icons.add)
                   ],
                 )

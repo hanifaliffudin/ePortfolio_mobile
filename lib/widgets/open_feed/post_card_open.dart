@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../custom_appBar.dart';
 
 class PostCardOpen extends StatefulWidget{
   @override
@@ -9,28 +10,7 @@ class _FeedCardOpen extends State<PostCardOpen>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.logout)
-          )
-
-        ],
-        centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('FILKOM'),
-            Text(
-              'Student Dashboard',
-              style: TextStyle(
-                  fontSize: 16
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: Container(
         padding: const EdgeInsets.all(8),
         child : Card(
