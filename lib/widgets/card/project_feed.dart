@@ -30,7 +30,7 @@ class _ProjectFeedState extends State<ProjectFeed> {
                         Row(
                           children: [
                             const CircleAvatar(
-                              child: Icon(Icons.person),
+                              backgroundImage: NetworkImage(('https://picsum.photos/200')),
                               radius: 25,
                             ),
                             const SizedBox(width: 8,),

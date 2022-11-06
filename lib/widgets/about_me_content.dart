@@ -5,6 +5,9 @@ import 'package:eportfolio/widgets/block/newest_activity.dart';
 import 'package:eportfolio/widgets/block/personal_information_block.dart';
 import 'package:flutter/material.dart';
 
+import 'block/add_interest.dart';
+import 'block/add_socialMedia.dart';
+
 class AboutMeContent extends StatefulWidget {
   const AboutMeContent({Key? key}) : super(key: key);
 
@@ -74,6 +77,7 @@ void AddBlock(context){
                 style: ElevatedButton.styleFrom(
                 ),
                 onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddInterest()));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,6 +91,7 @@ void AddBlock(context){
                 style: ElevatedButton.styleFrom(
                 ),
                 onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSocialMedia()));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

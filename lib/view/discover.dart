@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eportfolio/widgets/discover_card.dart';
+import 'package:eportfolio/widgets/card/discover_card.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({Key? key}) : super(key: key);

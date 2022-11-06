@@ -28,7 +28,7 @@ class _PostFeedState extends State<PostFeed> {
                     Row(
                       children: [
                         const CircleAvatar(
-                          child: Icon(Icons.person),
+                          backgroundImage: NetworkImage(('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
                           radius: 25,
                         ),
                         const SizedBox(width: 8,),
