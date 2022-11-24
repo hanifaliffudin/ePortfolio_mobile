@@ -49,7 +49,7 @@ class _BoxAddPostState extends State<BoxAddPost> {
                         children: [
                           Row(
                             children: [
-                              Text('Add Articles/Project'),
+                              Text('Add Articles'),
                               Icon(Icons.article),
                             ],
                           )
