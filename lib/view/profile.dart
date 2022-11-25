@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:eportfolio/widgets/profile_header_widget.dart';
 import 'package:eportfolio/widgets/about_me_content.dart';
-import 'package:eportfolio/widgets/achivement_content.dart';
+import 'package:eportfolio/widgets/collections_content.dart';
+import '../article_content.dart';
 import '../widgets/activities_content.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: NestedScrollView(
           headerSliverBuilder: (context, _){
             return [
@@ -45,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                          'Activities',
+                          'Articles',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -53,7 +54,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                          'Achivements',
+                          'Collection',
+                          style: TextStyle(
+                              color: Colors.black
+                          )
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                          'Activities',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -72,16 +81,20 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ListView(
                           children: [
-                            Activities()
-                            //ArticlesFeed()
+                            ArticlesContent(),
                           ],
                         ),
                         ListView(
                           children: [
-                            AchivementContent(),
+                            CollectionContent(),
                           ],
                         ),
-                      ]
+                        ListView(
+                          children: [
+                            Activities(),
+                          ],
+                        ),
+                      ],
                   )
               )
             ],

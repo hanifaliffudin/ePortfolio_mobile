@@ -1,3 +1,4 @@
+import 'package:eportfolio/widgets/card/header_feed_card.dart';
 import 'package:flutter/material.dart';
 import '../custom_appBar.dart';
 
@@ -18,41 +19,7 @@ class _FeedCardOpen extends State<PostCardOpen>{
             padding: EdgeInsets.all(10),
             child : Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          child : Icon(Icons.person),
-                          radius: 25,
-                        ),
-                        const SizedBox(width: 8,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Nafira Ramadhannis',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18
-                              ),
-                            ),
-                            Text(
-                              '1751502021111007'
-                            ),
-                            Text('11.20 PM・22 Oct 2022')
-                          ],
-                        )
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: (){},
-                      icon: Icon(Icons.more_horiz),
-                    )
-                  ],
-                ),
+                HeaderFeedCard(),
                 const SizedBox(
                   height: 10,
                 ),

@@ -54,7 +54,7 @@ class _AboutMeState extends State<AboutMe> {
                               Text(
                                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac pharetra elit. Nullam fermentum iaculis aliquam. Donec laoreet justo vitae egestas vehicula. Mauris vitae efficitur elit. Sed in felis felis. Maecenas vestibulum iaculis diam ut iaculis. Aliquam eget pretium ante. Vestibulum vel gravida tortor, at commodo leo. Etiam accumsan quam id nunc sagittis, pulvinar bibendum leo vestibulum. Donec ac magna diam. Etiam in sodales arcu, vel ullamcorper augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum est metus, tincidunt sed congue quis, pellentesque a enim.',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 15,
                                 ),
                               ),
                             ],

@@ -1,6 +1,8 @@
 import 'package:eportfolio/widgets/open_feed/post_card_open.dart';
 import 'package:flutter/material.dart';
 
+import 'header_feed_card.dart';
+
 class PostFeed extends StatefulWidget {
   const PostFeed({Key? key}) : super(key: key);
 
@@ -22,38 +24,7 @@ class _PostFeedState extends State<PostFeed> {
             padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          backgroundImage: NetworkImage(('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
-                          radius: 25,
-                        ),
-                        const SizedBox(width: 8,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Hanif Aliffudin',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18
-                              ),
-                            ),
-                            Text('Teknik Informatika'),
-                            Text('01.28 PM ・ 2 Aug 2022')
-                          ],
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                        onPressed: (){},
-                        icon: Icon(Icons.more_horiz)
-                    )
-                  ],
-                ),
+                HeaderFeedCard(),
                 const SizedBox(height: 10,),
                 const Text
                   ('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',maxLines: 2,overflow: TextOverflow.ellipsis,),

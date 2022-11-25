@@ -64,7 +64,7 @@ class _NewestActState extends State<NewestAct> {
                 color: Colors.black,
               ),
               InkWell(
-                onTap: () {DefaultTabController.of(context)?.index =1;},
+                onTap: () {DefaultTabController.of(context)?.index =3;},
                 child: Text('Show all activities ->',
                 style: TextStyle(
                   fontSize: 15

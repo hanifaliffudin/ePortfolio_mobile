@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-
 import '../open_feed/certificate_card_open.dart';
 
-class CertCard extends StatefulWidget {
-  const CertCard({Key? key}) : super(key: key);
+class CollectionCard extends StatefulWidget {
+  const CollectionCard({Key? key}) : super(key: key);
 
   @override
-  State<CertCard> createState() => _CertCardState();
+  State<CollectionCard> createState() => _CollectionCardState();
 }
 
-class _CertCardState extends State<CertCard> {
+class _CollectionCardState extends State<CollectionCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
       child: InkWell(
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>CertCardOpen()));
+          //Navigator.push(context, MaterialPageRoute(builder: (context)=>CertCardOpen()));
         },
         child: Card(
           child: Padding(
@@ -29,24 +28,27 @@ class _CertCardState extends State<CertCard> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
+                        /*CircleAvatar(
                           backgroundImage: NetworkImage(('https://picsum.photos/300')),
                           radius: 25,
-                        ),
+                        ),*/
                         SizedBox(
                           width: 8,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Nafira Ramadhannis',
+                            Text('MarkdownBlock',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
+                                color: Colors.blue,
                               ),
                             ),
-                            Text('175150201111007'),
-                            Text('11.20 PM・22 Oct 2022'),
+                            Text('public',
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                            ),),
                           ],
                         ),
                         SizedBox(width: 8,),
@@ -62,19 +64,36 @@ class _CertCardState extends State<CertCard> {
                   height: 10,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Image(
-                      image: NetworkImage('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')
+                  padding: EdgeInsets.only(left: 8),
+                  child :Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                        "Simple blog using Next and Markdown"
+                    ),
                   ),
                 ),
                 SizedBox(height: 10,),
-                Text(
-                  'AAD Certification',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold
+                Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'JavaScript',
+                        style: TextStyle(
+                            color: Colors.grey
+                        ),
+                      ),
+                      SizedBox(width: 20,),
+                      Text('Updated on 24 May 2022',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                Text('Earned: May 24, 2022 02:30:00')
+
               ],
             ),
           ),

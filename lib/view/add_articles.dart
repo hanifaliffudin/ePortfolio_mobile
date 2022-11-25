@@ -4,6 +4,7 @@ import '../widgets/custom_appBar.dart';
 class AddArticles extends StatefulWidget {
   const AddArticles({Key? key}) : super(key: key);
 
+
   @override
   State<AddArticles> createState() => _AddArticlesState();
 }
@@ -31,7 +32,7 @@ class _AddArticlesState extends State<AddArticles> {
                       border: OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.white,
-                      hintText: 'Heading',
+                      hintText: 'Title',
                     ),
                   ),
                   SizedBox(
@@ -117,6 +118,19 @@ class _AddArticlesState extends State<AddArticles> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.blue
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          'Visibility',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 7,),
                       TextButton(
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.blue

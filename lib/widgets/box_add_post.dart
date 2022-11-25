@@ -42,7 +42,8 @@ class _BoxAddPostState extends State<BoxAddPost> {
                       onPressed: () {}, icon: Icon(Icons.video_file)),
                   ElevatedButton(
                       onPressed: () {
-                        BottomPopUp(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddArticles()));
+                        //BottomPopUp(context);
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -71,35 +72,4 @@ class _BoxAddPostState extends State<BoxAddPost> {
       ),
     );
   }
-}
-
-void BottomPopUp(context) {
-  showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-          child: Container(
-            height: 120,
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  leading: Icon(Icons.article),
-                  title: Text('Add Article'),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddArticles()));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.file_copy_sharp),
-                  title: Text('Add Project'),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddProject()));
-                  },
-                )
-              ],
-            ),
-          )));
 }

@@ -1,16 +1,16 @@
 import 'package:eportfolio/widgets/open_feed/certificate_card_open.dart';
 import 'package:flutter/material.dart';
-import '../view/add_certificate.dart';
-import 'card/cert_feed_card.dart';
+import '../view/add_collection.dart';
+import 'card/collection_feed_card.dart';
 
-class AchivementContent extends StatefulWidget {
-  const AchivementContent({Key? key}) : super(key: key);
+class CollectionContent extends StatefulWidget {
+  const CollectionContent({Key? key}) : super(key: key);
 
   @override
-  State<AchivementContent> createState() => _AchivementContentState();
+  State<CollectionContent> createState() => _CollectionContentState();
 }
 
-class _AchivementContentState extends State<AchivementContent> {
+class _CollectionContentState extends State<CollectionContent> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,14 +23,14 @@ class _AchivementContentState extends State<AchivementContent> {
               minimumSize: const Size.fromHeight(35), // NEW
             ),
             onPressed: () {
-              Navigator.push(context , MaterialPageRoute(builder: (context) => const AddCertificate()),
+              Navigator.push(context , MaterialPageRoute(builder: (context) => const AddCollection()),
             );
               },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Add new certificate',
+                  'Add new Collection',
                   style: TextStyle(fontSize: 15),
                 ),
                 Icon(Icons.add)
@@ -38,7 +38,7 @@ class _AchivementContentState extends State<AchivementContent> {
             ),
           ),
         ),
-        CertCard()
+        CollectionCard()
       ],
     );
   }
