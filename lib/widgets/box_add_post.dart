@@ -10,6 +10,7 @@ class BoxAddPost extends StatefulWidget {
 }
 
 class _BoxAddPostState extends State<BoxAddPost> {
+
   @override
   Widget build(BuildContext context) {
     return Container(

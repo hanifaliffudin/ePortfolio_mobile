@@ -1,8 +1,10 @@
 import 'package:eportfolio/view/discover.dart';
-import 'package:eportfolio/view/feeds.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:flutter/material.dart';
+import '../widgets/box_add_post.dart';
+import '../widgets/card/post_feed.dart';
 import '../widgets/custom_appBar.dart';
+import 'feeds.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -38,7 +40,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: CustomAppBar(),
       body: _widgetOptions.elementAt(_selectedIndex),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,

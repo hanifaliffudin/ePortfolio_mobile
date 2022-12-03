@@ -28,7 +28,8 @@ class _ArticleFeedState extends State<ArticleFeed> {
                     HeaderFeedCard(),
                     const SizedBox(height: 10,),
                     const Text
-                      ('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',maxLines: 2,overflow: TextOverflow.ellipsis,),
+                      ('This is artikel '
+                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',maxLines: 2,overflow: TextOverflow.ellipsis,),
                     const SizedBox(height: 10,),
                     const Image(image: NetworkImage('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
                     const SizedBox(height: 10,),

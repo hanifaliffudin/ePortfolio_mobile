@@ -1,5 +1,8 @@
+import 'package:eportfolio/login.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:flutter/material.dart';
+
+import 'register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +19,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      routes: {
+        '/register' : (context) => const Register(),
+        //'/' : (context) => const Login(),
+        '/' : (context) => const HomePage(),
+      },
       // initialRoute: '/',
       // routes: {
       //   HomePage.routeName: (context) => const HomePage(),
