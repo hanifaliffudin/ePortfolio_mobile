@@ -32,6 +32,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
       nim = data['nim'];
       major = data['major'];
       city = data['city'];
+      //datebirtg
       setState(() {});
     });
   }
