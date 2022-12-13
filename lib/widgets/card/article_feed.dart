@@ -25,7 +25,7 @@ class _ArticleFeedState extends State<ArticleFeed> {
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
-                    HeaderFeedCard(),
+                    // HeaderFeedCard(postData: 'tes'),
                     const SizedBox(height: 10,),
                     const Text
                       ('This is artikel '

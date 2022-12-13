@@ -25,7 +25,7 @@ class _ProjectCardOpenState extends State<ProjectCardOpen> {
                   padding: EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      HeaderFeedCard(),
+                      // HeaderFeedCard(biodata: "tes"),
                       const SizedBox(
                         height: 10,
                       ),

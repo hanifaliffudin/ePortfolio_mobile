@@ -19,7 +19,7 @@ class _FeedCardOpen extends State<PostCardOpen>{
             padding: EdgeInsets.all(10),
             child : Column(
               children: [
-                HeaderFeedCard(),
+                // HeaderFeedCard(biodata: 'tes'),
                 const SizedBox(
                   height: 10,
                 ),

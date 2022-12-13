@@ -1,13 +1,31 @@
+import 'dart:convert';
+
 import 'package:eportfolio/view/discover.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../widgets/box_add_post.dart';
 import '../widgets/card/post_feed.dart';
+import 'package:http/http.dart' as http;
 import '../widgets/custom_appBar.dart';
 import 'feeds.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  /*const HomePage({Key? key}) : super(key: key);*/
+  HomePage(this.jwt);
+
+  /*factory HomePage.fromBase64(String jwt) =>
+      HomePage(
+          jwt,
+          json.decode(
+              ascii.decode(
+                  base64.decode(base64.normalize(jwt.split(".")[1]))
+              )
+          )
+      );*/
+
+  final String jwt;
+  /*final Map<String, dynamic> payload;*/
 
   @override
   State<HomePage> createState() => _HomePageState();

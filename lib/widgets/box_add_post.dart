@@ -1,6 +1,10 @@
+import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/view/add_articles.dart';
 import 'package:flutter/material.dart';
-import '../view/add_project.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
+
+import '../view/home.dart';
 
 class BoxAddPost extends StatefulWidget {
   const BoxAddPost({Key? key}) : super(key: key);
@@ -10,6 +14,9 @@ class BoxAddPost extends StatefulWidget {
 }
 
 class _BoxAddPostState extends State<BoxAddPost> {
+  final storage = FlutterSecureStorage();
+  TextEditingController descController = TextEditingController();
+  String? jwt;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +31,8 @@ class _BoxAddPostState extends State<BoxAddPost> {
       child: Column(
         children: [
           TextField(
+            controller: descController,
             keyboardType: TextInputType.multiline,
-            maxLines: 2,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               filled: true,
@@ -38,7 +45,9 @@ class _BoxAddPostState extends State<BoxAddPost> {
             children: [
               Row(
                 children: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.image)),
+                  IconButton(onPressed: () {
+
+                  }, icon: Icon(Icons.image)),
                   IconButton(
                       onPressed: () {}, icon: Icon(Icons.video_file)),
                   ElevatedButton(
@@ -61,7 +70,29 @@ class _BoxAddPostState extends State<BoxAddPost> {
               ),
               TextButton(
                 style: TextButton.styleFrom(backgroundColor: Colors.blue),
-                onPressed: () {},
+                onPressed: () {
+                  APIService.createPost(descController.text).then((response)
+                  {
+                    if(response){
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(jwt ?? '')));
+                    } else {
+                      FormHelper.showSimpleAlertDialog(
+                        context,
+                        "Error!",
+                        "Failed create post! Please try again",
+                        "OK",
+                            () {
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    }
+                  }
+                  )
+                  ;
+                },
                 child: Text(
                   'Post',
                   style: TextStyle(color: Colors.white),

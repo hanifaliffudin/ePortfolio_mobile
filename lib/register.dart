@@ -1,9 +1,9 @@
-import 'dart:convert';
-
+import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
+import 'config.dart';
+import 'login.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -17,30 +17,16 @@ class _RegisterState extends State<Register> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  void register() async{
-    Map<String, dynamic> map ={
-      "username": usernameController.text.toString().trim(),
-      "email": emailController.text.toString().trim(),
-      "password": passwordController.text.toString().trim()
-    };
-    var body= json.encode(map);
-    var encoding= Encoding.getByName('utf-8');
-    const headers = {"Content-Type" : "application/json"};
-    try {
-      await http
-          .post(Uri.parse('http://10.0.2.2:8800/api/auth/register'),
-          headers: headers, body: body, encoding: encoding)
-          .then((value) {
-        Navigator.pushNamed(context, "/");
-        print(value.body);
-      });
-    } catch(e){
-      print(e);
-    }
-  }
+  void displayDialog(context, title, text) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text(title),
+            content: Text(text),
+          ));
+
 
   bool isAPIcallProcess = false;
-  GlobalKey<FormState> globaFormlKey =GlobalKey<FormState>();
+  GlobalKey<FormState> globaFormlKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +35,7 @@ class _RegisterState extends State<Register> {
         backgroundColor: Colors.blue,
         body: ProgressHUD(
           child: Form(
-            key : globaFormlKey,
+            key: globaFormlKey,
             child: _registerUI(context),
           ),
           key: UniqueKey(),
@@ -59,6 +45,7 @@ class _RegisterState extends State<Register> {
       ),
     );
   }
+
   Widget _registerUI(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
@@ -75,13 +62,11 @@ class _RegisterState extends State<Register> {
                     colors: [
                       Colors.white,
                       Colors.white,
-                    ]
-                ),
+                    ]),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(100),
                   bottomRight: Radius.circular(100),
-                )
-            ),
+                )),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -97,18 +82,13 @@ class _RegisterState extends State<Register> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(
-                left: 20,
-                bottom: 30,
-                top: 50
-            ),
+            padding: const EdgeInsets.only(left: 20, bottom: 30, top: 50),
             child: Text(
               "Register",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
-                  color: Colors.white
-              ),
+                  color: Colors.white),
             ),
           ),
           Padding(
@@ -122,8 +102,8 @@ class _RegisterState extends State<Register> {
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: (String value){},
-                  validator: (value){
+                  onChanged: (String value) {},
+                  validator: (value) {
                     return value!.isEmpty ? 'Please enter username' : null;
                   },
                 ),
@@ -136,8 +116,8 @@ class _RegisterState extends State<Register> {
                       prefixIcon: Icon(Icons.people),
                       border: OutlineInputBorder(),
                     ),
-                    onChanged: (String value){},
-                    validator: (value){
+                    onChanged: (String value) {},
+                    validator: (value) {
                       return value!.isEmpty ? 'Please enter email' : null;
                     },
                   ),
@@ -151,10 +131,8 @@ class _RegisterState extends State<Register> {
                       prefixIcon: Icon(Icons.password),
                       border: OutlineInputBorder(),
                     ),
-                    onChanged: (String value){
-
-                    },
-                    validator: (value){
+                    onChanged: (String value) {},
+                    validator: (value) {
                       return value!.isEmpty ? 'Please enter password' : null;
                     },
                   ),
@@ -162,16 +140,34 @@ class _RegisterState extends State<Register> {
               ],
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           Center(
             child: FormHelper.submitButton(
               "Register",
-                  () {
-                //register(emailController.text.toString(), usernameController.text.toString(), passwordController.text.toString());
-                    register();
+              () {
+                APIService.register(usernameController.text,
+                        emailController.text, passwordController.text)
+                    .then((response) {
+                  if (response) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    FormHelper.showSimpleAlertDialog(
+                      context,
+                      Config.appName,
+                      "Username/Email already used, Please choose another Username/Email",
+                      "OK",
+                      () {
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  }
+                });
               },
               btnColor: Colors.redAccent,
-              borderColor:Colors.white,
+              borderColor: Colors.white,
               txtColor: Colors.white,
               borderRadius: 10,
             ),
