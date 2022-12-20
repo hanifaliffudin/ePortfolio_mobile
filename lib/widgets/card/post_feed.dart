@@ -19,14 +19,14 @@ class _PostFeedState extends State<PostFeed> {
 
   List<PostModel> postList =[];
 
-  void postTimeline() async{
+  Future<void> postTimeline() async{
     await http
         .get(Uri.parse(Config.timelineApi))
         .then((value) {
       var data = jsonDecode(value.body);
       for (int i =0 ; i < data.length; i++) {
         print('index=${data[i]}');
-        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'.toString()]));
+        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'.toString()], data[i]['_id'.toString()]));
       }
       setState(() {});
     });
@@ -69,7 +69,8 @@ class _PostFeedState extends State<PostFeed> {
                   const SizedBox(height: 10,),
                   Container(
                     margin: EdgeInsets.all(10),
-                    child: Image(image: NetworkImage('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
+                    child: Text('')
+                    //Image(image: NetworkImage('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
                   ),
                   const SizedBox(height: 10,),
                   Align(

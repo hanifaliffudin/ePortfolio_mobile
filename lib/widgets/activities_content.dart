@@ -29,7 +29,7 @@ class _ActivitiesState extends State<Activities> {
       var data = jsonDecode(value.body);
       for (int i =0 ; i < data.length; i++) {
         print('index=${data[i]}');
-        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'.toString()]));
+        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'.toString()], data[i]['_id'.toString()]));
       }
       setState(() {});
     });

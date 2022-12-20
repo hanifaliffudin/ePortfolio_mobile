@@ -36,11 +36,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-     /* routes: {
-        '/register' : (context) => const Register(),
+      /*routes: {
+        *//*'/register' : (context) => const Register(),
         '/' : (context) => const Login(),
-        //'/home' : (context) => const HomePage(),
-        'profile':(context) => const ProfilePage()
+        //'/home' : (context) => const HomePage(),*//*
+        //'profile':(context) => const ProfilePage()
       },*/
       /*home: jwtOrEmpty()? Login() : HomePage(jwtOrEmpty),*/
       home: FutureBuilder(

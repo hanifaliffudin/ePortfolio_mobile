@@ -29,7 +29,7 @@ class APIService {
       body: jsonEncode(request),
     );
 
-    var data = json.decode(response.body);
+    var data = jsonDecode(response.body);
     jwt = data['jwt'];
     userId = data['userId'];
     if (response.statusCode != 200) {
@@ -39,7 +39,7 @@ class APIService {
       print(response.body);
       storage.write(key: 'jwt', value: jwt);
       storage.write(key: 'userId', value: userId.toString());
-      getUser();
+      getIdUserPosting(userId.toString());
       return true;
     }
   }
@@ -66,57 +66,81 @@ class APIService {
     }
   }
 
- /* static void getUser() async{
-    String? username;
-    String? major;
-    String? nim;
-    String? city;
 
-    final storage = FlutterSecureStorage();
-    var userId = await storage.read(key: 'userId');
-    await http
-        .get(Uri.parse('https://1c77-125-163-127-92.ap.ngrok.io/api/users/$userId'))
-        .then((value) {
-      var data = json.decode(value.body);
-      username = data['username'];
-      major = data['major'];
-      nim =  data['nim'];
-      city = data['city'];
+  //getIdUserPosting service api
+  static Future<Map<String, dynamic>> getIdUserPosting(String userIdPosting) async{
 
-    });*/
-
-
- /* List<PostModel> postList =[];
-
-  void postTimeline() async{
-    await http
-        .get(Uri.parse('https://09f6-180-248-37-185.ap.ngrok.io/api/posts/timeline/all'))
-        .then((value) {
-      var data = json.decode(value.body);
-      for (int i =0 ; i < data.length; i++) {
-        print('index=${data[i]}');
-        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'.toString()]));
-      }
-      setState(() {});
-    });
-  }*/
-
-  //getUser service api
-  static Future<String> getUser() async{
-
-    final storage = FlutterSecureStorage();
-    var userId = await storage.read(key: 'userId');
     var urlUser = Config.users;
-    var url = Uri.parse('$urlUser/$userId');
-    var response = await client.post(url);
+    var url = Uri.parse('$urlUser/$userIdPosting');
+
+    var response = await client.get(url);
 
     if (response.statusCode == 200) {
-      var data = json.decode(response.body);
+      var data = jsonDecode(response.body);
       return data;
     } else {
       return Future.error(Icons.error);
     }
 }
+
+  //getUser
+  static Future<Map<String, dynamic>> getUserData() async{
+    final storage = FlutterSecureStorage();
+    var userId = await storage.read(key: 'userId');
+    var urlUser = Config.users;
+    var url = Uri.parse('$urlUser/$userId');
+    var response = await client.get(url);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
+  //update user
+  static Future<bool> updateUserData(String nim, String major, String city, String dateBirth, String gender, String interest, String about, String socialMedia, String skill) async{
+    final storage = FlutterSecureStorage();
+    var userId = await storage.read(key: 'userId');
+    var urlUser = Config.users;
+    var url = Uri.parse('$urlUser/$userId');
+    final request = {'userId': userId, 'nim': nim, 'major': major, 'city':city, 'dateBirth': dateBirth, 'gender': gender, 'interest':interest, 'about': about, 'socialMedia': socialMedia, 'skill':skill };
+    var response = await client.put(url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(request),
+    );
+
+    if(response.statusCode != 200){
+      print('update profile failed');
+      return false;
+    } else {
+      print('update profile success');
+      return true;
+    }
+  }
+
+  //delete post
+  static Future<bool> deletePost(String postId) async{
+    final storage = FlutterSecureStorage();
+    var urlPost = Config.postApi;
+    var url = Uri.parse('$urlPost/$postId');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.delete(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(request)
+    );
+
+    if(response.statusCode != 200){
+      print('create post failed');
+      return false;
+    } else {
+      print('create post success');
+      return true;
+    }
+  }
 
   //get posts service api
   static Future<bool> createPost(String desc) async{

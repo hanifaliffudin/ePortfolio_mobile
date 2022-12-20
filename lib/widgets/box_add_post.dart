@@ -74,6 +74,8 @@ class _BoxAddPostState extends State<BoxAddPost> {
                   APIService.createPost(descController.text).then((response)
                   {
                     if(response){
+                      setState(() {
+                      });
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -90,8 +92,7 @@ class _BoxAddPostState extends State<BoxAddPost> {
                       );
                     }
                   }
-                  )
-                  ;
+                  );
                 },
                 child: Text(
                   'Post',
