@@ -21,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       
-      length: 4,
+      length: 5,
       child: NestedScrollView(
           headerSliverBuilder: (context, _){
             return [
@@ -38,10 +38,19 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Material(
                 child: TabBar(
+                  isScrollable: true,
                   tabs: [
                     Tab(
                       child: Text(
                           'About Me',
+                          style: TextStyle(
+                              color: Colors.black
+                          )
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                          'Posts',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -57,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                          'Collection',
+                          'Activities',
                           style: TextStyle(
                               color: Colors.black
                           )
@@ -65,14 +74,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                          'Activities',
-                          style: TextStyle(
-                              color: Colors.black
-                          )
+                        'Achivements',
+                        style: TextStyle(
+                          color: Colors.black
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 ),
+
               ),
               Expanded(
                   child: TabBarView(
@@ -84,7 +94,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ListView(
                           children: [
-                            ArticlesContent(),
+                            Activities(),
+                          ],
+                        ),
+                        ListView(
+                          children: [
+                            ArticlesContent()
                           ],
                         ),
                         ListView(
@@ -94,6 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ListView(
                           children: [
+                            //Achivement()
                             Activities(),
                           ],
                         ),

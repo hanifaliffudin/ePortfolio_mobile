@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:snippet_coder_utils/FormHelper.dart';
+import 'package:custom_switch/custom_switch.dart';
 
 import '../../config.dart';
 import '../../models/post_model.dart';
@@ -21,11 +22,12 @@ class HeaderFeedCard extends StatefulWidget {
 class _HeaderFeedCardState extends State<HeaderFeedCard> {
 
   String? username;
+  String? profilePicture;
   String? major;
   String? date;
   String? jwt;
   PostModel postData;
-  var ntap;
+  var data;
   var postId;
   var userId;
 
@@ -34,11 +36,12 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
   Future<Map<String, dynamic>> getIdUserPosting() async {
     final storage = FlutterSecureStorage();
     userId = await storage.read(key: 'userId');
-    ntap = await APIService.getIdUserPosting(postData.userId);
-    username = ntap['username'];
-    major = ntap['major'];
-    date = ntap['date'];
-    return ntap;
+    data = await APIService.getIdUserPosting(postData.userId);
+    username = data['username'];
+    profilePicture = data['profilePicture'];
+    major = data['major'];
+    date = data['date'];
+    return data;
   }
 
   Future<bool> deletePost() async {
@@ -63,9 +66,15 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
-                      backgroundImage: NetworkImage(('https://picsum.photos/200')),
-                      radius: 25,
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        (profilePicture ==
+                            null ||
+                            profilePicture ==
+                                "")
+                            ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                            : '${Config.apiURL}/${profilePicture.toString()}',
+                      ), radius: 25,
                     ),
                     const SizedBox(width: 8,),
                     Column(
@@ -101,10 +110,13 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
     );
   }
   void settingButton(context) {
+    bool status = false;
+    String value;
+
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-          height: 100,
+          height: 150,
           margin: EdgeInsets.only(left: 10, top: 10, right: 10),
           child: Column(
             children: [
@@ -146,6 +158,26 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                   }
                 }
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Visibility'),
+                  CustomSwitch(
+                    activeColor: Colors.pinkAccent,
+                    value: status,
+                    onChanged: (value) {
+                      if(value == true){
+                        print("Public");
+                      } else{
+                        print("Private");
+                      }
+                      setState(() {
+                        status = value;
+                      });
+                    },
+                  ),
+                ],
+              )
             ],
           ),
         ));

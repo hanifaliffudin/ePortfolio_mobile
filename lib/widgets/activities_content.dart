@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:eportfolio/widgets/box_add_post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config.dart';
 import '../models/post_model.dart';
 import 'card/header_feed_card.dart';
 import 'package:http/http.dart' as http;
+
 class Activities extends StatefulWidget {
   const Activities({Key? key}) : super(key: key);
 
@@ -29,7 +31,7 @@ class _ActivitiesState extends State<Activities> {
       var data = jsonDecode(value.body);
       for (int i =0 ; i < data.length; i++) {
         print('index=${data[i]}');
-        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'.toString()], data[i]['_id'.toString()]));
+        postList.add(PostModel(data[i]['userId'].toString(), data[i]['desc'].toString(), data[i]['updatedAt'], data[i]['_id'.toString()], data[i]['comments'.toString()]));
       }
       setState(() {});
     });
@@ -43,6 +45,7 @@ class _ActivitiesState extends State<Activities> {
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: [
         SizedBox(height: 7,),
@@ -65,25 +68,22 @@ class _ActivitiesState extends State<Activities> {
                         alignment: Alignment.topLeft,
                         child: Container(
                           margin: EdgeInsets.all(10),
-                          child: new Text(
-                            postList[index].desc,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          child: MarkdownBody(data: postList[index].desc.toString()),
                         ),
                       ),
                       const SizedBox(height: 10,),
-                      Container(
+                     /* Container(
                         margin: EdgeInsets.all(10),
                         child: Image(image: NetworkImage('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(height: 10,),*/
                       Align(
                         alignment: Alignment.topLeft,
                         child: new Text(
-                            postList[index].updatedAt
+                            getFormattedDate(postList[index].updatedAt.toString()),
                         ),
                       )
+                      //
                     ],
                   ),
                 ),
@@ -92,5 +92,10 @@ class _ActivitiesState extends State<Activities> {
         )
        ],
     );
+  }
+
+  String getFormattedDate(String dtStr) {
+    var dt = DateTime.parse(dtStr);
+    return "${dt.day.toString().padLeft(2,'0')}-${dt.month.toString().padLeft(2,'0')}-${dt.year} ${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}:${dt.second.toString().padLeft(2,'0')}.${dt.millisecond .toString().padLeft(3,'0')}";
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:eportfolio/login.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
+import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -30,18 +31,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final storage = FlutterSecureStorage();
+    var jwt = storage.read(key: 'jwt');
 
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      /*routes: {
-        *//*'/register' : (context) => const Register(),
-        '/' : (context) => const Login(),
-        //'/home' : (context) => const HomePage(),*//*
+      routes: {
+        '/editUser' : (context) => EditUserProfile(),
+        '/home' : (context) => HomePage(jwt.toString()),
         //'profile':(context) => const ProfilePage()
-      },*/
+      },
       /*home: jwtOrEmpty()? Login() : HomePage(jwtOrEmpty),*/
       home: FutureBuilder(
           future: jwtOrEmpty,

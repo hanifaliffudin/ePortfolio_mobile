@@ -1,4 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import '../../config.dart';
+import '../../models/post_model.dart';
 
 class NewestAct extends StatefulWidget {
   const NewestAct({Key? key}) : super(key: key);
@@ -8,6 +15,7 @@ class NewestAct extends StatefulWidget {
 }
 
 class _NewestActState extends State<NewestAct> {
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +35,7 @@ class _NewestActState extends State<NewestAct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
-                            'Newest Activity',
+                            'Newest Post',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           ),
@@ -52,6 +60,7 @@ class _NewestActState extends State<NewestAct> {
                           child: Column(
                             //crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+
                               //add function here
                             ],
                           )),
@@ -64,7 +73,7 @@ class _NewestActState extends State<NewestAct> {
                 color: Colors.black,
               ),
               InkWell(
-                onTap: () {DefaultTabController.of(context)?.index =3;},
+                onTap: () {DefaultTabController.of(context)?.index =1;},
                 child: Text('Show all activities ->',
                 style: TextStyle(
                   fontSize: 15
@@ -76,5 +85,10 @@ class _NewestActState extends State<NewestAct> {
         ),
       ),
     );
+  }
+
+  String getFormattedDate(String dtStr) {
+    var dt = DateTime.parse(dtStr);
+    return "${dt.day.toString().padLeft(2,'0')}-${dt.month.toString().padLeft(2,'0')}-${dt.year} ${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}:${dt.second.toString().padLeft(2,'0')}.${dt.millisecond .toString().padLeft(3,'0')}";
   }
 }
