@@ -1,39 +1,35 @@
-class UserModel{
-  late String? socialMedia;
-  late List<dynamic>? blockProfile;
-  late String? id;
-  late String? username;
-  late String? email;
-  late String? profilePicture;
-  late String? nim;
-  late String? major;
-  late String? city;
-  late String? interest;
-  late String? about;
-  late List<String>? skill;
-  late bool? isAdmin;
-  late String? createdAt;
-  late int? V;
-  late String? dateBirth;
-  late String? gender;
+class UserModel {
+  String username;
+  String major;
+  String nim;
+  String profilePicture;
+  String city;
+  String gender;
+  String dateBirth;
+  String about;
+  String interest;
 
   UserModel(
-    this.socialMedia,
-    this.blockProfile,
-    this.id,
-    this.username,
-    this.email,
-    this.profilePicture,
-    this.nim,
-    this.major,
-    this.city,
-    this.interest,
-    this.about,
-    this.skill,
-    this.isAdmin,
-    this.createdAt,
-    this.V,
-    this.dateBirth,
-    this.gender,
-  );
+      {required this.username,
+      required this.major,
+      required this.nim,
+      required this.profilePicture,
+      required this.city,
+      required this.gender,
+      required this.dateBirth,
+      required this.about,
+      required this.interest});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+        username: json['username'],
+        major: json['major'],
+        nim: json['nim'],
+        profilePicture: json['profilePicture'],
+        city: json['city'],
+        gender: json['gender'],
+        dateBirth: json['dateBirth'],
+        about: json['about'],
+        interest: json['interest']);
+  }
 }

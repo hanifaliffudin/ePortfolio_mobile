@@ -30,7 +30,7 @@ class _CollectionContentState extends State<CollectionContent> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Add new Collection',
+                  'Add new Activity',
                   style: TextStyle(fontSize: 15),
                 ),
                 Icon(Icons.add)

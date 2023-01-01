@@ -14,7 +14,7 @@ class BoxAddPost extends StatefulWidget {
 }
 
 class _BoxAddPostState extends State<BoxAddPost> {
-  final storage = FlutterSecureStorage();
+  //final storage = FlutterSecureStorage();
   TextEditingController descController = TextEditingController();
   String? jwt;
 
@@ -22,7 +22,6 @@ class _BoxAddPostState extends State<BoxAddPost> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10),
-      height: 150,
       padding: EdgeInsets.all(10),
       decoration: new BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -41,15 +40,10 @@ class _BoxAddPostState extends State<BoxAddPost> {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  IconButton(onPressed: () {
-
-                  }, icon: Icon(Icons.image)),
-                  IconButton(
-                      onPressed: () {}, icon: Icon(Icons.video_file)),
                   ElevatedButton(
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context)=>AddArticles()));
@@ -76,10 +70,7 @@ class _BoxAddPostState extends State<BoxAddPost> {
                     if(response){
                       setState(() {
                       });
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage(jwt ?? '')));
+                      Navigator.pushNamed(context, '/home');
                     } else {
                       FormHelper.showSimpleAlertDialog(
                         context,

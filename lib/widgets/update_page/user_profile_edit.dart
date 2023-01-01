@@ -1,4 +1,11 @@
+import 'dart:ui';
+
+import 'package:dio/dio.dart' as Dio;
+import 'package:http/http.dart' as http;
+/*import 'package:dio/dio.dart';*/
 import 'dart:io';
+import 'dart:async';
+import 'package:path/path.dart';
 import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,10 +13,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../config.dart';
+import '../../models/user_model.dart';
 import '../custom_appBar.dart';
-import 'package:path/path.dart';
-import 'package:http_parser/http_parser.dart';
-import 'package:http/http.dart' as http;
 
 class EditUserProfile extends StatefulWidget {
   EditUserProfile({Key? key}) : super(key: key);
@@ -20,15 +25,65 @@ class EditUserProfile extends StatefulWidget {
 
 class _EditUserProfileState extends State<EditUserProfile> {
 
-  //File? profilePicture ;
+  //-----------------------------------------USING DIO----------------------------------//
+
+  XFile? imageFile;
+
+  Future _uploadImage() async {
+    final storage = FlutterSecureStorage();
+    var userId = await storage.read(key: 'userId');
+    /*var selectedImage = File(imageFile!.path);*/
+
+    print('upload started');
+
+    try {
+      var response = await sendForm('${Config.users}/${userId}',
+          {'userId': '${userId}'}, {'profilePicture': imageFile!});
+
+      if(response.statusCode != 200){
+        print('tidak berhasil');
+      } else {
+        print("res-1 $response");
+      }
+
+    } catch ( err) {
+      print(err);
+    }
+    setState(() {
+      imageFile = imageFile;
+    });
+  }
+
+  Future<Dio.Response> sendForm(
+      String url, Map<String, dynamic> data, Map<String, XFile> files) async {
+    Map<String, Dio.MultipartFile> fileMap = {};
+    for (MapEntry fileEntry in files.entries) {
+      XFile file = fileEntry.value;
+      String fileName = basename(file.path);
+      fileMap[fileEntry.key] = Dio.MultipartFile(
+          file.openRead(), await file.length(),
+          filename: fileName);
+    }
+    data.addAll(fileMap);
+    var formData = Dio.FormData.fromMap(data);
+    Dio.Dio dio = new Dio.Dio();
+    return await dio.put(url,
+        data: formData,
+        options: Dio.Options(contentType: 'multipart/form-data',
+       ));
+  }
+
+  //-----------------------------------------USING DIO----------------------------------//
+
+  //-----------------------------------------USING HTTP----------------------------------//
+
+  /*File? profilePicture ;
   var filePath;
-  final _picker = ImagePicker();
   bool showSpinner = false ;
   var pickedFile;
 
-
   Future getImage()async{
-    pickedFile = await _picker.pickImage(source: ImageSource.gallery , imageQuality: 80);
+    pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery , imageQuality: 80);
     if(pickedFile!= null ){
       profilePicture =  File(pickedFile.path);
       filePath = basename(pickedFile.path);
@@ -51,7 +106,7 @@ class _EditUserProfileState extends State<EditUserProfile> {
     var urlUser = Config.users;
     var uri = Uri.parse('$urlUser/$userId');
 
-    var request = new http.MultipartRequest('PUT', uri);
+    var request = new http.MultipartRequest('POST', uri);
     request.fields['userId'] = userId ;
 
     var multiport = new http.MultipartFile(
@@ -59,11 +114,15 @@ class _EditUserProfileState extends State<EditUserProfile> {
         stream,
         length);
 
-/*    var multiport = await http.MultipartFile.fromBytes('profilePicture', profilePicture,
-    filename: ('${filePath}'));*/
     print(pickedFile.path);
-    request.files.add(new http.MultipartFile.fromBytes('file', await File.fromUri(Uri.parse(pickedFile.path)).readAsBytes(), contentType: new MediaType('image', 'jpeg')));
+    request.files.add(multiport);
+    for (var e in request.headers.entries) {
+      print('${e.key} = ${e.value}');
+    }
+
     var response = await request.send() ;
+    print("RESSSP");
+    print(await response.stream.bytesToString());
 
     if(response.statusCode == 200){
       print('image uploaded');
@@ -71,11 +130,8 @@ class _EditUserProfileState extends State<EditUserProfile> {
     }else {
       print('failed');
     }
-  }
-
-  bool isApiCallProcess = false;
-  bool isImageSelected = false;
-  static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
+  }*/
+  //-----------------------------------------USING HTTP----------------------------------//
 
   TextEditingController nimController = TextEditingController();
   TextEditingController majorController = TextEditingController();
@@ -87,43 +143,16 @@ class _EditUserProfileState extends State<EditUserProfile> {
   TextEditingController socialMediaController = TextEditingController();
   TextEditingController skillController = TextEditingController();
 
-  var data;
+  late Future<UserModel> futureUser;
 
-  String? nim;
-  String? major;
-  String? city;
-  String? dateBirth;
-  String? gender;
-  String? interest;
-  String? about;
-  File? profilePicture;
-  //String? updatedProfilePicture;
-
-  Future<Map<String, dynamic>> getUserData() async{
-    data = await APIService.getUserData();
-    nim = data['nim'];
-    major = data['major'];
-    city = data['city'];
-    dateBirth = data['dateBirth'];
-    gender = data['gender'];
-    interest = data['interest'];
-    about = data['about'];
-    profilePicture = data['profilePicture'];
-
-    nimController.text = nim ?? '';
-    majorController.text = major ?? '';
-    cityController.text = city ?? '';
-    dateBirthController.text = dateBirth ?? '';
-    genderController.text = gender ?? '';
-    interestController.text = interest ?? '';
-    aboutController.text = about ?? '';
-
-    return data;
+  @override
+  void initState() {
+    super.initState();
+    futureUser = APIService().fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: CustomAppBar(),
       body: SingleChildScrollView(
@@ -139,46 +168,37 @@ class _EditUserProfileState extends State<EditUserProfile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  //-------------------------------------------------------------------------------//
+
+                  //--------------------------------------------------------------------------------//
                   GestureDetector(
-                    onTap: (){
-                      getImage();
+                    onTap: () {
+                      _getFromGallery();
                     },
                     child: Container(
-                      child :
-                        profilePicture == null? Center(child: Text('Pick Image'),) :
-                        Container(
-                          child: Center(
-                            child: Image.file(
-                              File(profilePicture!.path).absolute,
-                              height: 100,
-                              width: 100,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        )
-                    ),
+                        child: imageFile == null
+                            ? Center(
+                                child: Text('Pick Image'),
+                              )
+                            : Container(
+                                child: Center(
+                                  child: Image.file(
+                                    File(imageFile!.path).absolute,
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )),
                   ),
 
-                  /*profilePicker(
-                    isImageSelected,
-                    profilePicture ?? "" ,
-                        (file) => {
-                      setState(
-                            () {
-
-                              updatedProfilePicture = file.path;
-                              print('hkhjjhkkjhkhlhl${updatedProfilePicture}');
-
-                              isImageSelected = true;
-                        },
-                      )
-                    },
-                  ),*/
-                  SizedBox(height: 15,),
+                  SizedBox(
+                    height: 15,
+                  ),
                   Center(
                     child: GestureDetector(
-                      onTap: (){
-                        uploadImage();
+                      onTap: () {
+                        _uploadImage();
                       },
                       child: Container(
                         height: 50,
@@ -210,93 +230,48 @@ class _EditUserProfileState extends State<EditUserProfile> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      /*TextButton(
-                        style:
-                            TextButton.styleFrom(backgroundColor: Colors.blue),
-                        onPressed: () {
-                          if (validateAndSave()) {
-                            print(productModel!.toJson());
-
-                            setState(() {
-                              isApiCallProcess = true;
-                            });
-                          APIService.updateUserData(
-                                  nimController.text,
-                                  majorController.text,
-                                  cityController.text,
-                                  dateBirthController.text,
-                                  genderController.text,
-                                  interestController.text,
-                                  aboutController.text,
-                                  profilePicture!,
-                                  isImageSelected)
-                                  *//*socialMediaController.text,
-                                  skillController.text)*//*
-                              .then((response) {
-                            setState(() {
-                              isApiCallProcess = false;
-                            });
-                            FormHelper.showSimpleAlertDialog(
-                              context,
-                              "Success!",
-                              "Success edit profile",
-                              "OK",
-                              () {
-                                Navigator.pushNamed(context, '/home');
-                              },
-                            );
-                          }
-                          );
-                        },*/
                       Center(
-                        child: FormHelper.submitButton(
-                          "Save",
-                              () {
-                              setState(() {
-                                /*print('apakahkosong?${updatedProfilePicture}');*/
-                                print('cok');
-                                isApiCallProcess = true;
-                              });
-                              APIService.updateUserData(
-                                  nimController.text,
-                                  majorController.text,
-                                  cityController.text,
-                                  dateBirthController.text,
-                                  genderController.text,
-                                  interestController.text,
-                                  aboutController.text,
-                                 /* updatedProfilePicture!,*/
-                                  isImageSelected)
-                                  /*socialMediaController.text,
-                                  skillController.text)*/
-                                    .then(
-                                    (response) {
-                                  setState(() {
+                        child: FormHelper.submitButton("Save", () {
+                          APIService.updateUserData(
+                            nimController.text,
+                            majorController.text,
+                            cityController.text,
+                            dateBirthController.text,
+                            genderController.text,
+                            interestController.text,
+                            aboutController.text,
+                            /*profilePicture!,*/
+                            /*isImageSelected*/
+                          )
+                              /*socialMediaController.text,
+                                    skillController.text)*/
+                              .then(
+                            (response) {
+                              /* setState(() {
                                     isApiCallProcess = false;
-                                  });
+                                  });*/
 
-                                  if (response) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      '/home',
-                                          (route) => false,
-                                    );
-                                  } else {
-                                    FormHelper.showSimpleAlertDialog(
-                                      context,
-                                      Config.appName,
-                                      "Error occur",
-                                      "OK",
-                                          () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    );
-                                  }
-                                },
-                              );
-                            }
-                          ),
-                        ),
+                              if (response) {
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/home',
+                                  (route) => false,
+                                );
+                              } else {
+                                FormHelper.showSimpleAlertDialog(
+                                  context,
+                                  Config.appName,
+                                  "Error occur",
+                                  "OK",
+                                  () {
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+                              }
+                            },
+                          );
+                        }),
+                      ),
                     ],
                   ),
                 ],
@@ -309,144 +284,145 @@ class _EditUserProfileState extends State<EditUserProfile> {
   }
 
   Widget userForm() {
-   return FutureBuilder(
-      future: getUserData(),
-      builder : (context, snapshot){
-        if (snapshot.hasData){
-          return Column(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                  child: Text('NIM :')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: nimController,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: about ?? '',
+    return FutureBuilder<UserModel>(
+        future: futureUser,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            nimController.text = snapshot.data!.nim ?? '';
+            majorController.text = snapshot.data!.major ?? '';
+            cityController.text = snapshot.data!.city ?? '';
+            dateBirthController.text = snapshot.data!.dateBirth ?? '';
+            genderController.text = snapshot.data!.gender ?? '';
+            interestController.text = snapshot.data!.interest ?? '';
+            aboutController.text = snapshot.data!.about ?? '';
+            return Column(
+              children: [
+                Align(alignment: Alignment.topLeft, child: Text('NIM :')),
+                SizedBox(
+                  height: 5,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(
-                  alignment: Alignment.topLeft,
-                  child: Text('Major:')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: majorController,
-                keyboardType: TextInputType.multiline,
-                //maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Informatic Engineer',
+                TextField(
+                  controller: nimController,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: '175150xxxxxxxx',
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(
-                  alignment: Alignment.topLeft,
-                  child: Text('City:')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: cityController,
-                keyboardType: TextInputType.multiline,
-                //maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Tuban, East Java',
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(alignment: Alignment.topLeft,child: Text('Date Birth:')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: dateBirthController,
-                keyboardType: TextInputType.multiline,
-                //maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: '06 January 2000',
+                Align(alignment: Alignment.topLeft, child: Text('Major:')),
+                SizedBox(
+                  height: 5,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(alignment: Alignment.topLeft,child: Text('Gender:')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: genderController,
-                keyboardType: TextInputType.multiline,
-                //maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Male/Female',
+                TextField(
+                  controller: majorController,
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: 5,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Informatic Engineer',
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(alignment: Alignment.topLeft,child: Text('Interest:')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: interestController,
-                keyboardType: TextInputType.multiline,
-                //maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Fishing in sea',
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(alignment: Alignment.topLeft,child: Text('About Me :')),
-              SizedBox(
-                height: 5,
-              ),
-              TextField(
-                controller: aboutController,
-                keyboardType: TextInputType.multiline,
-                //maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Im a ...',
+                Align(alignment: Alignment.topLeft, child: Text('City:')),
+                SizedBox(
+                  height: 5,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              /*Text('Social media :'),
+                TextField(
+                  controller: cityController,
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: 5,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Tuban, East Java',
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Align(alignment: Alignment.topLeft, child: Text('Date Birth:')),
+                SizedBox(
+                  height: 5,
+                ),
+                TextField(
+                  controller: dateBirthController,
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: 5,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: '06 January 2000',
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Align(alignment: Alignment.topLeft, child: Text('Gender:')),
+                SizedBox(
+                  height: 5,
+                ),
+                TextField(
+                  controller: genderController,
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: 5,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Male/Female',
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Align(alignment: Alignment.topLeft, child: Text('Interest:')),
+                SizedBox(
+                  height: 5,
+                ),
+                TextField(
+                  controller: interestController,
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: 5,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Fishing in sea',
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Align(alignment: Alignment.topLeft, child: Text('About Me :')),
+                SizedBox(
+                  height: 5,
+                ),
+                TextField(
+                  controller: aboutController,
+                  keyboardType: TextInputType.multiline,
+                  //maxLines: 5,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Im a ...',
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                /*Text('Social media :'),
           SizedBox(
             height: 5,
           ),
@@ -464,7 +440,7 @@ class _EditUserProfileState extends State<EditUserProfile> {
           SizedBox(
             height: 10,
           ),*/
-              /*Text('Skills :'),
+                /*Text('Skills :'),
           SizedBox(
             height: 5,
           ),
@@ -479,80 +455,21 @@ class _EditUserProfileState extends State<EditUserProfile> {
               hintText: 'Javascript programming, etc',
             ),
           ),*/
-            ],
-          );
-        } else return CircularProgressIndicator();
-      }
-    );
+              ],
+            );
+          } else
+            return CircularProgressIndicator();
+        });
   }
 
-  static Widget profilePicker(
-    bool isImageSelected,
-    String fileName,
-    Function onFilePicked,
-  ) {
-    Future<XFile?> _imageFile;
-    ImagePicker _picker = ImagePicker();
-   print('ajkhskwd${fileName}');
-    return Column(
-      children: [
-        fileName.isNotEmpty
-            ? isImageSelected
-                ? Image.file(
-                    File(fileName),
-                    width: 300,
-                    height: 300,
-                  )
-                : SizedBox(
-                    child: Image.network(
-                      fileName,
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.scaleDown,
-                    ),
-                  )
-            : SizedBox(
-                child: Image.network(
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png",
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.scaleDown,
-                ),
-              ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 35.0,
-              width: 35.0,
-              child: IconButton(
-                padding: const EdgeInsets.all(0),
-                icon: const Icon(Icons.image, size: 35.0),
-                onPressed: () {
-                  _imageFile = _picker.pickImage(source: ImageSource.gallery);
-                  _imageFile.then((file) async {
-                    onFilePicked(file);
-                  });
-                },
-              ),
-            ),
-            SizedBox(
-              height: 35.0,
-              width: 35.0,
-              child: IconButton(
-                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                icon: const Icon(Icons.camera, size: 35.0),
-                onPressed: () {
-                  _imageFile = _picker.pickImage(source: ImageSource.camera);
-                  _imageFile.then((file) async {
-                    onFilePicked(file);
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+  _getFromGallery() async {
+    XFile? pickedFile =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = XFile(pickedFile.path);
+      });
+    }
   }
+
 }

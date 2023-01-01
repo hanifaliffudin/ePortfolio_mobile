@@ -1,6 +1,7 @@
-import 'package:eportfolio/models/users_response_model.dart';
 import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
+
+import '../../models/user_model.dart';
 
 class AboutMe extends StatefulWidget {
   const AboutMe({Key? key}) : super(key: key);
@@ -11,24 +12,18 @@ class AboutMe extends StatefulWidget {
 
 class _AboutMeState extends State<AboutMe> {
 
-  var data;
-  String? about;
-
-  Future<Map<String, dynamic>> getUserData() async{
-    data = await APIService.getUserData();
-    about = data['about'];
-    return data;
-  }
+  late Future<UserModel> futureUser;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    futureUser = APIService().fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUserData(),
+    return FutureBuilder<UserModel>(
+      future: futureUser,
       builder: (context, snapshot){
         if(snapshot.hasData){
           return Container(
@@ -75,7 +70,7 @@ class _AboutMeState extends State<AboutMe> {
                                     Align(
                                       alignment: Alignment.topLeft,
                                       child: Text(
-                                        about ?? '',
+                                        snapshot.data!.about ?? '',
                                         style: TextStyle(
                                           fontSize: 15,
                                         ),

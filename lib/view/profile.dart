@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:eportfolio/widgets/profile_header_widget.dart';
 import 'package:eportfolio/widgets/about_me_content.dart';
 import 'package:eportfolio/widgets/collections_content.dart';
+import '../achivement_content.dart';
 import '../article_content.dart';
 import '../widgets/activities_content.dart';
 
@@ -74,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Tab(
                       child: Text(
-                        'Achivements',
+                        'Badges',
                         style: TextStyle(
                           color: Colors.black
                         ),
@@ -109,8 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         ListView(
                           children: [
-                            //Achivement()
-                            Activities(),
+                            Achivement()
                           ],
                         ),
                       ],

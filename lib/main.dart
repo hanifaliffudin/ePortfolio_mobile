@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
     return jwt;
   }
 
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class MyApp extends StatelessWidget {
         '/home' : (context) => HomePage(jwt.toString()),
         //'profile':(context) => const ProfilePage()
       },
-      /*home: jwtOrEmpty()? Login() : HomePage(jwtOrEmpty),*/
+
       home: FutureBuilder(
           future: jwtOrEmpty,
           builder: (context, snapshot) {
@@ -56,7 +55,6 @@ class MyApp extends StatelessWidget {
                 return Login();
               } else {
                 return HomePage(jwt.toString());
-                /*var payload = json.decode(ascii.decode(base64.decode(base64.normalize(jwt[1]))));*/
               }
             } else {
               return Login();

@@ -1,11 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import '../../config.dart';
-import '../../models/post_model.dart';
 
 class NewestAct extends StatefulWidget {
   const NewestAct({Key? key}) : super(key: key);

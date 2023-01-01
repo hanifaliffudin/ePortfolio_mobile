@@ -1,15 +1,19 @@
+import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
 import '../widgets/custom_appBar.dart';
 
 class AddArticles extends StatefulWidget {
   const AddArticles({Key? key}) : super(key: key);
-
 
   @override
   State<AddArticles> createState() => _AddArticlesState();
 }
 
 class _AddArticlesState extends State<AddArticles> {
+  TextEditingController descController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +31,7 @@ class _AddArticlesState extends State<AddArticles> {
               child: Column(
                 children: [
                   TextField(
+                    controller: titleController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -39,6 +44,7 @@ class _AddArticlesState extends State<AddArticles> {
                     height: 5,
                   ),
                   TextField(
+                    controller: descController,
                     keyboardType: TextInputType.multiline,
                     maxLines: 5,
                     decoration: InputDecoration(
@@ -51,27 +57,12 @@ class _AddArticlesState extends State<AddArticles> {
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: (){},
-                            icon: Icon(Icons.image),
-                          ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.video_file)
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
@@ -84,7 +75,9 @@ class _AddArticlesState extends State<AddArticles> {
                   Align(
                       alignment: Alignment.topLeft,
                       child: Text('Add cover image')),
-                  SizedBox(height: 7,),
+                  SizedBox(
+                    height: 7,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,9 +86,9 @@ class _AddArticlesState extends State<AddArticles> {
                         child: TextButton(
                           onPressed: () {},
                           style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue
-                          ),
-                          child: Text('Browse', style: TextStyle(color: Colors.white)),
+                              backgroundColor: Colors.blue),
+                          child: Text('Browse',
+                              style: TextStyle(color: Colors.white)),
                         ),
                       ),
                       Container(
@@ -119,9 +112,8 @@ class _AddArticlesState extends State<AddArticles> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.blue
-                        ),
+                        style:
+                            TextButton.styleFrom(backgroundColor: Colors.blue),
                         onPressed: () {},
                         child: Text(
                           'Visibility',
@@ -130,12 +122,31 @@ class _AddArticlesState extends State<AddArticles> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 7,),
+                      SizedBox(
+                        width: 7,
+                      ),
                       TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.blue
-                        ),
-                        onPressed: () {},
+                        style:
+                            TextButton.styleFrom(backgroundColor: Colors.blue),
+                        onPressed: () {
+                          APIService().createArticle(
+                                  titleController.text, descController.text)
+                              .then((response) {
+                            if (response) {
+                              Navigator.pushNamed(context, '/home');
+                            } else {
+                              FormHelper.showSimpleAlertDialog(
+                                context,
+                                "Error!",
+                                "Failed create article! Please try again",
+                                "OK",
+                                () {
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            }
+                          });
+                        },
                         child: Text(
                           'Add',
                           style: TextStyle(

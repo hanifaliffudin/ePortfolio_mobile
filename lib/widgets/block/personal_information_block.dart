@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import '../../config.dart';
 import '../../models/user_model.dart';
-import '../../models/users_response_model.dart';
+
 
 class PersonalInformation extends StatefulWidget {
   const PersonalInformation({Key? key}) : super(key: key);
@@ -17,34 +17,18 @@ class PersonalInformation extends StatefulWidget {
 
 class _PersonalInformationState extends State<PersonalInformation> {
 
-  var data;
-  String? username;
-  String? major;
-  String? nim;
-  String? city;
-  String? dateBirth;
-  String? gender;
-
-  Future<Map<String, dynamic>> getUserData() async{
-    data = await APIService.getUserData();
-    username = data['username'];
-    major = data['major'];
-    nim = data['nim'];
-    city = data['city'];
-    dateBirth = data['dateBirth'];
-    gender = data['gender'];
-    return data;
-  }
+  late Future<UserModel> futureUser;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    futureUser = APIService().fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUserData(),
+    return FutureBuilder<UserModel>(
+      future: futureUser,
       builder: (context, snapshot){
         if(snapshot.hasData){
           return Container(
@@ -100,7 +84,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                                 TextStyle(fontWeight: FontWeight.bold),
                                               ),
                                               //TextSpan(text: username ?? ''),
-                                              TextSpan(text: username ?? ''),
+                                              TextSpan(text: snapshot.data!.username ?? '',),
                                             ],
                                           )),
                                       RichText(
@@ -111,7 +95,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                                   text: 'Student ID : ',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold)),
-                                              TextSpan(text: nim ?? ''),
+                                              TextSpan(text: snapshot.data!.nim ?? ''),
                                             ],
                                           )),
                                       RichText(
@@ -122,7 +106,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                                   text: 'Major : ',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold)),
-                                              TextSpan(text: major ?? ''),
+                                              TextSpan(text: snapshot.data!.major ?? ''),
                                             ],
                                           )),
                                       RichText(
@@ -133,7 +117,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                                   text: 'City : ',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold)),
-                                              TextSpan(text: city ?? ''),
+                                              TextSpan(text: snapshot.data!.city ?? ''),
                                             ],
                                           )),
                                       RichText(
@@ -144,7 +128,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                               text: 'Date of Birth : ',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold)),
-                                          TextSpan(text: dateBirth ?? ''),
+                                          TextSpan(text: snapshot.data!.dateBirth ?? ''),
                                         ],
                                       )),
                                       RichText(
@@ -155,7 +139,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
                                                   text: 'Gender : ',
                                                   style: TextStyle(
                                                       fontWeight: FontWeight.bold)),
-                                              TextSpan(text: gender ?? ''),
+                                              TextSpan(text: snapshot.data!.gender ?? ''),
                                             ],
                                           )),
                                     ],

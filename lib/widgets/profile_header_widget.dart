@@ -1,15 +1,8 @@
-import 'dart:convert';
-
 import 'package:eportfolio/config.dart';
 import 'package:eportfolio/services/api_service.dart';
-import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 
 import '../models/user_model.dart';
-import '../models/users_response_model.dart';
-
 
 class ProfileHeader extends StatefulWidget {
   ProfileHeader({Key? key}) : super(key: key);
@@ -19,33 +12,18 @@ class ProfileHeader extends StatefulWidget {
 }
 
 class _ProfileHeaderState extends State<ProfileHeader> {
-
-  var data;
-  String? username;
-  String? major;
-  String? nim;
-  String? profilePicture;
-  String? city;
-
-  Future<Map<String, dynamic>> getUserData() async{
-    data = await APIService.getUserData();
-    username = data['username'];
-    major = data['major'];
-    nim = data['nim'];
-    profilePicture = data['profilePicture'];
-    city = data['city'];
-    return data;
-  }
+  late Future<UserModel> futureUser;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    futureUser = APIService().fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getUserData(),
+    return FutureBuilder<UserModel>(
+        future: futureUser,
         builder: (context, snapshot){
           if(snapshot.hasData){
             return Container(
@@ -65,12 +43,12 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                             margin: EdgeInsets.all(10),
                             child: CircleAvatar(
                               backgroundImage: NetworkImage(
-                                (profilePicture ==
+                                (snapshot.data!.profilePicture ==
                                     null ||
-                                    profilePicture ==
+                                    snapshot.data!.profilePicture ==
                                         "")
                                     ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
-                                    : '${Config.apiURL}/${profilePicture.toString()}',
+                                    : '${Config.apiURL}/${snapshot.data!.profilePicture.toString()}',
                               ), radius: 60,
                             )
                           ),
@@ -83,22 +61,22 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(username ?? '',
+                          Text(snapshot.data!.username ?? '',
                               style:
                               TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                           SizedBox(
                             height: 5,
                           ),
-                          Text(nim ?? '',
+                          Text(snapshot.data!.nim ?? '',
                               style: TextStyle(fontWeight: FontWeight.w600)),
                           SizedBox(
                             height: 5,
                           ),
-                          Text(major ?? ''),
+                          Text(snapshot.data!.major ?? ''),
                           SizedBox(
                             height: 5,
                           ),
-                          Text(city ?? ''),
+                          Text(snapshot.data!.city ?? ''),
                         ],
                       )
                     ],
@@ -117,18 +95,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                                   style: ElevatedButton.styleFrom(
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).popAndPushNamed('/editUser'/*, arguments: [
-                                      snapshot.data!.nim,
-                                      snapshot.data!.major,
-                                      snapshot.data!.city,
-                                      snapshot.data!.dateBirth,
-                                      snapshot.data!.gender,
-                                      snapshot.data!.interest,
-                                      snapshot.data!.about,
-                                      snapshot.data!.socialMedia,
-                                      snapshot.data!.skill,
-                                      snapshot.data!.profilePicture
-                                    ]*/);
+                                    Navigator.pushNamed(context, '/editUser');
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

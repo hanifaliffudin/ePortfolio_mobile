@@ -1,6 +1,9 @@
-import 'package:eportfolio/widgets/card/header_feed_card.dart';
 import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import '../../models/article_model.dart';
+import '../../services/api_service.dart';
+import 'header_article_card.dart';
 
 class ArticleFeed extends StatefulWidget {
   const ArticleFeed({Key? key}) : super(key: key);
@@ -10,45 +13,66 @@ class ArticleFeed extends StatefulWidget {
 }
 
 class _ArticleFeedState extends State<ArticleFeed> {
+
+  late Future<List<ArticleModel>> futureArticle;
+
+  @override
+  void initState(){
+    super.initState();
+    futureArticle = APIService().fetchArticle();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: Card(
-            child: InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProjectCardOpen()));
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    // HeaderFeedCard(postData: 'tes'),
-                    const SizedBox(height: 10,),
-                    const Text
-                      ('This is artikel '
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',maxLines: 2,overflow: TextOverflow.ellipsis,),
-                    const SizedBox(height: 10,),
-                    const Image(image: NetworkImage('https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
-                    const SizedBox(height: 10,),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: const Text('13 Ways to Lorem ipsum dolor sit amet.', //JUDUL
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold
+        FutureBuilder<List<ArticleModel>>(
+          future: futureArticle,
+          builder: (context, snapshot){
+            if(snapshot.hasData){
+              return ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => ProjectCardOpen()));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              HeaderArticle(articleData: snapshot.data![index]),
+                              const SizedBox(height: 10,),
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Container(
+                                  margin: EdgeInsets.all(10),
+                                  child: MarkdownBody(data: snapshot.data![index].desc),
+                                ),
+                              ),
+                              const SizedBox(height: 10,),
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Container(
+                                  margin: EdgeInsets.all(10),
+                                  child: Text(snapshot.data![index].title,style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  ),),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+                    );
+                  }
+              );
+            } else return CircularProgressIndicator();
+          }
         )
       ],
     );
