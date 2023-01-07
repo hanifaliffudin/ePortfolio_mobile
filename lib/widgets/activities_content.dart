@@ -2,7 +2,7 @@ import 'package:eportfolio/widgets/box_add_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../config.dart';
-import '../models/post_response_model.dart';
+import '../models/post_model.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 import 'block/comment_block.dart';
@@ -16,14 +16,14 @@ class Activities extends StatefulWidget {
 }
 
 class _ActivitiesState extends State<Activities> {
-  late Future<List<PostResponseModel>> futureUserPost;
+  late Future<List<PostModel>> futureUserPost;
   late Future<UserModel> futureUser;
 
   @override
   void initState() {
     super.initState();
-    futureUserPost = APIService().userPost();
-    futureUser = APIService().fetchUser();
+    futureUserPost = APIService().friendPost();
+    futureUser = APIService().fetchAnyUser();
   }
 
   @override
@@ -34,7 +34,7 @@ class _ActivitiesState extends State<Activities> {
           height: 7,
         ),
         BoxAddPost(),
-        FutureBuilder<List<PostResponseModel>>(
+        FutureBuilder<List<PostModel>>(
             future: futureUserPost,
             builder: (context, snapshot) {
               if (snapshot.hasData) {

@@ -5,26 +5,29 @@ import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import 'config.dart';
-import 'models/article_model.dart';
-import 'models/user_model.dart';
+import '../../config.dart';
+import '../../models/article_model.dart';
+import '../../models/user_model.dart';
 
-class ArticlesContent extends StatefulWidget {
-  const ArticlesContent({Key? key}) : super(key: key);
+class FriendArticlesContent extends StatefulWidget {
+  FriendArticlesContent({required this.userId});
+  String userId;
 
   @override
-  State<ArticlesContent> createState() => _ArticlesContentState();
+  State<FriendArticlesContent> createState() => _FriendArticlesContentState(userId);
 }
 
-class _ArticlesContentState extends State<ArticlesContent> {
+class _FriendArticlesContentState extends State<FriendArticlesContent> {
+  _FriendArticlesContentState(this.userId);
+  String userId;
 
-  late Future<List<ArticleModel>> futureUserArticle;
+  late Future<List<ArticleModel>> futureFriendArticle;
   late Future<UserModel> futureUser;
 
   @override
   void initState(){
     super.initState();
-    futureUserArticle = APIService().userArticle();
+    futureFriendArticle = APIService().friendArticle(userId);
     futureUser = APIService().fetchAnyUser();
   }
 
@@ -36,7 +39,7 @@ class _ArticlesContentState extends State<ArticlesContent> {
           height: 7,
         ),
         FutureBuilder<List<ArticleModel>>(
-            future: futureUserArticle ,
+            future: futureFriendArticle ,
             builder: (context, snapshot){
               if(snapshot.hasData){
                 return ListView.builder(

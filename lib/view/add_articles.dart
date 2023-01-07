@@ -148,7 +148,7 @@ class _AddArticlesState extends State<AddArticles> {
                           });
                         },
                         child: Text(
-                          'Add',
+                          'Add Article',
                           style: TextStyle(
                             color: Colors.white,
                           ),

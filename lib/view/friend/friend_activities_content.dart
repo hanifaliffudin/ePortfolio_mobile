@@ -1,29 +1,32 @@
-import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
+import 'package:eportfolio/widgets/box_add_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../config.dart';
-import '../../models/article_model.dart';
+import '../../models/post_model.dart';
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
-import '../block/comment_block.dart';
-import 'header_article_card.dart';
+import '../../widgets/block/comment_block.dart';
+import '../../widgets/card/header_feed_card.dart';
 
-class ArticleFeed extends StatefulWidget {
-  const ArticleFeed({Key? key}) : super(key: key);
+class FriendActivities extends StatefulWidget {
+  FriendActivities({required this.userId});
+  String userId;
 
   @override
-  State<ArticleFeed> createState() => _ArticleFeedState();
+  State<FriendActivities> createState() => _FriendActivitiesState(userId);
 }
 
-class _ArticleFeedState extends State<ArticleFeed> {
-
-  late Future<List<ArticleModel>> futureArticle;
+class _FriendActivitiesState extends State<FriendActivities> {
+  late Future<List<PostModel>> futureFriendPost;
   late Future<UserModel> futureUser;
+  String userId;
+
+  _FriendActivitiesState(this.userId);
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    futureArticle = APIService().fetchArticle();
+    futureFriendPost = APIService().friendPost(userId);
     futureUser = APIService().fetchAnyUser();
   }
 
@@ -31,45 +34,50 @@ class _ArticleFeedState extends State<ArticleFeed> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FutureBuilder<List<ArticleModel>>(
-          future: futureArticle,
-          builder: (context, snapshot){
-            if(snapshot.hasData){
-              return ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: snapshot.data!.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => ProjectCardOpen()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
+        SizedBox(
+          height: 15,
+        ),
+        FutureBuilder<List<PostModel>>(
+            future: futureFriendPost,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data!.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: Container(
+                          margin: EdgeInsets.all(10),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              HeaderArticle(articleData: snapshot.data![index]),
-                              const SizedBox(height: 10,),
+                              HeaderFeedCard(postData: snapshot.data![index]),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Container(
                                   margin: EdgeInsets.all(10),
-                                  child: MarkdownBody(data: snapshot.data![index].desc),
+                                  child: MarkdownBody(
+                                      data: snapshot.data![index].desc
+                                          .toString()),
                                 ),
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Align(
                                 alignment: Alignment.topLeft,
-                                child: Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: Text(snapshot.data![index].title,style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                  ),),
+                                child: new Text( 'Created : '+
+                                    getFormattedDate(snapshot
+                                        .data![index].updatedAt
+                                        .toString()),
                                 ),
                               ),
-                              Container(//komentar box
+                              Container(
                                 child: Container(
                                   padding: EdgeInsets.only(
                                       left: 5, right: 5, top: 15, bottom: 5),
@@ -117,7 +125,7 @@ class _ArticleFeedState extends State<ArticleFeed> {
                                                                   bottom: MediaQuery.of(context).viewInsets.bottom),
                                                               child: Container(
                                                                   height: 500,
-                                                                  child: CommentBlock(articleData: snapshot.data![index])
+                                                                  child: CommentBlock(postData: snapshot.data![index])
                                                               ),
                                                             )
                                                         );
@@ -140,20 +148,7 @@ class _ArticleFeedState extends State<ArticleFeed> {
                                       ),
                                       GestureDetector(
                                         onTap: (){
-                                          showModalBottomSheet(
-                                              isScrollControlled:true,
-                                              context: context,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-                                              builder: (context) => Padding(
-                                                padding: EdgeInsets.only(
-                                                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                child: Container(
-                                                    height: 500,
-                                                    child: CommentBlock(articleData : snapshot.data![index])
-                                                ),
-                                              )
-                                          );
+                                          comment(context);
                                         },
                                         child: Icon(
                                             Icons.send_sharp,
@@ -166,14 +161,21 @@ class _ArticleFeedState extends State<ArticleFeed> {
                             ],
                           ),
                         ),
-                      ),
-                    );
-                  }
-              );
-            } else return CircularProgressIndicator();
-          }
-        )
+                      );
+                    });
+              } else
+                return CircularProgressIndicator();
+            })
       ],
     );
+  }
+
+  void comment(context) {
+
+  }
+
+  String getFormattedDate(String dtStr) {
+    var dt = DateTime.parse(dtStr);
+    return "${dt.day.toString().padLeft(2, '0')}-${dt.month.toString().padLeft(2, '0')}-${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}.${dt.millisecond.toString().padLeft(3, '0')}";
   }
 }

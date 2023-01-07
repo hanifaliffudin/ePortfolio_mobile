@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-List<PostResponseModel> postFromJson(String str) =>
-    List<PostResponseModel>.from(
-        json.decode(str).map((x) => PostResponseModel.fromMap(x)));
+List<PostModel> postFromJson(String str) =>
+    List<PostModel>.from(
+        json.decode(str).map((x) => PostModel.fromMap(x)));
 
-class PostResponseModel {
+class PostModel {
    String id;
    String userId;
    String desc;
@@ -14,7 +14,7 @@ class PostResponseModel {
    String updatedAt;
    int V;
 
-  PostResponseModel({
+  PostModel({
     required this.id,
     required this.userId,
     required this.desc,
@@ -25,9 +25,9 @@ class PostResponseModel {
     required this.V,
   });
 
-  factory PostResponseModel.fromMap(
+  factory PostModel.fromMap(
           Map<String, dynamic> json) =>
-      PostResponseModel(
+      PostModel(
           id: json['_id'],
           userId: json['userId'],
           desc: json['desc'],
@@ -67,9 +67,8 @@ class Comments {
   final String date;
 
 
-
   factory Comments.fromJson(Map<String, dynamic> json) {
-    return Comments(
+    return new Comments(
         userId: json['userId'],
         comment: json['comment'],
         id: json['_id'],

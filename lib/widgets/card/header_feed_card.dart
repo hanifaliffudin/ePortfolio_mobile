@@ -4,24 +4,23 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:custom_switch/custom_switch.dart';
 
 import '../../config.dart';
-import '../../models/post_response_model.dart';
+import '../../models/post_model.dart';
 import '../../services/api_service.dart';
-import '../../view/home.dart';
 
 class HeaderFeedCard extends StatefulWidget {
   HeaderFeedCard({required this.postData});
-  PostResponseModel postData;
+
+  PostModel postData;
 
   @override
   State<HeaderFeedCard> createState() => _HeaderFeedCardState(postData);
 }
 
 class _HeaderFeedCardState extends State<HeaderFeedCard> {
-
   String? username;
   String? profilePicture;
   String? major;
-  PostResponseModel postData;
+  PostModel postData;
   var data;
   var postId;
   var userId;
@@ -44,42 +43,57 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: getIdUser(),
-        builder: (context, snapshot){
-          if (snapshot.hasData){
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
             return Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          (profilePicture ==
-                              null ||
-                              profilePicture ==
-                                  "")
-                              ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
-                              : '${Config.apiURL}/${profilePicture.toString()}',
-                        ), radius: 25,
+                      userId == postData.userId
+                          ? GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profile', arguments: postData.userId);
+                              },
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  (profilePicture == null ||
+                                          profilePicture == "")
+                                      ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                                      : '${Config.apiURL}/${profilePicture.toString()}',
+                                ),
+                                radius: 25,
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/friendprofile',
+                                    arguments: postData.userId);
+                              },
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  (profilePicture == null ||
+                                          profilePicture == "")
+                                      ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                                      : '${Config.apiURL}/${profilePicture.toString()}',
+                                ),
+                                radius: 25,
+                              ),
+                            ),
+                      const SizedBox(
+                        width: 8,
                       ),
-                      const SizedBox(width: 8,),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             username ?? '',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18
-                            ),
+                                fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           Text(major ?? ''),
                           /*Text(postList[index].updatedAt)*/
@@ -91,17 +105,16 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                       child: userId != postData.userId
                           ? Container()
                           : IconButton(
-                          onPressed: () {
-                            settingButton(context);
-                          },
-                          icon: Icon(Icons.more_horiz)))
+                              onPressed: () {
+                                settingButton(context);
+                              },
+                              icon: Icon(Icons.more_horiz)))
                 ],
               ),
             );
           } else
             return CircularProgressIndicator();
-        }
-    );
+        });
   }
 
   void settingButton(context) {
@@ -111,58 +124,58 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-          height: 150,
-          margin: EdgeInsets.only(left: 10, top: 10, right: 10),
-          child: Column(
-            children: [
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(),
-                  onPressed: () {},
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Edit'), Icon(Icons.edit)],
-                  )),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(),
-                  onPressed: () {
-                    deletePost().then((response){
-                      FormHelper.showSimpleAlertDialog(
-                        context,
-                        "Success!",
-                        "Success delete post!",
-                        "OK",
+              height: 150,
+              margin: EdgeInsets.only(left: 10, top: 10, right: 10),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(),
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Edit'), Icon(Icons.edit)],
+                      )),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(),
+                      onPressed: () {
+                        deletePost().then((response) {
+                          FormHelper.showSimpleAlertDialog(
+                            context,
+                            "Success!",
+                            "Success delete post!",
+                            "OK",
                             () {
                               Navigator.pushNamed(context, '/home');
-                        },
-                      );
-                    });
-                  },
-                  child: Row(
+                            },
+                          );
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Delete'), Icon(Icons.remove)],
+                      )),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Delete'), Icon(Icons.remove)],
-                  )),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Visibility'),
-                  CustomSwitch(
-                    activeColor: Colors.pinkAccent,
-                    value: status,
-                    onChanged: (value) {
-                      if(value == true){
-                        print("Public");
-                      } else{
-                        print("Private");
-                      }
-                      setState(() {
-                        status = value;
-                      });
-                    },
-                  ),
+                    children: [
+                      Text('Visibility'),
+                      CustomSwitch(
+                        activeColor: Colors.pinkAccent,
+                        value: status,
+                        onChanged: (value) {
+                          if (value == true) {
+                            print("Public");
+                          } else {
+                            print("Private");
+                          }
+                          setState(() {
+                            status = value;
+                          });
+                        },
+                      ),
+                    ],
+                  )
                 ],
-              )
-            ],
-          ),
-        ));
+              ),
+            ));
   }
 }

@@ -2,6 +2,7 @@ import 'package:eportfolio/config.dart';
 import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
 
+
 import '../models/user_model.dart';
 
 class ProfileHeader extends StatefulWidget {
@@ -17,7 +18,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   @override
   void initState() {
     super.initState();
-    futureUser = APIService().fetchUser();
+    futureUser = APIService().fetchAnyUser();
   }
 
   @override

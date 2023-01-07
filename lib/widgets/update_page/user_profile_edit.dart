@@ -148,7 +148,7 @@ class _EditUserProfileState extends State<EditUserProfile> {
   @override
   void initState() {
     super.initState();
-    futureUser = APIService().fetchUser();
+    futureUser = APIService().fetchAnyUser();
   }
 
   @override
@@ -254,7 +254,7 @@ class _EditUserProfileState extends State<EditUserProfile> {
                               if (response) {
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
-                                  '/home',
+                                  '/profile',
                                   (route) => false,
                                 );
                               } else {

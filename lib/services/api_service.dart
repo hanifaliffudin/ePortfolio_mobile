@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:eportfolio/models/article_model.dart';
+import 'package:eportfolio/models/badges_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../config.dart';
-import '../models/post_response_model.dart';
+
+import '../models/activity_model.dart';
+import '../models/post_model.dart';
 import '../models/user_model.dart';
 
 class APIService {
@@ -68,7 +71,7 @@ class APIService {
     }
   }
 
-  //fetch single post
+  //fetch single post by id
   static Future<Map<String, dynamic>> getSinglePost(String idPost) async{
     var urlPost = Config.postApi;
     var url = Uri.parse('$urlPost/$idPost');
@@ -79,6 +82,28 @@ class APIService {
       return data;
     }else return Future.error(Icons.error);
 
+  }
+
+  //Fetch User
+  Future<UserModel> fetchAnyUser([String? userId]) async {
+    var url;
+    var urlUser = Config.users;
+
+    if (userId == null){
+      final storage = FlutterSecureStorage();
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlUser/$userId');
+    } else {
+      url = Uri.parse('$urlUser/$userId');
+    }
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load user');
+    }
   }
 
   //fetch Id User
@@ -190,7 +215,7 @@ class APIService {
   //create article
   Future<bool> createArticle(String title, String desc) async{
     final storage = FlutterSecureStorage();
-    var url = Uri.parse(Config.articleApi);
+    var url = Uri.parse(Config.createArticle);
     var userId = await storage.read(key: 'userId');
     final request = {'userId': userId, 'title': title, 'desc' : desc};
     final response = await http.post(
@@ -224,7 +249,7 @@ class APIService {
   }
 
   //fetch all post
-  Future<List<PostResponseModel>> fetchPost() async {
+  Future<List<PostModel>> fetchPost() async {
     var url = Uri.parse(Config.timelineApi);
     final response =
     await http.get(url);
@@ -232,7 +257,7 @@ class APIService {
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
 
-      return parsed.map<PostResponseModel>((json) => PostResponseModel.fromMap(json)).toList();
+      return parsed.map<PostModel>((json) => PostModel.fromMap(json)).toList();
     } else {
       throw Exception('Failed to load album');
     }
@@ -256,7 +281,7 @@ class APIService {
   }
 
   //fetch user post
-  Future<List<PostResponseModel>> userPost() async {
+  Future<List<PostModel>> userPost() async {
     final storage = FlutterSecureStorage();
     var url = Config.userActivities;
     var userId = await storage.read(key: 'userId');
@@ -266,24 +291,115 @@ class APIService {
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
 
-      return parsed.map<PostResponseModel>((json) => PostResponseModel.fromMap(json)).toList();
+      return parsed.map<PostModel>((json) => PostModel.fromMap(json)).toList();
     } else {
       throw Exception('Failed to load post');
     }
   }
 
-  //fetch user
-  Future<UserModel> fetchUser() async {
-    final storage = FlutterSecureStorage();
-    var userId = await storage.read(key: 'userId');
-    var urlUser = Config.users;
-    var url = Uri.parse('$urlUser/$userId');
+  //fetch friend post
+  Future<List<PostModel>> friendPost([String? userId]) async {
+    var url;
+    var urlActivity = Config.userActivities;
+
+    if (userId == null){
+      final storage = FlutterSecureStorage();
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlActivity/$userId');
+    } else {
+      url = Uri.parse('$urlActivity/$userId');
+    }
+
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed.map<BadgesModel>((json) => BadgesModel.fromMap(json)).toList();
     } else {
-      throw Exception('Failed to load album');
+      throw Exception('Failed to load article');
+    }
+
+  }
+
+  //fetch friend article
+  Future<List<ArticleModel>> friendArticle(String userId) async {
+    var url = Config.articleApi;
+    final response =
+    await http.get(Uri.parse('${url}/${userId}'));
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+
+      return parsed.map<ArticleModel>((json) => ArticleModel.fromMap(json)).toList();
+    } else {
+      throw Exception('Failed to load article');
+    }
+  }
+
+  //fetch activity by user
+  Future<List<ActivityModel>> fetchAnyActivity([String? userId]) async {
+    var url;
+    var urlActivity = Config.activities;
+
+    if (userId == null){
+      final storage = FlutterSecureStorage();
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlActivity/$userId');
+    } else {
+      url = Uri.parse('$urlActivity/$userId');
+    }
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed.map<ActivityModel>((json) => ActivityModel.fromMap(json)).toList();
+    } else {
+      throw Exception('Failed to load article');
+    }
+  }
+
+  //create activity
+  Future<bool> createActivity(String title, String type, String desc, String startDate, String endDate) async{
+    final storage = FlutterSecureStorage();
+    var url = Uri.parse(Config.createActivity);
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId, 'title': title, 'type' : type, 'desc' : desc, 'startDate' : startDate, 'endDate': endDate};
+    final response = await http.post(
+        url,
+        body: jsonEncode(request),
+        headers: {'Content-Type':'application/json'}
+    );
+
+    if(response.statusCode != 200){
+      print('create article failed');
+      return false;
+    } else {
+      print('create article success');
+      return true;
+    }
+  }
+
+  //fetch badges by user
+  Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async{
+    var url;
+    var urlActivity = Config.badges;
+
+    if (userId == null){
+      final storage = FlutterSecureStorage();
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlActivity/$userId');
+    } else {
+      url = Uri.parse('$urlActivity/$userId');
+    }
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed.map<BadgesModel>((json) => BadgesModel.fromMap(json)).toList();
+    } else {
+      throw Exception('Failed to load article');
     }
   }
 

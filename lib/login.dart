@@ -145,7 +145,7 @@ class _LoginState extends State<Login> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomePage(jwt ?? '')));
+                                  builder: (context) => HomePage(0)));
                           ;
                         } else {
                           FormHelper.showSimpleAlertDialog(

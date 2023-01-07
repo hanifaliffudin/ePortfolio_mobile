@@ -1,27 +1,29 @@
+import 'package:eportfolio/widgets/custom_appBar.dart';
 import 'package:flutter/material.dart';
-import 'package:eportfolio/widgets/profile_header_widget.dart';
-import 'package:eportfolio/widgets/about_me_content.dart';
 import 'package:eportfolio/widgets/activity_tab.dart';
-import '../badges_tab.dart';
-import '../article_content.dart';
-import '../widgets/activities_content.dart';
-import 'album.dart';
-import 'friend/friend_about_me_tab.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+import '../../badges_tab.dart';
+import '../album.dart';
+import 'friend_about_me_tab.dart';
+import 'friend_activities_content.dart';
+import 'friend_article_content.dart';
+import 'friend_profile_header.dart';
 
-  static const routeName = '/profile';
+class FriendProfilePage extends StatefulWidget {
+  const FriendProfilePage({Key? key}) : super(key: key);
+
+  static const routeName = '/friendprofile';
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<FriendProfilePage> createState() => _FriendProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _FriendProfilePageState extends State<FriendProfilePage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
+      appBar: CustomAppBar(),
       body: DefaultTabController(
         length: 6,
         child: NestedScrollView(
@@ -29,9 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
               return [
                 SliverList(
                     delegate: SliverChildListDelegate(
-                        [ProfileHeader()]
-                    )
-                )
+                        [FriendProfileHeader(userId: args.toString())]))
               ];
             },
             body: Column(
@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           'Album',
                           style: TextStyle(color: Colors.black),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -76,17 +76,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     ListView(
                       children: [
-                        //FriendAboutMeContent(),
-                        AboutMeContent(),
+                        FriendAboutMeContent(userId: args.toString()),
                       ],
                     ),
                     ListView(
                       children: [
-                        Activities(),
+                        FriendActivities(userId: args.toString()),
                       ],
                     ),
                     ListView(
-                      children: [ArticlesContent()],
+                      children: [
+                        FriendArticlesContent(userId: args.toString())
+                      ],
                     ),
                     ListView(
                       children: [
@@ -97,9 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [Badges()],
                     ),
                     ListView(
-                      children: [
-                        Album()
-                      ],
+                      children: [Album()],
                     ),
                   ],
                 ))

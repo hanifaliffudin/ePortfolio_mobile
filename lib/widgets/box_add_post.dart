@@ -1,10 +1,7 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/view/add_articles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
-
-import '../view/home.dart';
 
 class BoxAddPost extends StatefulWidget {
   const BoxAddPost({Key? key}) : super(key: key);
@@ -14,9 +11,8 @@ class BoxAddPost extends StatefulWidget {
 }
 
 class _BoxAddPostState extends State<BoxAddPost> {
-  //final storage = FlutterSecureStorage();
+
   TextEditingController descController = TextEditingController();
-  String? jwt;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +66,7 @@ class _BoxAddPostState extends State<BoxAddPost> {
                     if(response){
                       setState(() {
                       });
-                      Navigator.pushNamed(context, '/home');
+                      Navigator.pushNamed(context, '/activities');
                     } else {
                       FormHelper.showSimpleAlertDialog(
                         context,

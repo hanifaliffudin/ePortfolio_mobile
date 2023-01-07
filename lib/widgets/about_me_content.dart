@@ -1,8 +1,10 @@
-import 'package:eportfolio/widgets/block/about_me.dart';
 import 'package:eportfolio/widgets/block/add_skill.dart';
 import 'package:eportfolio/widgets/block/newest_activity.dart';
-import 'package:eportfolio/widgets/block/personal_information_block.dart';
 import 'package:flutter/material.dart';
+import '../models/user_model.dart';
+import '../services/api_service.dart';
+import '../view/friend/friend_about_me_block.dart';
+import '../view/friend/friend_personal_information.dart';
 import 'block/add_interest.dart';
 import 'block/add_socialMedia.dart';
 
@@ -14,39 +16,54 @@ class AboutMeContent extends StatefulWidget {
 }
 
 class _AboutMeContentState extends State<AboutMeContent> {
+
+  late Future<UserModel> futureUser;
+
+  @override
+  void initState() {
+    super.initState();
+    futureUser = APIService().fetchAnyUser();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 7,),
-        Container(
-          padding: EdgeInsets.only(left: 10),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll<Color>(Colors.blue),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+    return FutureBuilder<UserModel>(
+      future: futureUser,
+      builder : (context, snapshot){
+        if(snapshot.hasData){
+          return Column(
+            children: [
+              SizedBox(height: 7,),
+              Container(
+                padding: EdgeInsets.only(left: 10),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll<Color>(Colors.blue),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      AddBlock(context);
+                    },
+                    child: Text(
+                      'Add new block',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
-              onPressed: () {
-                AddBlock(context);
-              },
-              child: Text(
-                'Add new block',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-        PersonalInformation(),
-        AboutMe(),
-        NewestAct()
-
-      ],
+              FriendPersonalInformation(userId: snapshot.data!.id),
+              FriendAboutMeBlock(userId : snapshot.data!.id),
+              NewestAct()
+            ],
+          );
+        } else return CircularProgressIndicator();
+      }
     );
   }
   void AddBlock(context){

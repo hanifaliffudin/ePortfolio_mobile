@@ -1,5 +1,6 @@
 class UserModel {
   String username;
+  String id;
   String major;
   String nim;
   String profilePicture;
@@ -11,6 +12,7 @@ class UserModel {
 
   UserModel(
       {required this.username,
+      required this.id,
       required this.major,
       required this.nim,
       required this.profilePicture,
@@ -23,6 +25,7 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
         username: json['username'],
+        id: json['_id'],
         major: json['major'],
         nim: json['nim'],
         profilePicture: json['profilePicture'],

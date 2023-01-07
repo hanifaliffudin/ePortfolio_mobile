@@ -12,7 +12,7 @@ import 'feeds.dart';
 
 class HomePage extends StatefulWidget {
   /*const HomePage({Key? key}) : super(key: key);*/
-  HomePage(this.jwt);
+  HomePage(this._selectedIndex);
 
   /*factory HomePage.fromBase64(String jwt) =>
       HomePage(
@@ -24,15 +24,16 @@ class HomePage extends StatefulWidget {
           )
       );*/
 
-  final String jwt;
+
+  final int _selectedIndex;
   /*final Map<String, dynamic> payload;*/
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState(_selectedIndex);
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex;
   String _pageTitle = 'Home';
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -40,6 +41,8 @@ class _HomePageState extends State<HomePage> {
     DiscoverPage(),
     ProfilePage(),
   ];
+
+  _HomePageState(this._selectedIndex);
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,7 +52,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 

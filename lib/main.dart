@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:eportfolio/login.dart';
+import 'package:eportfolio/view/friend/friend_profile.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
@@ -22,7 +23,6 @@ class MyApp extends StatelessWidget {
     var jwt = await storage.read(key: "jwt");
     var userId = await storage.read(key: 'userId');
     if(jwt == null) return "";
-    print('iniuserId $userId');
     return jwt;
   }
 
@@ -40,8 +40,10 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/editUser' : (context) => EditUserProfile(),
-        '/home' : (context) => HomePage(jwt.toString()),
-        //'profile':(context) => const ProfilePage()
+        '/home' : (context) => HomePage(0),
+        '/friendprofile':(context) => FriendProfilePage(),
+        '/profile':(context) => HomePage(2),
+        '/activities':(context) => HomePage(3)
       },
 
       home: FutureBuilder(
@@ -54,7 +56,7 @@ class MyApp extends StatelessWidget {
               if(jwt.length !=3) {
                 return Login();
               } else {
-                return HomePage(jwt.toString());
+                return HomePage(0);
               }
             } else {
               return Login();

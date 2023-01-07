@@ -1,6 +1,6 @@
 import 'package:comment_box/comment/comment.dart';
 import 'package:eportfolio/config.dart';
-import 'package:eportfolio/models/post_response_model.dart';
+import 'package:eportfolio/models/post_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/user_model.dart';
@@ -18,19 +18,18 @@ class PostFeed extends StatefulWidget {
 
 class _PostFeedState extends State<PostFeed> {
   late Future<UserModel> futureUser;
-  late Future<List<PostResponseModel>> futurePost;
-
+  late Future<List<PostModel>> futurePost;
 
   @override
   void initState() {
     super.initState();
-    futureUser = APIService().fetchUser();
+    futureUser = APIService().fetchAnyUser();
     futurePost = APIService().fetchPost();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<PostResponseModel>>(
+    return FutureBuilder<List<PostModel>>(
       future : futurePost,
       builder: (context, snapshot){
         if(snapshot.hasData){
