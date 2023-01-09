@@ -22,7 +22,7 @@ class _ActivitiesState extends State<Activities> {
   @override
   void initState() {
     super.initState();
-    futureUserPost = APIService().friendPost();
+    futureUserPost = APIService().userPost();
     futureUser = APIService().fetchAnyUser();
   }
 

@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'package:dio/dio.dart' as Dio;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
 import 'package:eportfolio/models/article_model.dart';
 import 'package:eportfolio/models/badges_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:mime_type/mime_type.dart';
 import '../config.dart';
-
 import '../models/activity_model.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
@@ -15,54 +19,50 @@ class APIService {
 
   //login
   static Future<bool> login(String email, String password) async {
-
     final storage = FlutterSecureStorage();
     String? jwt;
     String? userId;
-    String? nim;
 
-    var url = Uri.parse(
-      Config.loginAPI
-    );
+    var url = Uri.parse(Config.loginAPI);
 
     final request = {'email': email, 'password': password};
     var response = await client.post(
       url,
-      headers: {'Content-Type': 'application/json'},
       body: jsonEncode(request),
+      headers: {'Content-Type': 'application/json'},
     );
 
     var data = jsonDecode(response.body);
     jwt = data['jwt'];
     userId = data['userId'];
-    nim = data['nim'];
     if (response.statusCode != 200) {
       print('login failed');
       return false;
     } else {
-      print(response.body);
-      storage.write(key: 'jwt', value: jwt);
+      print('login success');
+      storage.write(key: 'jwt', value: jwt.toString());
       storage.write(key: 'userId', value: userId.toString());
-      storage.write(key: 'nim', value: nim.toString());
-      getIdUser(userId.toString());
       return true;
     }
   }
 
   //register
-  static Future<bool> register(String username, String email, String password) async{
-    var url = Uri.parse(
-        Config.registerAPI
-    );
+  static Future<bool> register(
+      String username, String email, String password) async {
+    var url = Uri.parse(Config.registerAPI);
 
-    final request = {'username': username, 'email': email, 'password':password};
+    final request = {
+      'username': username,
+      'email': email,
+      'password': password
+    };
     var response = await client.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(request),
     );
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       print('register failed');
       return false;
     } else {
@@ -71,25 +71,12 @@ class APIService {
     }
   }
 
-  //fetch single post by id
-  static Future<Map<String, dynamic>> getSinglePost(String idPost) async{
-    var urlPost = Config.postApi;
-    var url = Uri.parse('$urlPost/$idPost');
-
-    var response = await client.get(url);
-    if(response.statusCode == 200){
-      var data = jsonDecode(response.body);
-      return data;
-    }else return Future.error(Icons.error);
-
-  }
-
-  //Fetch User
+  //fetch User
   Future<UserModel> fetchAnyUser([String? userId]) async {
     var url;
     var urlUser = Config.users;
 
-    if (userId == null){
+    if (userId == null) {
       final storage = FlutterSecureStorage();
       var userId = await storage.read(key: 'userId');
       url = Uri.parse('$urlUser/$userId');
@@ -107,31 +94,35 @@ class APIService {
   }
 
   //fetch Id User
-  static Future<Map<String, dynamic>> getIdUser(String userIdPosting) async{
-
+  static Future<Map<String, dynamic>> getIdUser(String userIdPosting) async {
     var urlUser = Config.users;
     var url = Uri.parse('$urlUser/$userIdPosting');
-
     var response = await client.get(url);
-
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       return data;
     } else {
       return Future.error(Icons.error);
     }
-}
+  }
 
   //update user
-  static Future<bool> updateUserData(String nim, String major, String city, String dateBirth, String gender, String interest, String about/*, String socialMedia, String skill*/,/*String profilePicture,*/ /*bool isFileSelected*/) async{
-
+  static Future<bool> updateUserData(
+    String nim,
+    String major,
+    String city,
+    String dateBirth,
+    String gender,
+    String interest,
+    String about /*, String socialMedia, String skill*/,
+  ) async {
     final storage = FlutterSecureStorage();
     var userId = await storage.read(key: 'userId');
     var urlUser = Config.users;
     var url = Uri.parse('$urlUser/$userId');
 
     var newrequest = http.MultipartRequest('PUT', url);
-    newrequest.fields['userId'] = userId;
+    newrequest.fields['userId'] = userId!;
     newrequest.fields['nim'] = nim;
     newrequest.fields['major'] = major;
     newrequest.fields['city'] = city;
@@ -140,27 +131,9 @@ class APIService {
     newrequest.fields['interest'] = interest;
     newrequest.fields['about'] = about;
 
-    //var filePath = File(fileBits, '/storage/images/$profilePicture');
-
-    /*if (profilePicture != null && isFileSelected) {
-      http.MultipartFile multipartFile = await http.MultipartFile.fromPath(
-        'profilePicture',
-        profilePicture,
-      );
-      newrequest.files.add(multipartFile);
-      print('inisjdksah $multipartFile');
-    }*/
-
-
     var newresponse = await newrequest.send();
 
-    /*final request = {'userId': userId, 'nim': nim, 'major': major, 'city':city, 'dateBirth': dateBirth, 'gender': gender, 'interest':interest, 'about': about, *//*'socialMedia': socialMedia, 'skill':skill*//* };
-    var response = await client.put(url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(request),
-    );*/
-
-    if(newresponse.statusCode != 200){
+    if (newresponse.statusCode != 200) {
       print('update profile failed');
       return false;
     } else {
@@ -169,20 +142,78 @@ class APIService {
     }
   }
 
-  //delete post
-  static Future<bool> deletePost(String postId) async{
+  //update profilePicture
+  Future<bool> uploadImage(XFile profilePicture) async {
     final storage = FlutterSecureStorage();
-    var urlPost = Config.postApi;
+    var userId = await storage.read(key: 'userId');
+    print('upload started');
+    var response = await uploadForm('${Config.users}/${userId}',
+        {'userId': '${userId}'}, {'profilePicture': profilePicture!});
+
+    if (response.statusCode != 200) {
+      print('tidak berhasil');
+      return false;
+    } else {
+      print("res-1 $response");
+      return true;
+    }
+  }
+
+  Future<Dio.Response> uploadForm(
+      String url, Map<String, dynamic> data, Map<String, XFile> files) async {
+    Map<String, Dio.MultipartFile> fileMap = {};
+    for (MapEntry fileEntry in files.entries) {
+      XFile file = fileEntry.value;
+      String fileName = basename(file.path);
+      String? mimeType = mime(fileName);
+      if (mimeType == null) continue;
+      String mimee = mimeType.split('/')[0];
+      String type = mimeType.split('/')[1];
+
+      fileMap[fileEntry.key] = Dio.MultipartFile(
+        file.openRead(),
+        await file.length(),
+        filename: fileName,
+        contentType: MediaType(mimee, type),
+      );
+    }
+    data.addAll(fileMap);
+    var formData = Dio.FormData.fromMap(data);
+    Dio.Dio dio = Dio.Dio();
+    return await dio.put(url,
+        data: formData,
+        options: Dio.Options(
+          contentType: 'multipart/form-data',
+        ));
+  }
+
+  //-------------------------------POST---------------------------------------------//
+
+  //fetch single post by id
+  static Future<Map<String, dynamic>> getSinglePost(String idPost) async {
+    var urlPost = Config.post;
+    var url = Uri.parse('$urlPost/$idPost');
+
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else
+      return Future.error(Icons.error);
+  }
+
+  //delete post
+  static Future<bool> deletePost(String postId) async {
+    final storage = FlutterSecureStorage();
+    var urlPost = Config.post;
     var url = Uri.parse('$urlPost/$postId');
     var userId = await storage.read(key: 'userId');
     final request = {'userId': userId};
-    var response = await client.delete(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(request)
-    );
+    var response = await client.delete(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       print('create post failed');
       return false;
     } else {
@@ -191,68 +222,29 @@ class APIService {
     }
   }
 
-  //create posts service api
-  static Future<bool> createPost(String desc) async{
+  //create post
+  static Future<bool> createPost(String desc) async {
     final storage = FlutterSecureStorage();
-    var url = Uri.parse(Config.postApi);
+    var url = Uri.parse(Config.post);
     var userId = await storage.read(key: 'userId');
     final request = {'userId': userId, 'desc': desc};
-    final response = await http.post(
-        url,
+    final response = await http.post(url,
         body: jsonEncode(request),
-        headers: {'Content-Type':'application/json'}
-    );
+        headers: {'Content-Type': 'application/json'});
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       print('create post failed');
       return false;
     } else {
       print('create post success');
       return true;
-    }
-  }
-
-  //create article
-  Future<bool> createArticle(String title, String desc) async{
-    final storage = FlutterSecureStorage();
-    var url = Uri.parse(Config.createArticle);
-    var userId = await storage.read(key: 'userId');
-    final request = {'userId': userId, 'title': title, 'desc' : desc};
-    final response = await http.post(
-        url,
-        body: jsonEncode(request),
-        headers: {'Content-Type':'application/json'}
-    );
-
-    if(response.statusCode != 200){
-      print('create article failed');
-      return false;
-    } else {
-      print('create article success');
-      return true;
-    }
-  }
-
-  //fetch all article
-  Future<List<ArticleModel>> fetchArticle() async {
-    var url = Uri.parse(Config.timelineArticleApi);
-    final response =
-    await http.get(url);
-
-    if (response.statusCode == 200) {
-      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-
-      return parsed.map<ArticleModel>((json) => ArticleModel.fromMap(json)).toList();
-    } else {
-      throw Exception('Failed to load album');
     }
   }
 
   //fetch all post
   Future<List<PostModel>> fetchPost() async {
     var url = Uri.parse(Config.timelineApi);
-    final response =
-    await http.get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -263,30 +255,12 @@ class APIService {
     }
   }
 
-  //fetch user article
-  Future<List<ArticleModel>> userArticle() async {
-    final storage = FlutterSecureStorage();
-    var url = Config.articleApi;
-    var userId = await storage.read(key: 'userId');
-    final response =
-    await http.get(Uri.parse('${url}/${userId}'));
-
-    if (response.statusCode == 200) {
-      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-
-      return parsed.map<ArticleModel>((json) => ArticleModel.fromMap(json)).toList();
-    } else {
-      throw Exception('Failed to load article');
-    }
-  }
-
   //fetch user post
   Future<List<PostModel>> userPost() async {
     final storage = FlutterSecureStorage();
-    var url = Config.userActivities;
+    var url = Config.fetchUserPost;
     var userId = await storage.read(key: 'userId');
-    final response =
-    await http.get(Uri.parse('${url}/${userId}'));
+    final response = await http.get(Uri.parse('${url}/${userId}'));
 
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -298,80 +272,35 @@ class APIService {
   }
 
   //fetch friend post
-  Future<List<PostModel>> friendPost([String? userId]) async {
-    var url;
-    var urlActivity = Config.userActivities;
-
-    if (userId == null){
-      final storage = FlutterSecureStorage();
-      var userId = await storage.read(key: 'userId');
-      url = Uri.parse('$urlActivity/$userId');
-    } else {
-      url = Uri.parse('$urlActivity/$userId');
-    }
-
+  Future<List<PostModel>> friendPost(String userId) async {
+    var urlActivity = Config.fetchUserPost;
+    var url = Uri.parse('$urlActivity/$userId');
     final response = await http.get(url);
-
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-      return parsed.map<BadgesModel>((json) => BadgesModel.fromMap(json)).toList();
+      return parsed
+          .map<PostModel>((json) => PostModel.fromMap(json))
+          .toList();
     } else {
-      throw Exception('Failed to load article');
-    }
-
-  }
-
-  //fetch friend article
-  Future<List<ArticleModel>> friendArticle(String userId) async {
-    var url = Config.articleApi;
-    final response =
-    await http.get(Uri.parse('${url}/${userId}'));
-
-    if (response.statusCode == 200) {
-      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-
-      return parsed.map<ArticleModel>((json) => ArticleModel.fromMap(json)).toList();
-    } else {
-      throw Exception('Failed to load article');
+      throw Exception('Failed to load post');
     }
   }
 
-  //fetch activity by user
-  Future<List<ActivityModel>> fetchAnyActivity([String? userId]) async {
-    var url;
-    var urlActivity = Config.activities;
+  //-------------------------------POST---------------------------------------------//
 
-    if (userId == null){
-      final storage = FlutterSecureStorage();
-      var userId = await storage.read(key: 'userId');
-      url = Uri.parse('$urlActivity/$userId');
-    } else {
-      url = Uri.parse('$urlActivity/$userId');
-    }
+  //-------------------------------ARTICLE------------------------------------------//
 
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-      return parsed.map<ActivityModel>((json) => ActivityModel.fromMap(json)).toList();
-    } else {
-      throw Exception('Failed to load article');
-    }
-  }
-
-  //create activity
-  Future<bool> createActivity(String title, String type, String desc, String startDate, String endDate) async{
+  //create article
+  Future<bool> createArticle(String title, String desc, String coverArticle) async {
     final storage = FlutterSecureStorage();
-    var url = Uri.parse(Config.createActivity);
+    var url = Uri.parse(Config.article);
     var userId = await storage.read(key: 'userId');
-    final request = {'userId': userId, 'title': title, 'type' : type, 'desc' : desc, 'startDate' : startDate, 'endDate': endDate};
-    final response = await http.post(
-        url,
+    final request = {'userId': userId, 'title': title, 'desc': desc, 'coverArticle' : coverArticle};
+    final response = await http.post(url,
         body: jsonEncode(request),
-        headers: {'Content-Type':'application/json'}
-    );
+        headers: {'Content-Type': 'application/json'});
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       print('create article failed');
       return false;
     } else {
@@ -380,12 +309,79 @@ class APIService {
     }
   }
 
-  //fetch badges by user
-  Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async{
-    var url;
-    var urlActivity = Config.badges;
+  //fetch all article
+  Future<List<ArticleModel>> fetchArticle() async {
+    var url = Uri.parse(Config.timelineArticleApi);
+    final response = await http.get(url);
 
-    if (userId == null){
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+
+      return parsed
+          .map<ArticleModel>((json) => ArticleModel.fromMap(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load album');
+    }
+  }
+
+  //fetch user article
+  Future<List<ArticleModel>> userArticle() async {
+    final storage = FlutterSecureStorage();
+    var url = Config.fetchUserArticle;
+    var userId = await storage.read(key: 'userId');
+    final response = await http.get(Uri.parse('${url}/${userId}'));
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+
+      return parsed
+          .map<ArticleModel>((json) => ArticleModel.fromMap(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load article');
+    }
+  }
+
+  //fetch friend article
+  Future<List<ArticleModel>> friendArticle(String userId) async {
+    var url = Config.fetchUserArticle;
+    final response = await http.get(Uri.parse('${url}/${userId}'));
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+
+      return parsed
+          .map<ArticleModel>((json) => ArticleModel.fromMap(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load article');
+    }
+  }
+
+  //fetch single article by id
+  Future<Map<String, dynamic>> fetchSingleArticle(String id) async {
+    var urlUser = Config.article;
+    var url = Uri.parse('$urlUser/$id');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
+  //-------------------------------ARTICLE------------------------------------------//
+
+  //-------------------------------ACTIVITY-----------------------------------------//
+
+  //fetch activity by user
+  Future<List<ActivityModel>> fetchAnyActivity([String? userId]) async {
+    var url;
+    var urlActivity = Config.fetchUserActivities;
+
+    if (userId == null) {
       final storage = FlutterSecureStorage();
       var userId = await storage.read(key: 'userId');
       url = Uri.parse('$urlActivity/$userId');
@@ -397,10 +393,93 @@ class APIService {
 
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-      return parsed.map<BadgesModel>((json) => BadgesModel.fromMap(json)).toList();
+      return parsed
+          .map<ActivityModel>((json) => ActivityModel.fromMap(json))
+          .toList();
     } else {
       throw Exception('Failed to load article');
     }
   }
 
+  //create activity
+  Future<bool> createActivity(String title, String type, String desc,
+      String startDate, String endDate) async {
+    final storage = FlutterSecureStorage();
+    var url = Uri.parse(Config.activity);
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'title': title,
+      'type': type,
+      'desc': desc,
+      'startDate': startDate,
+      'endDate': endDate
+    };
+    final response = await http.post(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('create article failed');
+      return false;
+    } else {
+      print('create article success');
+      return true;
+    }
+  }
+
+  //-------------------------------ACTIVITY-----------------------------------------//
+
+  //fetch badges by user
+  Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async {
+    var url;
+    var urlActivity = Config.fetchUserBadges;
+
+    if (userId == null) {
+      final storage = FlutterSecureStorage();
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlActivity/$userId');
+    } else {
+      url = Uri.parse('$urlActivity/$userId');
+    }
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed
+          .map<BadgesModel>((json) => BadgesModel.fromMap(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load article');
+    }
+  }
+
+  //create badges by user
+  Future<bool> createBadge(String imgBadge, String title, String issuer,
+      String urlLearn, String earnedDate, String desc) async {
+    final storage = FlutterSecureStorage();
+    var url = Uri.parse(Config.badges);
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'imgBadge': imgBadge,
+      'title': title,
+      'issuer': issuer,
+      'url': urlLearn,
+      'earnedDate': earnedDate,
+      'desc': desc
+    };
+    final response = await http.post(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('create badge failed');
+      return false;
+    } else {
+      print('create badge success');
+      return true;
+    }
+  }
 }

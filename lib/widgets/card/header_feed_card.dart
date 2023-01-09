@@ -57,7 +57,7 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                       userId == postData.userId
                           ? GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/profile', arguments: postData.userId);
+                                Navigator.pushNamed(context, '/profile');
                               },
                               child: CircleAvatar(
                                 backgroundImage: NetworkImage(

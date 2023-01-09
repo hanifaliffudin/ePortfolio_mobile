@@ -1,4 +1,5 @@
 import 'package:eportfolio/services/api_service.dart';
+import 'package:eportfolio/view/add_badges.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -33,8 +34,8 @@ class _BadgesState extends State<Badges> {
               minimumSize: const Size.fromHeight(35), // NEW
             ),
             onPressed: () {
-              /*Navigator.push(context , MaterialPageRoute(builder: (context) => const AddCollection()),
-              );*/
+              Navigator.push(context , MaterialPageRoute(builder: (context) => const AddBadges()),
+              );
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +85,7 @@ class _BadgesState extends State<Badges> {
                               height: 8,
                             ),
                             Image.network(
-                              '${Config.apiURL}${snapshot.data![index].imgBadge.toString()}',
+                              '${Config.apiURL}/${snapshot.data![index].imgBadge.toString()}',
                               width: 80,
                               height: 80,
                               fit: BoxFit.scaleDown,

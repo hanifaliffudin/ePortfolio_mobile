@@ -35,6 +35,53 @@ class _AddActivityState extends State<AddActivity> {
               ),
               child: Column(
                 children: [
+                  Align(
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.grey.shade200,
+                          child: CircleAvatar(
+                            radius: 50,
+                            child: Icon(Icons.person, size: 40),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 1,
+                          right: 1,
+                          child: Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Icon(Icons.add_a_photo, color: Colors.black),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 3,
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(
+                                    50,
+                                  ),
+                                ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(2, 4),
+                                    color: Colors.black.withOpacity(
+                                      0.3,
+                                    ),
+                                    blurRadius: 3,
+                                  ),
+                                ]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Center(child: Text('Activity Logo')),
+                  SizedBox(height: 10,),
                   TextField(
                     controller: titleController,
                     keyboardType: TextInputType.text,
@@ -130,7 +177,8 @@ class _AddActivityState extends State<AddActivity> {
                       border: OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.white,
-                      hintText: 'Activity description',
+                      labelText: 'Activity description',
+                      isDense : true,
                     ),
                   ),
                   SizedBox(

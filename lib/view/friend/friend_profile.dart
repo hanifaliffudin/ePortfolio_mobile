@@ -36,7 +36,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
             },
             body: Column(
               children: [
-                Material(
+                const Material(
                   child: TabBar(
                     isScrollable: true,
                     tabs: [

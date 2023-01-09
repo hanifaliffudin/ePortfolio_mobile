@@ -1,17 +1,19 @@
-import 'package:eportfolio/view/contributors.dart';
-import 'package:eportfolio/widgets/card/header_feed_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../../models/article_model.dart';
 import '../custom_appBar.dart';
 
-class ProjectCardOpen extends StatefulWidget {
-  const ProjectCardOpen({Key? key}) : super(key: key);
+class ArticleCardOpen extends StatefulWidget {
+  const ArticleCardOpen({Key? key}) : super(key: key);
+
 
   @override
-  State<ProjectCardOpen> createState() => _ProjectCardOpenState();
+  State<ArticleCardOpen> createState() => _ArticleCardOpenState();
 }
 
-class _ProjectCardOpenState extends State<ProjectCardOpen> {
+class _ArticleCardOpenState extends State<ArticleCardOpen> {
+
   get raisedButtonStyle => null;
 
   @override
@@ -25,11 +27,11 @@ class _ProjectCardOpenState extends State<ProjectCardOpen> {
                   padding: EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      // HeaderFeedCard(biodata: "tes"),
+                      // HeaderArticle(articleData: snapshot.data![index]),
                       const SizedBox(
                         height: 10,
                       ),
-                      Text('13 Ways to Lorem ipsum dolor sit amet.', //JUDUL
+                      Text('snapshot.data!.title', //JUDUL
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold
@@ -40,17 +42,21 @@ class _ProjectCardOpenState extends State<ProjectCardOpen> {
                       SizedBox(
                         height: 10,
                       ),
-                      const Image( //COVER IMAGE
-                          image: NetworkImage(
-                              'https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png')),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          margin: EdgeInsets.all(10),
+                          child: MarkdownBody(data: '![Image](${'snapshot.data!.coverArticle'})'),
+                        ),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
-                      const Text(
-                        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur id ultrices metus. Vestibulum varius eros at urna convallis porttitor. Curabitur eros lacus, pulvinar vel orci in, mollis feugiat augue. Ut risus quam, lacinia in faucibus sit amet, pretium a eros. Suspendisse nec bibendum sem. Aenean non tincidunt orci. Nunc sodales justo ac convallis ullamcorper. Nulla sollicitudin, ex vitae consectetur elementum, velit purus mollis quam, non efficitur felis lectus vitae justo. Aliquam aliquam tortor quis lorem pulvinar suscipit.',
+                      Text(
+                       " snapshot.data!.desc,"
                       ),
                     ],
-                  )))),
+                  ))))
     );
   }
 }

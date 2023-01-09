@@ -75,9 +75,12 @@ class _LoginState extends State<Login> {
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
-                          hintText: 'Email',
+                          border: OutlineInputBorder(
+                          ),
+                          filled: true,
                           prefixIcon: Icon(Icons.email),
-                          enabledBorder: OutlineInputBorder(),
+                          fillColor: Colors.white,
+                          hintText: 'Email',
                         ),
                         onChanged: (String value) {},
                         validator: (value) {
@@ -87,11 +90,15 @@ class _LoginState extends State<Login> {
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: TextFormField(
+                          obscureText: true,
                           controller: passwordController,
                           decoration: InputDecoration(
-                            hintText: 'Password',
+                            border: OutlineInputBorder(
+                            ),
+                            filled: true,
                             prefixIcon: Icon(Icons.password),
-                            enabledBorder: OutlineInputBorder(),
+                            fillColor: Colors.white,
+                            hintText: 'Password',
                           ),
                           onChanged: (String value) {},
                           validator: (value) {
@@ -146,7 +153,6 @@ class _LoginState extends State<Login> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => HomePage(0)));
-                          ;
                         } else {
                           FormHelper.showSimpleAlertDialog(
                             context,

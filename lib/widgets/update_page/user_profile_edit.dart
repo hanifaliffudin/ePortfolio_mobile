@@ -1,15 +1,7 @@
-import 'dart:ui';
-
-import 'package:dio/dio.dart' as Dio;
-import 'package:http/http.dart' as http;
-/*import 'package:dio/dio.dart';*/
 import 'dart:io';
 import 'dart:async';
-import 'package:path/path.dart';
 import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../config.dart';
@@ -24,115 +16,7 @@ class EditUserProfile extends StatefulWidget {
 }
 
 class _EditUserProfileState extends State<EditUserProfile> {
-
-  //-----------------------------------------USING DIO----------------------------------//
-
-  XFile? imageFile;
-
-  Future _uploadImage() async {
-    final storage = FlutterSecureStorage();
-    var userId = await storage.read(key: 'userId');
-    /*var selectedImage = File(imageFile!.path);*/
-
-    print('upload started');
-
-    try {
-      var response = await sendForm('${Config.users}/${userId}',
-          {'userId': '${userId}'}, {'profilePicture': imageFile!});
-
-      if(response.statusCode != 200){
-        print('tidak berhasil');
-      } else {
-        print("res-1 $response");
-      }
-
-    } catch ( err) {
-      print(err);
-    }
-    setState(() {
-      imageFile = imageFile;
-    });
-  }
-
-  Future<Dio.Response> sendForm(
-      String url, Map<String, dynamic> data, Map<String, XFile> files) async {
-    Map<String, Dio.MultipartFile> fileMap = {};
-    for (MapEntry fileEntry in files.entries) {
-      XFile file = fileEntry.value;
-      String fileName = basename(file.path);
-      fileMap[fileEntry.key] = Dio.MultipartFile(
-          file.openRead(), await file.length(),
-          filename: fileName);
-    }
-    data.addAll(fileMap);
-    var formData = Dio.FormData.fromMap(data);
-    Dio.Dio dio = new Dio.Dio();
-    return await dio.put(url,
-        data: formData,
-        options: Dio.Options(contentType: 'multipart/form-data',
-       ));
-  }
-
-  //-----------------------------------------USING DIO----------------------------------//
-
-  //-----------------------------------------USING HTTP----------------------------------//
-
-  /*File? profilePicture ;
-  var filePath;
-  bool showSpinner = false ;
-  var pickedFile;
-
-  Future getImage()async{
-    pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery , imageQuality: 80);
-    if(pickedFile!= null ){
-      profilePicture =  File(pickedFile.path);
-      filePath = basename(pickedFile.path);
-      setState(() {
-      });
-    }else {
-      print('no image selected');
-    }
-  }
-
-  Future<void> uploadImage()async{
-
-    var stream  = new http.ByteStream(profilePicture!.openRead());
-    stream.cast();
-
-    var length = await profilePicture!.length();
-
-    final storage = FlutterSecureStorage();
-    var userId = await storage.read(key: 'userId');
-    var urlUser = Config.users;
-    var uri = Uri.parse('$urlUser/$userId');
-
-    var request = new http.MultipartRequest('POST', uri);
-    request.fields['userId'] = userId ;
-
-    var multiport = new http.MultipartFile(
-        'profilePicture',
-        stream,
-        length);
-
-    print(pickedFile.path);
-    request.files.add(multiport);
-    for (var e in request.headers.entries) {
-      print('${e.key} = ${e.value}');
-    }
-
-    var response = await request.send() ;
-    print("RESSSP");
-    print(await response.stream.bytesToString());
-
-    if(response.statusCode == 200){
-      print('image uploaded');
-      print(filePath);
-    }else {
-      print('failed');
-    }
-  }*/
-  //-----------------------------------------USING HTTP----------------------------------//
-
+  XFile? profilePicture;
   TextEditingController nimController = TextEditingController();
   TextEditingController majorController = TextEditingController();
   TextEditingController cityController = TextEditingController();
@@ -153,133 +37,203 @@ class _EditUserProfileState extends State<EditUserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Color(0xFFF6F6F6),
-              ),
+    return FutureBuilder<UserModel>(
+      future: futureUser,
+      builder: (context, snapshot){
+        if(snapshot.hasData){
+          return Scaffold(
+            appBar: CustomAppBar(),
+            body: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //-------------------------------------------------------------------------------//
-
-                  //--------------------------------------------------------------------------------//
-                  GestureDetector(
-                    onTap: () {
-                      _getFromGallery();
-                    },
-                    child: Container(
-                        child: imageFile == null
-                            ? Center(
-                                child: Text('Pick Image'),
-                              )
-                            : Container(
-                                child: Center(
-                                  child: Image.file(
-                                    File(imageFile!.path).absolute,
-                                    height: 100,
-                                    width: 100,
-                                    fit: BoxFit.cover,
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color(0xFFF6F6F6),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 55,
+                                backgroundColor: Colors.grey.shade200,
+                                child: profilePicture != null
+                                    ? CircleAvatar(
+                                    radius: 100,
+                                    backgroundImage:
+                                    FileImage(File(profilePicture!.path)))
+                                    : CircleAvatar(
+                                  radius: 100,
+                                    backgroundImage:
+                                    NetworkImage(
+                                      (snapshot.data!.profilePicture ==
+                                          null ||
+                                          snapshot.data!.profilePicture ==
+                                              "")
+                                          ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                                          : '${Config.apiURL}/${snapshot.data!.profilePicture.toString()}',
+                                    ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 1,
+                                right: 1,
+                                child: Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _getFromGallery();
+                                      },
+                                      child: Icon(Icons.add_a_photo,
+                                          color: Colors.black),
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        width: 3,
+                                        color: Colors.white,
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                          50,
+                                        ),
+                                      ),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          offset: Offset(2, 4),
+                                          color: Colors.black.withOpacity(
+                                            0.3,
+                                          ),
+                                          blurRadius: 3,
+                                        ),
+                                      ]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                          child: TextButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                MaterialStatePropertyAll<Color>(Colors.blue),
+                                shape:
+                                MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
                                   ),
                                 ),
-                              )),
-                  ),
-
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        _uploadImage();
-                      },
-                      child: Container(
-                        height: 50,
-                        color: Colors.green,
-                        child: Text('upload'),
-                      ),
+                              ),
+                              onPressed: () {
+                                APIService().uploadImage(profilePicture!).then(
+                                      (response) {
+                                    if (response) {
+                                      FormHelper.showSimpleAlertDialog(
+                                        context,
+                                        Config.appName,
+                                        "Update photo success",
+                                        "OK",
+                                            () {
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                context,
+                                                '/profile',
+                                                    (route) => false,
+                                              );
+                                        },
+                                      );
+                                    } else {
+                                      FormHelper.showSimpleAlertDialog(
+                                        context,
+                                        Config.appName,
+                                        "Error occur",
+                                        "OK",
+                                            () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
+                                    }
+                                  },
+                                );;
+                              },
+                              child: Text('Update', style: TextStyle(color: Colors.white),)),
+                        ),
+                        userForm()
+                      ],
                     ),
                   ),
-                  userForm()
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Color(0xFFF6F6F6),
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Center(
-                        child: FormHelper.submitButton("Save", () {
-                          APIService.updateUserData(
-                            nimController.text,
-                            majorController.text,
-                            cityController.text,
-                            dateBirthController.text,
-                            genderController.text,
-                            interestController.text,
-                            aboutController.text,
-                            /*profilePicture!,*/
-                            /*isImageSelected*/
-                          )
-                              /*socialMediaController.text,
-                                    skillController.text)*/
-                              .then(
-                            (response) {
-                              /* setState(() {
-                                    isApiCallProcess = false;
-                                  });*/
-
-                              if (response) {
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/profile',
-                                  (route) => false,
-                                );
-                              } else {
-                                FormHelper.showSimpleAlertDialog(
-                                  context,
-                                  Config.appName,
-                                  "Error occur",
-                                  "OK",
-                                  () {
-                                    Navigator.of(context).pop();
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color(0xFFF6F6F6),
+                    ),
+                    padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.all(5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Center(
+                              child: FormHelper.submitButton("Save", () {
+                                APIService.updateUserData(
+                                  nimController.text,
+                                  majorController.text,
+                                  cityController.text,
+                                  dateBirthController.text,
+                                  genderController.text,
+                                  interestController.text,
+                                  aboutController.text,
+                                ).then(
+                                      (response) {
+                                    if (response) {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/profile',
+                                            (route) => false,
+                                      );
+                                    } else {
+                                      FormHelper.showSimpleAlertDialog(
+                                        context,
+                                        Config.appName,
+                                        "Error occur",
+                                        "OK",
+                                            () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
+                                    }
                                   },
                                 );
-                              }
-                            },
-                          );
-                        }),
-                      ),
-                    ],
+                              }),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        } else return CircularProgressIndicator();
+      }
     );
   }
 
@@ -464,12 +418,11 @@ class _EditUserProfileState extends State<EditUserProfile> {
 
   _getFromGallery() async {
     XFile? pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        imageFile = XFile(pickedFile.path);
+        profilePicture = XFile(pickedFile.path);
       });
     }
   }
-
 }

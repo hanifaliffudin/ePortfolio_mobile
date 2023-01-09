@@ -50,8 +50,9 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                       return Card(
                         child: InkWell(
                           onTap: () {
+
                             Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => ProjectCardOpen()));
+                                builder: (context) => ArticleCardOpen()));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10),

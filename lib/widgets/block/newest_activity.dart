@@ -28,7 +28,7 @@ class _NewestActState extends State<NewestAct> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
-                            'Newest Post',
+                            'Newest Activity',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           ),
@@ -66,7 +66,7 @@ class _NewestActState extends State<NewestAct> {
                 color: Colors.black,
               ),
               InkWell(
-                onTap: () {DefaultTabController.of(context)?.index =1;},
+                onTap: () {DefaultTabController.of(context)?.index =3;},
                 child: Text('Show all activities ->',
                 style: TextStyle(
                   fontSize: 15

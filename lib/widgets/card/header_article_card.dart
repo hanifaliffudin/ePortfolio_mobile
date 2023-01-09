@@ -16,7 +16,7 @@ class HeaderArticle extends StatefulWidget {
 
 class _HeaderArticleState extends State<HeaderArticle> {
 
-  _HeaderArticleState(ArticleModel this.articleData);
+  _HeaderArticleState(this.articleData);
 
   ArticleModel articleData;
   String? username;
@@ -48,15 +48,35 @@ class _HeaderArticleState extends State<HeaderArticle> {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        (profilePicture ==
-                            null ||
-                            profilePicture ==
-                                "")
-                            ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
-                            : '${Config.apiURL}/${profilePicture.toString()}',
-                      ), radius: 25,
+                    userId == articleData.userId
+                    ? GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/profile',arguments: articleData.userId);
+                      },
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          (profilePicture == null ||
+                              profilePicture == "")
+                              ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                              : '${Config.apiURL}/${profilePicture.toString()}',
+                        ),
+                        radius: 25,
+                      ),
+                    )
+                        : GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/friendprofile',
+                            arguments: articleData.userId);
+                      },
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          (profilePicture == null ||
+                              profilePicture == "")
+                              ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                              : '${Config.apiURL}/${profilePicture.toString()}',
+                        ),
+                        radius: 25,
+                      ),
                     ),
                     const SizedBox(width: 8,),
                     Column(

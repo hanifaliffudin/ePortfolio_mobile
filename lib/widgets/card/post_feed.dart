@@ -2,6 +2,7 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:eportfolio/config.dart';
 import 'package:eportfolio/models/post_model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
@@ -59,107 +60,93 @@ class _PostFeedState extends State<PostFeed> {
                         const SizedBox(
                           height: 10,
                         ),
+
                         Align(
                           alignment: Alignment.topLeft,
-                          child: new Text('Created : ${getFormattedDate(snapshot.data![index].updatedAt)}',
+                          child: new Text('Created : ${DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].updatedAt))}',
                             style: TextStyle(
                                 fontSize: 12
                             ),),
                         ),
-                        Container(
-                          child: Container(
-                            padding: EdgeInsets.only(
-                                left: 5, right: 5, top: 15, bottom: 5),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Row(
-                                    children: <Widget>[
-                                      FutureBuilder<UserModel>(
-                                          future: futureUser,
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasData) {
-                                              return CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                  (snapshot.data!.profilePicture == null ||
-                                                      snapshot.data!.profilePicture == "")
-                                                      ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
-                                                      : '${Config.apiURL}/${snapshot.data!.profilePicture.toString()}',
-                                                ),
-                                                radius: 20,
-                                              );
-                                            } else
-                                              return CircularProgressIndicator();
-                                          }),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          color: Colors.transparent,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              TextField(
-                                                readOnly: true,
-                                                onTap: (){
-                                                  showModalBottomSheet(
-                                                      isScrollControlled:true,
-                                                      context: context,
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-                                                      builder: (context) => Padding(
-                                                        padding: EdgeInsets.only(
-                                                            bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                        child: Container(
-                                                            height: 500,
-                                                            child: CommentBlock(postData : snapshot.data![index])
-                                                        ),
-                                                      )
-                                                  );
-                                                },
-                                                decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
-                                                  labelText: 'Add comment',
-                                                  isDense: true, // Added this
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                    Container(//komentar box
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: 5, right: 5, top: 15, bottom: 5),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Row(
+                                children: <Widget>[
+                                  FutureBuilder<UserModel>(
+                                      future: futureUser,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              (snapshot.data!.profilePicture == null ||
+                                                  snapshot.data!.profilePicture == "")
+                                                  ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                                                  : '${Config.apiURL}/${snapshot.data!.profilePicture.toString()}',
+                                            ),
+                                            radius: 20,
+                                          );
+                                        } else
+                                          return CircularProgressIndicator();
+                                      }),
+                                  SizedBox(
+                                    width: 10,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                GestureDetector(
-                                  onTap: (){
-                                    showModalBottomSheet(
-                                        isScrollControlled:true,
-                                        context: context,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-                                        builder: (context) => Padding(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                                          child: Container(
-                                              height: 500,
-                                              child: CommentBlock(postData : snapshot.data![index])
+                                  Expanded(
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          TextField(
+                                            style: TextStyle(
+                                                height: 0.7,
+                                                fontSize: 15
+                                            ),
+                                            readOnly: true,
+                                            onTap: (){
+                                              showModalBottomSheet(
+                                                  isScrollControlled:true,
+                                                  context: context,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
+                                                  builder: (context) => Padding(
+                                                    padding: EdgeInsets.only(
+                                                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                    child: Container(
+                                                        height: 500,
+                                                        child: CommentBlock(postData: snapshot.data![index])
+                                                    ),
+                                                  )
+                                              );
+                                            },
+                                            decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(30.0),
+                                              ),
+                                              labelText: 'Add comment',
+                                              isDense: true, // Added this
+                                            ),
                                           ),
-                                        )
-                                    );
-                                  },
-                                  child: Icon(
-                                      Icons.send_sharp,
-                                      size: 30, color: Colors.black),
-                                ),
-                              ],
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                          ],
                         ),
+                      ),
+                    ),
                       ],
                     ),
                   ),

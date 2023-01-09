@@ -13,7 +13,7 @@ class AddArticles extends StatefulWidget {
 class _AddArticlesState extends State<AddArticles> {
   TextEditingController descController = TextEditingController();
   TextEditingController titleController = TextEditingController();
-
+  TextEditingController coverArticleController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,11 +37,11 @@ class _AddArticlesState extends State<AddArticles> {
                       border: OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.white,
-                      hintText: 'Title',
+                      labelText: 'Title',
                     ),
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 15,
                   ),
                   TextField(
                     controller: descController,
@@ -59,9 +59,6 @@ class _AddArticlesState extends State<AddArticles> {
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 10,
             ),
             Container(
               decoration: BoxDecoration(
@@ -95,8 +92,9 @@ class _AddArticlesState extends State<AddArticles> {
                         padding: EdgeInsets.only(top: 6.5, left: 6),
                         width: 295,
                         child: TextFormField(
+                          controller: coverArticleController,
                           decoration: new InputDecoration(
-                            hintText: 'yourfilename.jpg',
+                            labelText: 'URL image',
                             contentPadding: EdgeInsets.all(8),
                             filled: true,
                             fillColor: Colors.white,
@@ -130,7 +128,7 @@ class _AddArticlesState extends State<AddArticles> {
                             TextButton.styleFrom(backgroundColor: Colors.blue),
                         onPressed: () {
                           APIService().createArticle(
-                                  titleController.text, descController.text)
+                                  titleController.text, descController.text, coverArticleController.text)
                               .then((response) {
                             if (response) {
                               Navigator.pushNamed(context, '/home');

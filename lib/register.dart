@@ -98,13 +98,16 @@ class _RegisterState extends State<Register> {
                 TextFormField(
                   controller: usernameController,
                   decoration: InputDecoration(
-                    hintText: 'Username',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                    ),
+                    filled: true,
+                    prefixIcon: Icon(Icons.supervised_user_circle),
+                    fillColor: Colors.white,
+                    hintText: 'username',
                   ),
                   onChanged: (String value) {},
                   validator: (value) {
-                    return value!.isEmpty ? 'Please enter username' : null;
+                    return value!.isEmpty ? 'Please enter Username' : null;
                   },
                 ),
                 Padding(
@@ -112,28 +115,37 @@ class _RegisterState extends State<Register> {
                   child: TextFormField(
                     controller: emailController,
                     decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                      ),
+                      filled: true,
+                      prefixIcon: Icon(Icons.email),
+                      fillColor: Colors.white,
                       hintText: 'Email',
-                      prefixIcon: Icon(Icons.people),
-                      border: OutlineInputBorder(),
                     ),
                     onChanged: (String value) {},
                     validator: (value) {
-                      return value!.isEmpty ? 'Please enter email' : null;
+                      return value!.isEmpty ? 'Please enter Email' : null;
                     },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: TextFormField(
+                    obscureText: true,
                     controller: passwordController,
                     decoration: InputDecoration(
-                      hintText: 'Password',
+                      border: OutlineInputBorder(
+                      ),
+                      filled: true,
                       prefixIcon: Icon(Icons.password),
-                      border: OutlineInputBorder(),
+                      fillColor: Colors.white,
+                      hintText: 'Password',
                     ),
                     onChanged: (String value) {},
                     validator: (value) {
-                      return value!.isEmpty ? 'Please enter password' : null;
+                      return value!.isEmpty
+                          ? 'Please enter password'
+                          : null;
                     },
                   ),
                 ),

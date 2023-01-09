@@ -74,9 +74,11 @@ packages:
   custom_switch:
     dependency: "direct main"
     description:
-      name: custom_switch
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "6ebcddcb25b0e5cd9134994e02dec3d82ee5742f"
+      url: "https://github.com/Shiba-Kar/CustomSwitch"
+    source: git
     version: "0.0.1"
   dio:
     dependency: "direct main"
@@ -124,7 +126,7 @@ packages:
       name: flutter_secure_storage
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.3.5"
+    version: "4.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -233,6 +235,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  mime_type:
+    dependency: "direct main"
+    description:
+      name: mime_type
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:

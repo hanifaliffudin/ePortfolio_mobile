@@ -98,9 +98,9 @@ class _CommentBlockState extends State<CommentBlock> {
             },
             formKey: formKey,
             commentController: commentController,
-            backgroundColor: Colors.blue,
-            textColor: Colors.white,
-            sendWidget: Icon(Icons.send_sharp, size: 30, color: Colors.white),
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            sendWidget: Icon(Icons.send_sharp, size: 30, color: Colors.black),
             child: ListView(
               children: [
                 for (var i = 0; i < comments.length; i++)

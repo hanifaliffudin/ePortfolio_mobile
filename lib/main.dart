@@ -4,6 +4,7 @@ import 'package:eportfolio/login.dart';
 import 'package:eportfolio/view/friend/friend_profile.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
+import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/home' : (context) => HomePage(0),
         '/friendprofile':(context) => FriendProfilePage(),
         '/profile':(context) => HomePage(2),
+        '/openArticle':(context) => ArticleCardOpen(),
         '/activities':(context) => HomePage(3)
       },
 
