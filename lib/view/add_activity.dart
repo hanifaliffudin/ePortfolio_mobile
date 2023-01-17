@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
+import '../config.dart';
 import '../services/api_service.dart';
 import '../widgets/custom_appBar.dart';
 
@@ -13,10 +16,12 @@ class AddActivity extends StatefulWidget {
 }
 
 class _AddActivityState extends State<AddActivity> {
+  XFile? logoActivity;
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
+  TextEditingController logoController = TextEditingController();
   String? type;
 
   @override
@@ -35,52 +40,37 @@ class _AddActivityState extends State<AddActivity> {
               ),
               child: Column(
                 children: [
-                  Align(
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 55,
-                          backgroundColor: Colors.grey.shade200,
-                          child: CircleAvatar(
-                            radius: 50,
-                            child: Icon(Icons.person, size: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        child: TextButton(
+                          onPressed: () {},
+                          style: TextButton.styleFrom(
+                              backgroundColor: Colors.blue),
+                          child: Text('Album',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(top: 6.5, left: 6),
+                        width: 295,
+                        child: TextFormField(
+                          controller: logoController,
+                          decoration: new InputDecoration(
+                            labelText: 'URL image',
+                            contentPadding: EdgeInsets.only(bottom:16, left: 8),
+                            filled: true,
+                            fillColor: Colors.white,
+                            isDense: true,
+                            border: new OutlineInputBorder(
+                                borderSide: new BorderSide(color: Colors.grey)),
                           ),
                         ),
-                        Positioned(
-                          bottom: 1,
-                          right: 1,
-                          child: Container(
-                            child: Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Icon(Icons.add_a_photo, color: Colors.black),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 3,
-                                  color: Colors.white,
-                                ),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    50,
-                                  ),
-                                ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(2, 4),
-                                    color: Colors.black.withOpacity(
-                                      0.3,
-                                    ),
-                                    blurRadius: 3,
-                                  ),
-                                ]),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10,),
-                  Center(child: Text('Activity Logo')),
                   SizedBox(height: 10,),
                   TextField(
                     controller: titleController,
@@ -146,28 +136,54 @@ class _AddActivityState extends State<AddActivity> {
                   SizedBox(
                     height: 15,
                   ),
-                  RadioListTile(
-                    title: Text("Non-academic"),
-                    value: "non-academic",
-                    groupValue: type,
-                    onChanged: (value){
-                      setState(() {
-                        type = value.toString();
-                      });
-                    },
-                  ),
-                  RadioListTile(
-                    title: Text("Academic"),
-                    value: "academic",
-                    groupValue: type,
-                    onChanged: (value){
-                      setState(() {
-                        type = value.toString();
-                      });
-                    },
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                child: ListTile(
+                                  title: const Text("Non-Academic"),
+                                  leading: Radio(
+                                    fillColor: MaterialStateColor.resolveWith(
+                                            (states) => Color(0XFFB63728)),
+                                    value: "non-academic",
+                                    groupValue: type,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        type = value.toString();
+                                      });
+                                    },
+                                  ),
+                                )),
+                            Expanded(
+                                child: ListTile(
+                                  title: Text("Academic"),
+                                  leading: Radio(
+                                    fillColor: MaterialStateColor.resolveWith(
+                                            (states) => Color(0XFFB63728)),
+                                    value: "academic",
+                                    groupValue: type,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        type = value.toString();
+                                      });
+                                    },
+                                  ),
+                                ))
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 15,
                   ),
                   TextField(
                     controller: descController,
@@ -205,12 +221,12 @@ class _AddActivityState extends State<AddActivity> {
                             backgroundColor: Colors.blue
                         ),
                         onPressed: () {
-                          APIService().createActivity(titleController.text, type!, descController.text, startDateController.text, endDateController.text).then((response)
+                          APIService().createActivity(titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text).then((response)
                           {
                             if(response){
                               setState(() {
                               });
-                              Navigator.pushNamed(context, '/activities');
+                              Navigator.pushNamed(context, '/home');
                             } else {
                               FormHelper.showSimpleAlertDialog(
                                 context,
@@ -241,5 +257,15 @@ class _AddActivityState extends State<AddActivity> {
         ),
       ),
     );
+  }
+
+  _getFromGallery() async {
+    XFile? pickedFile =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        logoActivity = XFile(pickedFile.path);
+      });
+    }
   }
 }

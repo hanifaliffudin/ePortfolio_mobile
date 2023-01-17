@@ -1,24 +1,26 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/view/add_badges.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'config.dart';
-import 'models/badges_model.dart';
+import '../../config.dart';
+import '../../models/badges_model.dart';
 
-class Badges extends StatefulWidget {
-  const Badges({Key? key}) : super(key: key);
+class FriendBadges extends StatefulWidget {
+  FriendBadges({Key? key, required this.userId}) : super(key: key);
+  String userId;
 
   @override
-  State<Badges> createState() => _BadgesState();
+  State<FriendBadges> createState() => _FriendBadgesState(userId);
 }
 
-class _BadgesState extends State<Badges> {
+class _FriendBadgesState extends State<FriendBadges> {
   late Future<List<BadgesModel>> futureBadges;
+  String userId;
+  _FriendBadgesState(this.userId);
 
   @override
   void initState() {
     super.initState();
-    futureBadges = APIService().fetchAnyBadges();
+    futureBadges = APIService().fetchAnyBadges(userId);
   }
 
   @override
@@ -56,15 +58,15 @@ class _BadgesState extends State<Badges> {
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 300,
-                      childAspectRatio: 1.4 / 2,
+                      maxCrossAxisExtent: 200,
+                      childAspectRatio: 1.5 / 2,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext ctx, index) {
                     return Container(
                         margin: EdgeInsets.only(left: 10, right: 10),
-                        height: 120,
+                        height: 100,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             color: Colors.white,
@@ -74,7 +76,7 @@ class _BadgesState extends State<Badges> {
                                   spreadRadius: 2,
                                   blurRadius: 2,
                                   offset: Offset(0, 2) // Shadow position
-                                  ),
+                              ),
                             ],
                             borderRadius: BorderRadius.circular(15)),
                         child: Column(
@@ -84,19 +86,19 @@ class _BadgesState extends State<Badges> {
                               height: 8,
                             ),
                             Image.network(
-                              '${snapshot.data![index].imgBadge.toString()}',
+                              '${Config.apiURL}/${snapshot.data![index].imgBadge.toString()}',
                               width: 80,
                               height: 80,
                               fit: BoxFit.scaleDown,
                             ),
                             SizedBox(
-                              height: 5,
+                              height: 10,
                             ),
                             Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(left: 10, right: 10),
                               child: Text(
-                                snapshot.data![index].title, overflow: TextOverflow.ellipsis, maxLines: 2,
+                                snapshot.data![index].title,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -104,11 +106,11 @@ class _BadgesState extends State<Badges> {
                               height: 10,
                             ),
                             Container(
-                              padding: EdgeInsets.only(left: 10, right: 10),
-                                child: Text(snapshot.data![index].desc, overflow: TextOverflow.ellipsis, maxLines: 3,)),
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                child: Text(snapshot.data![index].desc)),
                             SizedBox(height: 8,),
                             Container(
-                              alignment: Alignment.topLeft,
+                                alignment: Alignment.topLeft,
                                 padding: EdgeInsets.only(left: 10, right: 10),
                                 child: Text('Issuer : ${snapshot.data![index].issuer}', style: TextStyle(
                                     fontWeight: FontWeight.bold
@@ -118,7 +120,7 @@ class _BadgesState extends State<Badges> {
                             ),
                             Container(
                                 padding: EdgeInsets.only(left: 10, right: 10),
-                                child: Text('Earned ${snapshot.data![index].earnedDate !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].earnedDate)) : ''}'))
+                                child: Text(snapshot.data![index].earnedDate))
                           ],
                         ));
                   });

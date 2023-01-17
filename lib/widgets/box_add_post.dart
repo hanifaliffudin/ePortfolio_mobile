@@ -61,12 +61,12 @@ class _BoxAddPostState extends State<BoxAddPost> {
               TextButton(
                 style: TextButton.styleFrom(backgroundColor: Colors.blue),
                 onPressed: () {
-                  APIService.createPost(descController.text).then((response)
+                   APIService.createPost(descController.text).then((response)
                   {
                     if(response){
                       setState(() {
                       });
-                      Navigator.pushNamed(context, '/activities');
+                      Navigator.pushNamed(context, '/home');
                     } else {
                       FormHelper.showSimpleAlertDialog(
                         context,

@@ -7,6 +7,7 @@ import '../album.dart';
 import 'friend_about_me_tab.dart';
 import 'friend_activities_content.dart';
 import 'friend_article_content.dart';
+import 'friend_badge_tab.dart';
 import 'friend_profile_header.dart';
 
 class FriendProfilePage extends StatefulWidget {
@@ -95,7 +96,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                       ],
                     ),
                     ListView(
-                      children: [Badges()],
+                      children: [FriendBadges(userId: args.toString())],
                     ),
                     ListView(
                       children: [Album()],

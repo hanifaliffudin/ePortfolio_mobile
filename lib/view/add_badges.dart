@@ -11,8 +11,6 @@ class AddBadges extends StatefulWidget {
   State<AddBadges> createState() => _AddBadgesState();
 }
 
-
-
 class _AddBadgesState extends State<AddBadges> {
   TextEditingController titleController = TextEditingController();
   TextEditingController imgBadgeController = TextEditingController();
@@ -45,6 +43,7 @@ class _AddBadgesState extends State<AddBadges> {
                         child: TextField(
                           controller: imgBadgeController,
                           keyboardType: TextInputType.text,
+                          style: TextStyle(height: 0.5,),
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             filled: true,
@@ -167,7 +166,7 @@ class _AddBadgesState extends State<AddBadges> {
                             backgroundColor: Colors.blue
                         ),
                         onPressed: () {
-                          APIService().createBadge(imgBadgeController.text, titleController.text, issuerController.text, urlController.text, earnedDateController.text, descController.text)
+                           APIService().createBadge(imgBadgeController.text, titleController.text, issuerController.text, urlController.text, earnedDateController.text, descController.text)
                               .then((response) {
                             if (response) {
                               Navigator.pushNamed(context, '/profile');

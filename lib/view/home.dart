@@ -1,32 +1,13 @@
-import 'dart:convert';
-
 import 'package:eportfolio/view/discover.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../widgets/box_add_post.dart';
-import '../widgets/card/post_feed.dart';
-import 'package:http/http.dart' as http;
 import '../widgets/custom_appBar.dart';
 import 'feeds.dart';
 
 class HomePage extends StatefulWidget {
-  /*const HomePage({Key? key}) : super(key: key);*/
-  HomePage(this._selectedIndex);
-
-  /*factory HomePage.fromBase64(String jwt) =>
-      HomePage(
-          jwt,
-          json.decode(
-              ascii.decode(
-                  base64.decode(base64.normalize(jwt.split(".")[1]))
-              )
-          )
-      );*/
-
+  const HomePage(this._selectedIndex, {Key? key}) : super(key: key);
 
   final int _selectedIndex;
-  /*final Map<String, dynamic> payload;*/
 
   @override
   State<HomePage> createState() => _HomePageState(_selectedIndex);
@@ -34,7 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex;
-  String _pageTitle = 'Home';
 
   static const List<Widget> _widgetOptions = <Widget>[
     Feeds(),

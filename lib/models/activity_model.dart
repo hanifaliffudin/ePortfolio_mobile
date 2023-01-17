@@ -9,7 +9,9 @@ class ActivityModel {
     required this.userId,
     required this.title,
     required this.type,
+    required this.image,
     required this.startDate,
+    required this.endDate,
     required this.desc,
     required this.isPublic,
     required this.id,
@@ -21,7 +23,9 @@ class ActivityModel {
   late final String userId;
   late final String title;
   late final String type;
+  late final String image;
   late final String startDate;
+  late final String endDate;
   late final String desc;
   late final bool isPublic;
   late final String id;
@@ -33,7 +37,9 @@ class ActivityModel {
       ActivityModel(userId: json['userId'],
           title: json['title'],
           type: json['type'],
+          image: json['image'],
           startDate: json['startDate'],
+          endDate: json['endDate'],
           desc: json['desc'],
           isPublic: json['isPublic'],
           id: json['_id'],
@@ -48,7 +54,9 @@ class ActivityModel {
     _data['userId'] = userId;
     _data['title'] = title;
     _data['type'] = type;
+    _data['image'] = image;
     _data['startDate'] = startDate;
+    _data['endDate'] = endDate;
     _data['desc'] = desc;
     _data['isPublic'] = isPublic;
     _data['_id'] = id;

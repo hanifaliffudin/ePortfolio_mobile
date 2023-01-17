@@ -3,8 +3,8 @@ import 'package:eportfolio/widgets/profile_header_widget.dart';
 import 'package:eportfolio/widgets/about_me_content.dart';
 import 'package:eportfolio/widgets/activity_tab.dart';
 import '../badges_tab.dart';
-import '../article_content.dart';
-import '../widgets/activities_content.dart';
+import '../article_tab.dart';
+import '../widgets/post_tab.dart';
 import 'album.dart';
 import 'friend/friend_about_me_tab.dart';
 
@@ -82,11 +82,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     ListView(
                       children: [
-                        Activities(),
+                        PostTab(),
                       ],
                     ),
                     ListView(
-                      children: [ArticlesContent()],
+                      children: [ArticleTab()],
                     ),
                     ListView(
                       children: [

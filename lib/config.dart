@@ -1,7 +1,7 @@
 class Config{
   static const String appName = "FILKOM E-PORTFOLIO";
-  //static const String apiURL = "http://103.187.223.15:8800";
-  static const String apiURL = "https://8a0f-125-166-0-142.ap.ngrok.io";//PROD_URL
+  static const String apiURL = "http://103.187.223.15:8800";
+  //static const String apiURL = "https://3e86-125-166-13-60.ap.ngrok.io";//PROD_URL
   static const loginAPI = "$apiURL/api/auth/login";
   static const registerAPI = "$apiURL/api/auth/register";
   static const users = "$apiURL/api/users";

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../models/activity_model.dart';
-import '../../models/user_model.dart';
 import '../../services/api_service.dart';
-
+import 'activity_task.dart';
 
 class ActivityCard extends StatefulWidget {
   const ActivityCard({Key? key}) : super(key: key);
@@ -35,7 +35,7 @@ class _ActivityCardState extends State<ActivityCard> {
                 return Container(
                   child: InkWell(
                     onTap: (){
-                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>CertCardOpen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>const ActivityTask()));
                     },
                     child: Card(
                       child: Padding(
@@ -49,7 +49,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      backgroundImage: NetworkImage(('https://picsum.photos/300')),
+                                      backgroundImage: NetworkImage((snapshot.data![index].image)),
                                       radius: 25,
                                     ),
                                     SizedBox(
@@ -58,11 +58,14 @@ class _ActivityCardState extends State<ActivityCard> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(snapshot.data![index].title,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                            color: Colors.blue,
+                                        Container(
+                                          width: 240,
+                                          child: Text(snapshot.data![index].title, overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Colors.blue,
+                                            ),
                                           ),
                                         ),
                                         Row(
@@ -98,7 +101,7 @@ class _ActivityCardState extends State<ActivityCard> {
                               child :Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                    snapshot.data![index].desc
+                                    snapshot.data![index].desc,overflow: TextOverflow.ellipsis, maxLines: 3,
                                 ),
                               ),
                             ),
@@ -106,7 +109,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             Align(
                               alignment: Alignment.topLeft,
                               child: Text(
-                                'Start : ${snapshot.data![index].startDate}',
+                                'During ${snapshot.data![index].startDate !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].startDate)) : ''} - ${snapshot.data![index].endDate !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].endDate)) : ''}',
                                 style: TextStyle(
                                     color: Colors.grey
                                 ),
@@ -115,7 +118,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             SizedBox(width: 20,),
                             Align(
                               alignment: Alignment.topLeft,
-                              child: Text('Updated on 24 May 2022',
+                              child: Text('Updated on ${snapshot.data![index].updatedAt !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].updatedAt)) : ''}',
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),

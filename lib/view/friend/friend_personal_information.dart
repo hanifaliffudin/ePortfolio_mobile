@@ -1,6 +1,6 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import '../../models/user_model.dart';
 
 
@@ -128,7 +128,7 @@ class _FriendPersonalInformationState extends State<FriendPersonalInformation> {
                                                     text: 'Date of Birth : ',
                                                     style: TextStyle(
                                                         fontWeight: FontWeight.bold)),
-                                                TextSpan(text: snapshot.data!.dateBirth ?? ''),
+                                                TextSpan(text: snapshot.data!.dateBirth !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data!.dateBirth)) : ''),
                                               ],
                                             )),
                                         RichText(

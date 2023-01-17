@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:custom_switch/custom_switch.dart';
 
@@ -20,6 +21,7 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
   String? username;
   String? profilePicture;
   String? major;
+  String? organization;
   PostModel postData;
   var data;
   var postId;
@@ -34,6 +36,7 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
     username = data['username'];
     profilePicture = data['profilePicture'];
     major = data['major'];
+    organization = data['organization'];
     return data;
   }
 
@@ -95,7 +98,8 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
-                          Text(major ?? ''),
+                          Text('${major ?? ''} | ${organization ?? ''}', overflow: TextOverflow.ellipsis,),
+                          Text(DateFormat.yMMMEd().format(DateTime.parse(postData.updatedAt)))
                           /*Text(postList[index].updatedAt)*/
                         ],
                       ),

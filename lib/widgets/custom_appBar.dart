@@ -14,7 +14,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
       actions: [
         IconButton(
             onPressed: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Login()));
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
               storage.delete(key: 'jwt');
               storage.delete(key: 'userId');
             },

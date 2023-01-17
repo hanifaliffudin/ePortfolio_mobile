@@ -16,6 +16,7 @@ import '../models/user_model.dart';
 
 class APIService {
   static var client = http.Client();
+  final storage = FlutterSecureStorage();
 
   //login
   static Future<bool> login(String email, String password) async {
@@ -47,14 +48,16 @@ class APIService {
   }
 
   //register
-  static Future<bool> register(
-      String username, String email, String password) async {
+  static Future<bool> register(String username, String email, String password,
+      String organization, String role) async {
     var url = Uri.parse(Config.registerAPI);
 
     final request = {
       'username': username,
       'email': email,
-      'password': password
+      'password': password,
+      'organization': organization,
+      'role': role
     };
     var response = await client.post(
       url,
@@ -75,16 +78,15 @@ class APIService {
   Future<UserModel> fetchAnyUser([String? userId]) async {
     var url;
     var urlUser = Config.users;
-
     if (userId == null) {
       final storage = FlutterSecureStorage();
-      var userId = await storage.read(key: 'userId');
-      url = Uri.parse('$urlUser/$userId');
+      var userIdya = await storage.read(key: 'userId');
+      url = Uri.parse('$urlUser/$userIdya');
     } else {
       url = Uri.parse('$urlUser/$userId');
     }
 
-    final response = await http.get(url);
+    final response = await client.get(url);
 
     if (response.statusCode == 200) {
       return UserModel.fromJson(jsonDecode(response.body));
@@ -114,26 +116,42 @@ class APIService {
     String dateBirth,
     String gender,
     String interest,
-    String about /*, String socialMedia, String skill*/,
+    String about,
+    String linkedin,
+    String github,
+    String instagram,
+    String facebook,
+    String twitter,
   ) async {
     final storage = FlutterSecureStorage();
     var userId = await storage.read(key: 'userId');
     var urlUser = Config.users;
     var url = Uri.parse('$urlUser/$userId');
+    var request = {
+      'userId': userId,
+      'nim': nim,
+      'major': major,
+      'city': city,
+      'dateBirth': dateBirth,
+      'gender': gender,
+      'interest': interest,
+      'about': about,
+      'socialMedia': {
+        'linkedin': linkedin,
+        'github' : github,
+        'instagram' : instagram,
+        'facebook' : facebook,
+        'twitter' : twitter,
+      }
+    };
 
-    var newrequest = http.MultipartRequest('PUT', url);
-    newrequest.fields['userId'] = userId!;
-    newrequest.fields['nim'] = nim;
-    newrequest.fields['major'] = major;
-    newrequest.fields['city'] = city;
-    newrequest.fields['dateBirth'] = dateBirth;
-    newrequest.fields['gender'] = gender;
-    newrequest.fields['interest'] = interest;
-    newrequest.fields['about'] = about;
+    var response = await client.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(request),
+    );
 
-    var newresponse = await newrequest.send();
-
-    if (newresponse.statusCode != 200) {
+    if (response.statusCode != 200) {
       print('update profile failed');
       return false;
     } else {
@@ -144,12 +162,13 @@ class APIService {
 
   //update profilePicture
   Future<bool> uploadImage(XFile profilePicture) async {
-    final storage = FlutterSecureStorage();
     var userId = await storage.read(key: 'userId');
     print('upload started');
-    var response = await uploadForm('${Config.users}/${userId}',
-        {'userId': '${userId}'}, {'profilePicture': profilePicture!});
-
+    var response = await uploadForm('${Config.users}/${userId}', {
+      'userId': '${userId}',
+    }, {
+      'profilePicture': profilePicture!
+    });
     if (response.statusCode != 200) {
       print('tidak berhasil');
       return false;
@@ -185,6 +204,44 @@ class APIService {
         options: Dio.Options(
           contentType: 'multipart/form-data',
         ));
+  }
+
+  //get all user
+  Future<List<UserModel>> getAllUser({String? query}) async {
+    var data = [];
+    List<UserModel> results = [];
+    var url = Uri.parse('${Config.users}/mobile/all');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        data = json.decode(response.body);
+        results = data.map((e) => UserModel.fromJson(e)).toList();
+        if (query != null) {
+          results = results
+              .where((element) => element.username.toLowerCase()
+                  .contains((query.toLowerCase())))
+              .toList();
+        }
+      } else {
+        print("fetch error");
+      }
+    } on Exception catch (e) {
+      print('error: $e');
+    }
+    return results;
+  }
+
+  Future<List<UserModel>> getAllFriend() async {
+    var url = Uri.parse('${Config.users}/mobile/all');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+
+      return parsed.map<UserModel>((json) => UserModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load album');
+    }
   }
 
   //-------------------------------POST---------------------------------------------//
@@ -231,7 +288,6 @@ class APIService {
     final response = await http.post(url,
         body: jsonEncode(request),
         headers: {'Content-Type': 'application/json'});
-
     if (response.statusCode != 200) {
       print('create post failed');
       return false;
@@ -278,9 +334,7 @@ class APIService {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-      return parsed
-          .map<PostModel>((json) => PostModel.fromMap(json))
-          .toList();
+      return parsed.map<PostModel>((json) => PostModel.fromMap(json)).toList();
     } else {
       throw Exception('Failed to load post');
     }
@@ -291,11 +345,17 @@ class APIService {
   //-------------------------------ARTICLE------------------------------------------//
 
   //create article
-  Future<bool> createArticle(String title, String desc, String coverArticle) async {
+  Future<bool> createArticle(
+      String title, String desc, String coverArticle) async {
     final storage = FlutterSecureStorage();
     var url = Uri.parse(Config.article);
     var userId = await storage.read(key: 'userId');
-    final request = {'userId': userId, 'title': title, 'desc': desc, 'coverArticle' : coverArticle};
+    final request = {
+      'userId': userId,
+      'title': title,
+      'desc': desc,
+      'coverArticle': coverArticle
+    };
     final response = await http.post(url,
         body: jsonEncode(request),
         headers: {'Content-Type': 'application/json'});
@@ -372,6 +432,24 @@ class APIService {
     }
   }
 
+  //update comment
+  Future<bool> updateComment(
+      String userId, String articleId, var comment) async {
+    var urlPost = Config.article;
+    var url = Uri.parse('$urlPost/$articleId');
+    final request = {'userId': userId, 'comments': comment};
+    var response = await client.put(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+    if (response.statusCode != 200) {
+      print(response.statusCode);
+      return false;
+    } else {
+      print('update comment success');
+      return true;
+    }
+  }
+
   //-------------------------------ARTICLE------------------------------------------//
 
   //-------------------------------ACTIVITY-----------------------------------------//
@@ -402,13 +480,13 @@ class APIService {
   }
 
   //create activity
-  Future<bool> createActivity(String title, String type, String desc,
+  Future<bool> createActivity(String title, String type, String image, String desc,
       String startDate, String endDate) async {
-    final storage = FlutterSecureStorage();
     var url = Uri.parse(Config.activity);
     var userId = await storage.read(key: 'userId');
     final request = {
       'userId': userId,
+      'image' : image,
       'title': title,
       'type': type,
       'desc': desc,
@@ -420,15 +498,19 @@ class APIService {
         headers: {'Content-Type': 'application/json'});
 
     if (response.statusCode != 200) {
-      print('create article failed');
+      print('create activity failed');
       return false;
     } else {
-      print('create article success');
+      print('create activity success');
       return true;
     }
   }
 
+
+
   //-------------------------------ACTIVITY-----------------------------------------//
+
+
 
   //fetch badges by user
   Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async {
@@ -482,4 +564,9 @@ class APIService {
       return true;
     }
   }
+
+
+//upload album by user
+
+
 }

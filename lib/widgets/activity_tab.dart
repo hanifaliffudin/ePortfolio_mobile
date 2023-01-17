@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../view/add_activity.dart';
-import 'card/activity_card.dart';
+import 'card/activity_tab.dart';
 
 class ActivityTab extends StatefulWidget {
   const ActivityTab({Key? key}) : super(key: key);

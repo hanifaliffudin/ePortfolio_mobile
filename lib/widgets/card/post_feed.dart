@@ -1,4 +1,3 @@
-import 'package:comment_box/comment/comment.dart';
 import 'package:eportfolio/config.dart';
 import 'package:eportfolio/models/post_model.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class _PostFeedState extends State<PostFeed> {
     return FutureBuilder<List<PostModel>>(
       future : futurePost,
       builder: (context, snapshot){
-        if(snapshot.hasData){
+        if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
           return ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               itemCount: snapshot.data!.length,
@@ -56,17 +55,6 @@ class _PostFeedState extends State<PostFeed> {
                             margin: EdgeInsets.all(10),
                             child: MarkdownBody(data: snapshot.data![index].desc),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: new Text('Created : ${DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].updatedAt))}',
-                            style: TextStyle(
-                                fontSize: 12
-                            ),),
                         ),
                     Container(//komentar box
                       child: Container(
@@ -152,13 +140,26 @@ class _PostFeedState extends State<PostFeed> {
                   ),
                 );
               });
-        }else return CircularProgressIndicator();
+        } else if(snapshot.hasError){
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 25,
+                ),
+                SizedBox(height: 10,),
+                Text('Something Went Wrong')
+              ],
+            ),
+          );
+        }
+        else if (snapshot.connectionState == ConnectionState.waiting){
+          return CircularProgressIndicator();
+        }return CircularProgressIndicator();
       }
     );
-  }
-
-  String getFormattedDate(String dtStr) {
-    var dt = DateTime.parse(dtStr);
-    return "${dt.day.toString().padLeft(2,'0')}-${dt.month.toString().padLeft(2,'0')}-${dt.year} ${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}:${dt.second.toString().padLeft(2,'0')}.${dt.millisecond .toString().padLeft(3,'0')}";
   }
 }

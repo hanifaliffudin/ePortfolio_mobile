@@ -7,6 +7,7 @@ import '../../models/article_model.dart';
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import '../block/comment_block.dart';
+import '../block/comment_block_article.dart';
 import 'header_article_card.dart';
 
 class ArticleFeed extends StatefulWidget {
@@ -17,12 +18,19 @@ class ArticleFeed extends StatefulWidget {
 }
 
 class _ArticleFeedState extends State<ArticleFeed> {
-
+  GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
   late Future<List<ArticleModel>> futureArticle;
   late Future<UserModel> futureUser;
 
   @override
   void initState(){
+    super.initState();
+    futureArticle = APIService().fetchArticle();
+    futureUser = APIService().fetchAnyUser();
+  }
+
+  Future<void> refresh()async {
     super.initState();
     futureArticle = APIService().fetchArticle();
     futureUser = APIService().fetchAnyUser();
@@ -35,7 +43,7 @@ class _ArticleFeedState extends State<ArticleFeed> {
         FutureBuilder<List<ArticleModel>>(
           future: futureArticle,
           builder: (context, snapshot){
-            if(snapshot.hasData){
+            if(snapshot.connectionState == ConnectionState.done && snapshot.hasData){
               return ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
@@ -141,7 +149,7 @@ class _ArticleFeedState extends State<ArticleFeed> {
                                                                 bottom: MediaQuery.of(context).viewInsets.bottom),
                                                             child: Container(
                                                                 height: 500,
-                                                                child: CommentBlock(articleData: snapshot.data![index])
+                                                                child: CommentBlockArticle(articleData: snapshot.data![index])
                                                             ),
                                                           )
                                                       );
@@ -174,7 +182,25 @@ class _ArticleFeedState extends State<ArticleFeed> {
                     );
                   }
               );
-            } else return CircularProgressIndicator();
+            } else if(snapshot.hasError){
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 25,
+                    ),
+                    SizedBox(height: 10,),
+                    Text('Something Went Wrong')
+                  ],
+                ),
+              );
+            }
+            else if(snapshot.connectionState ==  ConnectionState.waiting){
+              return CircularProgressIndicator();
+            } return CircularProgressIndicator();
           }
         )
       ],

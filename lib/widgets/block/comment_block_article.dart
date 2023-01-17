@@ -1,24 +1,26 @@
+import 'dart:convert';
+
 import 'package:comment_box/comment/comment.dart';
+import 'package:eportfolio/models/article_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../config.dart';
-import '../../models/post_model.dart';
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 
-class CommentBlock extends StatefulWidget {
-  const CommentBlock({Key? key,  required this.postData}) : super(key: key);
+class CommentBlockArticle extends StatefulWidget {
+  const CommentBlockArticle({Key? key,  required this.articleData}) : super(key: key);
 
-  final PostModel postData;
+  final ArticleModel articleData;
 
   @override
-  State<CommentBlock> createState() => _CommentBlockState(postData);
+  State<CommentBlockArticle> createState() => _CommentBlockArticleState(articleData);
 }
 
-class _CommentBlockState extends State<CommentBlock> {
-  final PostModel postData;
-  _CommentBlockState(this.postData);
+class _CommentBlockArticleState extends State<CommentBlockArticle> {
+  final ArticleModel articleData;
+  _CommentBlockArticleState(this.articleData);
 
   var data;
   String? username;
@@ -35,18 +37,17 @@ class _CommentBlockState extends State<CommentBlock> {
   @override
   void initState() {
     super.initState();
-    if(postData.comments.isNotEmpty){
-      for(int i = 0;i<postData.comments.length;i++){
-        comments.add(postData.comments[i].toJson());
+    if(articleData.comments.isNotEmpty){
+      for(int i = 0;i<articleData.comments.length;i++){
+        comments.add(articleData.comments[i].toJson());
       }
     }
-    futureUser = APIService().fetchAnyUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<UserModel>(
-        future: futureUser,
+        future: APIService().fetchAnyUser(),
         builder: (context,snapshot){
           if(snapshot.hasData){
             return CommentBox(
@@ -54,11 +55,11 @@ class _CommentBlockState extends State<CommentBlock> {
               labelText: 'Write a comment...',
               errorText: 'Comment cannot be blank',
               withBorder: false,
-              sendButtonMethod: () async {
+              sendButtonMethod: () {
                 if (formKey.currentState!.validate()) {
                   print(commentController.text);
                   setState(() {
-                    var value = {
+                   var value = {
                       'userId': snapshot.data!.id,
                       'comment': commentController.text,
                       'date' : DateTime.now().toString()
@@ -67,7 +68,7 @@ class _CommentBlockState extends State<CommentBlock> {
                   });
                   commentController.clear();
                   FocusScope.of(context).unfocus();
-                  await APIService().updateComment(postData.userId.toString(), postData.id.toString(), comments).then((response) =>
+                  APIService().updateComment(articleData.userId.toString(), articleData.id.toString(), comments).then((response) =>
                   {
                     if(response){
                       print('berhasil')
@@ -91,37 +92,37 @@ class _CommentBlockState extends State<CommentBlock> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
                       child: FutureBuilder<UserModel>(
-                        future: APIService().fetchAnyUser(comments[i]['userId']),
-                        builder: (context, snapshot){
-                          if(snapshot.hasData){
-                            return ListTile(
-                              leading: GestureDetector(
-                                onTap: () async {
-                                  print("Comment Clicked");
-                                },
-                                child: Container(
-                                  height: 50.0,
-                                  width: 50.0,
-                                  decoration: new BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius:
-                                      new BorderRadius.all(Radius.circular(50))),
-                                  child: CircleAvatar(
-                                      radius: 50,
-                                      backgroundImage: CommentBox.commentImageParser(
-                                          imageURLorPath: '${Config.apiURL}/${snapshot.data!.profilePicture}')),
-                                ),
+                      future: APIService().fetchAnyUser(comments[i]['userId']),
+                      builder: (context, snapshot){
+                        if(snapshot.hasData){
+                          return ListTile(
+                            leading: GestureDetector(
+                              onTap: () async {
+                                print("Comment Clicked");
+                              },
+                              child: Container(
+                                height: 50.0,
+                                width: 50.0,
+                                decoration: new BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius:
+                                    new BorderRadius.all(Radius.circular(50))),
+                                child: CircleAvatar(
+                                    radius: 50,
+                                    backgroundImage: CommentBox.commentImageParser(
+                                        imageURLorPath: '${Config.apiURL}/${snapshot.data!.profilePicture}')),
                               ),
-                              title: Text(
-                                snapshot.data!.username,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text(comments[i]['comment']),
-                              trailing:
-                              Text(DateFormat.yMMMEd().format(DateTime.parse(comments[i]['date'])), style: TextStyle(fontSize: 10)),
-                            );
-                          } else return CircularProgressIndicator();
-                        },
+                            ),
+                            title: Text(
+                              snapshot.data!.username,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(comments[i]['comment']),
+                            trailing:
+                            Text(DateFormat.yMMMEd().format(DateTime.parse(comments[i]['date'])), style: TextStyle(fontSize: 10)),
+                          );
+                        } else return CircularProgressIndicator();
+                      },
                       ),
                     )
                 ],

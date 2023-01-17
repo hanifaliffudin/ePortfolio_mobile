@@ -41,11 +41,11 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/editUser' : (context) => EditUserProfile(),
+        '/login' : (context) => Login(),
         '/home' : (context) => HomePage(0),
         '/friendprofile':(context) => FriendProfilePage(),
         '/profile':(context) => HomePage(2),
         '/openArticle':(context) => ArticleCardOpen(),
-        '/activities':(context) => HomePage(3)
       },
 
       home: FutureBuilder(

@@ -34,7 +34,7 @@ class PostModel {
           isPublic: json['isPublic'],
           createdAt: json['createdAt'],
           comments: List.from(json['comments'])
-              .map((e) => Comments.fromJson(e))
+              .map((e) => Comments.fromMap(e))
               .toList(),
           updatedAt: json['updatedAt'],
           V: json['__v']);
@@ -52,6 +52,9 @@ class PostModel {
     return _data;
   }
 }
+List<Comments> commentFromJson(String str) =>
+    List<Comments>.from(
+        json.decode(str).map((x) => Comments.fromMap(x)));
 
 class Comments {
   Comments({
@@ -67,8 +70,8 @@ class Comments {
   final String date;
 
 
-  factory Comments.fromJson(Map<String, dynamic> json) {
-    return new Comments(
+  factory Comments.fromMap(Map<String, dynamic> json) {
+    return Comments(
         userId: json['userId'],
         comment: json['comment'],
         id: json['_id'],

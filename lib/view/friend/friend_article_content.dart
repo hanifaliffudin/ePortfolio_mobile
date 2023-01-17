@@ -8,9 +8,10 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../config.dart';
 import '../../models/article_model.dart';
 import '../../models/user_model.dart';
+import '../../widgets/block/comment_block_article.dart';
 
 class FriendArticlesContent extends StatefulWidget {
-  FriendArticlesContent({required this.userId});
+  FriendArticlesContent({Key? key, required this.userId}) : super(key: key);
   String userId;
 
   @override
@@ -125,7 +126,7 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                                                                     bottom: MediaQuery.of(context).viewInsets.bottom),
                                                                 child: Container(
                                                                     height: 500,
-                                                                    child: CommentBlock(articleData: snapshot.data![index])
+                                                                    child: CommentBlockArticle(articleData: snapshot.data![index])
                                                                 ),
                                                               )
                                                           );
@@ -158,7 +159,7 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                                                       bottom: MediaQuery.of(context).viewInsets.bottom),
                                                   child: Container(
                                                       height: 500,
-                                                      child: CommentBlock(articleData : snapshot.data![index])
+                                                      child: CommentBlockArticle(articleData : snapshot.data![index])
                                                   ),
                                                 )
                                             );
