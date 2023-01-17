@@ -329,8 +329,8 @@ class APIService {
 
   //fetch friend post
   Future<List<PostModel>> friendPost(String userId) async {
-    var urlActivity = Config.fetchUserPost;
-    var url = Uri.parse('$urlActivity/$userId');
+    var urlPost = Config.fetchUserPost;
+    var url = Uri.parse('$urlPost/$userId');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();

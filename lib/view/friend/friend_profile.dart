@@ -5,7 +5,8 @@ import 'package:eportfolio/widgets/activity_tab.dart';
 import '../../badges_tab.dart';
 import '../album.dart';
 import 'friend_about_me_tab.dart';
-import 'friend_activities_content.dart';
+import 'friend_activity_tab.dart';
+import 'friend_posts_content.dart';
 import 'friend_article_content.dart';
 import 'friend_badge_tab.dart';
 import 'friend_profile_header.dart';
@@ -82,7 +83,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                     ),
                     ListView(
                       children: [
-                        FriendActivities(userId: args.toString()),
+                        FriendPosts(userId: args.toString()),
                       ],
                     ),
                     ListView(
@@ -92,7 +93,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                     ),
                     ListView(
                       children: [
-                        ActivityTab(),
+                        FriendActivityTab(userId: args.toString()),
                       ],
                     ),
                     ListView(

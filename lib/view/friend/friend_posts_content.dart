@@ -7,20 +7,20 @@ import '../../services/api_service.dart';
 import '../../widgets/block/comment_block.dart';
 import '../../widgets/card/header_feed_card.dart';
 
-class FriendActivities extends StatefulWidget {
-  FriendActivities({required this.userId});
+class FriendPosts extends StatefulWidget {
+  FriendPosts({required this.userId});
   String userId;
 
   @override
-  State<FriendActivities> createState() => _FriendActivitiesState(userId);
+  State<FriendPosts> createState() => _FriendPostsState(userId);
 }
 
-class _FriendActivitiesState extends State<FriendActivities> {
+class _FriendPostsState extends State<FriendPosts> {
   late Future<List<PostModel>> futureFriendPost;
   late Future<UserModel> futureUser;
   String userId;
 
-  _FriendActivitiesState(this.userId);
+  _FriendPostsState(this.userId);
 
   @override
   void initState() {

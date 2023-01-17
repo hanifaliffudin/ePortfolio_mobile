@@ -86,7 +86,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           SizedBox(height: 16,),
                           Text(snapshot.data![index].major ?? ''),
                           SizedBox(height: 2  ,),
-                          Text('Universitas Brawijaya'),
+                          Text(snapshot.data![index].organization ?? ''),
                           SizedBox(height: 5,)
                         ],
                       ),
