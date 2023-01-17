@@ -156,7 +156,7 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [Text('Delete'), Icon(Icons.remove)],
+                        children: [Text('Delete'), Icon(Icons.delete)],
                       )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

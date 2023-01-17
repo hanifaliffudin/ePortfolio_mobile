@@ -123,34 +123,7 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     SizedBox(
-                      height: 10,
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 25, top: 10),
-                        child: RichText(
-                          text: TextSpan(
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 14.0,
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: 'Forgot Password ?',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        decoration: TextDecoration.underline),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        print("Forgot Password");
-                                      })
-                              ]),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
+                      height: 40,
                     ),
                     Center(
                       child: FormHelper.submitButton(
@@ -175,6 +148,9 @@ class _LoginState extends State<Login> {
                                 "OK",
                                 () {
                                   Navigator.of(context).pop();
+                                  setState(() {
+                                    isApiCallProcess = false;
+                                  });
                                 },
                               );
                             }

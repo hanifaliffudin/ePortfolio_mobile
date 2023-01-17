@@ -1,13 +1,11 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/view/search_user.dart';
 import 'package:flutter/material.dart';
-
 import '../config.dart';
 import '../models/user_model.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({Key? key}) : super(key: key);
-
   static const routeName = '/discover';
 
   @override
@@ -60,35 +58,39 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,
                   children: List.generate(snapshot.data!.length, (index) {
-                    return Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              (snapshot.data![index].profilePicture == null ||
-                                  snapshot.data![index].profilePicture == "")
-                                  ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
-                                  : '${Config.apiURL}/${snapshot.data![index].profilePicture.toString()}',
+                    return InkWell(
+                      onTap: (){Navigator.pushNamed(context, '/friendprofile',
+                          arguments: snapshot.data![index].id);},
+                      child: Card(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                (snapshot.data![index].profilePicture == null ||
+                                    snapshot.data![index].profilePicture == "")
+                                    ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                                    : '${Config.apiURL}/${snapshot.data![index].profilePicture.toString()}',
+                              ),
+                              radius: 25,
                             ),
-                            radius: 25,
-                          ),
-                          SizedBox(height: 16,),
-                          Text(
-                            snapshot.data![index].username ?? '',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 20
+                            SizedBox(height: 16,),
+                            Text(
+                              snapshot.data![index].username ?? '',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 2,),
-                          Text(snapshot.data![index].nim ?? ''),
-                          SizedBox(height: 16,),
-                          Text(snapshot.data![index].major ?? ''),
-                          SizedBox(height: 2  ,),
-                          Text(snapshot.data![index].organization ?? ''),
-                          SizedBox(height: 5,)
-                        ],
+                            SizedBox(height: 2,),
+                            Text(snapshot.data![index].nim ?? ''),
+                            SizedBox(height: 16,),
+                            Text(snapshot.data![index].major ?? ''),
+                            SizedBox(height: 2  ,),
+                            Text(snapshot.data![index].organization ?? ''),
+                            SizedBox(height: 5,)
+                          ],
+                        ),
                       ),
                     );
                   }),

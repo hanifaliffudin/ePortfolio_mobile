@@ -53,7 +53,7 @@ class _PostFeedState extends State<PostFeed> {
                           alignment: Alignment.topLeft,
                           child: Container(
                             margin: EdgeInsets.all(10),
-                            child: MarkdownBody(data: snapshot.data![index].desc),
+                            child: MarkdownBody(fitContent: true,data: snapshot.data![index].desc, ),
                           ),
                         ),
                     Container(//komentar box

@@ -26,13 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
-          Text('FILKOM'),
-          Text(
-            'Student Dashboard',
-            style: TextStyle(
-                fontSize: 16
-            ),
-          ),
+          Text('STUDENT E-PORTFOLIO'),
         ],
       ),
     );

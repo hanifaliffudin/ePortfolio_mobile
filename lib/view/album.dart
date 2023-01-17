@@ -1,4 +1,18 @@
+import 'dart:convert';
+
+import 'package:eportfolio/config.dart';
+import 'package:eportfolio/view/video_player.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mime_type/mime_type.dart';
+import 'package:video_thumbnail_imageview/video_thumbnail_imageview.dart';
+import '../models/album_model.dart';
+import '../models/post_model.dart';
+import '../services/api_service.dart';
 
 class Album extends StatefulWidget {
   @override
@@ -6,159 +20,328 @@ class Album extends StatefulWidget {
 }
 
 class _AlbumState extends State<Album> {
-  OverlayEntry? _popupDialog;
-  List<String> imageUrls = [
-    'https://placeimg.com/640/480/animals',
-    'https://placeimg.com/640/480/arch',
-    'https://placeimg.com/640/480/nature',
-    'https://placeimg.com/640/480/people',
-    'https://placeimg.com/640/480/tech',
-    'https://placeimg.com/640/480/animals',
-    'https://placeimg.com/640/480/arch',
-    'https://placeimg.com/640/480/nature',
-    'https://placeimg.com/640/480/people',
-    'https://placeimg.com/640/480/tech',
-    'https://placeimg.com/640/480/nature',
-    'https://placeimg.com/640/480/people',
-    'https://placeimg.com/640/480/tech',
-    'https://placeimg.com/640/480/animals',
-    'https://placeimg.com/640/480/arch',
-    'https://placeimg.com/640/480/nature',
-    'https://placeimg.com/640/480/people',
-  ];
+  late Future<List<AlbumModel>> futureAlbum;
+  var userId;
+  var data;
+  String? username;
+  late PostModel postData;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GridView.count(
-          padding: EdgeInsets.all(8),
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          crossAxisCount: 3,
-          childAspectRatio: 1.0,
-          children: imageUrls.map(_createGridTileWidget).toList(),
-        ),
-      ],
-    );
+  Future<Map<String, dynamic>> getIdUser() async {
+    final storage = FlutterSecureStorage();
+    userId = await storage.read(key: 'userId');
+    data = await APIService.getIdUser(postData.userId);
+    username = data['username'];
+    return data;
   }
-
-  Widget _createGridTileWidget(String url) => Builder(
-    builder: (context) => GestureDetector(
-      onLongPress: () {
-        _popupDialog = _createPopupDialog(url);
-        Overlay.of(context)?.insert(_popupDialog!);
-      },
-      onLongPressEnd: (details) => _popupDialog?.remove(),
-      child: Image.network(
-
-        url, fit: BoxFit.cover,),
-    ),
-  );
-
-  OverlayEntry _createPopupDialog(String url) {
-    return OverlayEntry(
-      builder: (context) => AnimatedDialog(
-        child: _createPopupContent(url),
-      ),
-    );
-  }
-
-  Widget _createPhotoTitle() => Container(
-      width: double.infinity,
-      color: Colors.white,
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage('https://placeimg.com/640/480/people'),
-        ),
-        title: Text(
-          'john.doe',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        ),
-      ));
-
-  Widget _createActionBar() => Container(
-    padding: EdgeInsets.symmetric(vertical: 10.0),
-    color: Colors.white,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Icon(
-          Icons.favorite_border,
-          color: Colors.black,
-        ),
-        Icon(
-          Icons.chat_bubble_outline_outlined,
-          color: Colors.black,
-        ),
-        Icon(
-          Icons.send,
-          color: Colors.black,
-        ),
-      ],
-    ),
-  );
-
-  Widget _createPopupContent(String url) => Container(
-    padding: EdgeInsets.symmetric(horizontal: 16.0),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _createPhotoTitle(),
-          Image.network(url, fit: BoxFit.fitWidth),
-          _createActionBar(),
-        ],
-      ),
-    ),
-  );
-}
-
-class AnimatedDialog extends StatefulWidget {
-  const AnimatedDialog({this.child});
-
-  final Widget? child;
-
-  @override
-  State<StatefulWidget> createState() => AnimatedDialogState();
-}
-
-class AnimatedDialogState extends State<AnimatedDialog>
-    with SingleTickerProviderStateMixin {
-  AnimationController? controller;
-  Animation<double>? opacityAnimation;
-  Animation<double>? scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-
-    controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 400));
-    scaleAnimation =
-        CurvedAnimation(parent: controller!, curve: Curves.easeOutExpo);
-    opacityAnimation = Tween<double>(begin: 0.0, end: 0.6).animate(
-        CurvedAnimation(parent: controller!, curve: Curves.easeOutExpo));
-
-    controller?.addListener(() => setState(() {}));
-    controller?.forward();
+    futureAlbum = APIService().fetchAnyAlbum();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Material(
-        color: Colors.black.withOpacity(opacityAnimation!.value),
-        child: Center(
-          child: FadeTransition(
-            opacity: scaleAnimation!,
-            child: ScaleTransition(
-              scale: scaleAnimation!,
-              child: widget.child,
+    return FutureBuilder<List<AlbumModel>>(
+      future: futureAlbum,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          return Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 5, right: 5, top: 10),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    minimumSize: const Size.fromHeight(35), // NEW
+                  ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(10.0))),
+                        builder: (context) => Padding(
+                              padding: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).viewInsets.bottom),
+                              child: Container(
+                                  height: 120,
+                                  margin: EdgeInsets.only(
+                                      left: 10, top: 10, right: 10),
+                                  child: Column(
+                                    children: [
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(),
+                                          onPressed: () {
+                                            uploadFile();
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Add photo'),
+                                              Icon(Icons.photo)
+                                            ],
+                                          )),
+                                      ElevatedButton(
+                                          style: ElevatedButton.styleFrom(),
+                                          onPressed: () {
+                                            uploadFileVideo();
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Add video'),
+                                              Icon(Icons.ondemand_video)
+                                            ],
+                                          )),
+                                    ],
+                                  )),
+                            ));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Add Photo/Video',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Icon(Icons.add)
+                    ],
+                  ),
+                ),
+              ),
+              GridView.count(
+                  padding: EdgeInsets.all(5),
+                  physics: NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.0,
+                  children: List.generate(snapshot.data!.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          snapshot.data![index].type == 'image'
+                              ? GestureDetector(
+                                  onTap: () async {
+                                    await showDialog(
+                                        context: context,
+                                        builder: (_) => imageDialog(
+                                            snapshot.data![index].filename,
+                                            snapshot.data![index].fileAlbum));
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                      '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
+                                      fit: BoxFit.cover,
+                                      width: 200,
+                                      height: 175,
+                                    ),
+                                  ),
+                                )
+                              : GestureDetector(
+                                  onTap: () async {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (_) => PlayVid(
+                                        urlVideo:
+                                            '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
+                                        nameVideo:
+                                            '${snapshot.data![index].filename}',
+                                      ),
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: VTImageView(
+                                      videoUrl:
+                                          '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
+                                      assetPlaceHolder:
+                                          'assets/images/video-playe.jpeg',
+                                    ),
+                                  ),
+                                ),
+                        ],
+                      ),
+                    );
+                  })),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 25,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Something Went Wrong')
+              ],
             ),
-          ),
+          );
+        } else
+          return CircularProgressIndicator();
+      },
+    );
+  }
+
+  void uploadFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['png', 'jpg', 'jpeg'],
+    );
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      var path = file.path.toString();
+      var filename = file.name;
+      String? mimeType = mime(filename);
+      String mimee = mimeType!.split('/')[0];
+      String type = mimeType.split('/')[1];
+      var name = file.name;
+      var size = file.size;
+      var dataFile = {
+        'userId': userId,
+        'filename': name,
+        'filesize': size,
+        'type': 'image',
+      };
+      var formData = FormData.fromMap({
+        'data': json.encode(dataFile),
+        'fileAlbum': await MultipartFile.fromFile(path,
+            filename: filename, contentType: new MediaType(mimee, type)),
+      });
+      Response response = await Dio().post(Config.album, data: formData);
+      print(response.data.toString());
+    } else {
+      print('File not found');
+    }
+  }
+
+  void uploadFileVideo() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['mp4', 'webm', 'quicktime'],
+    );
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      var path = file.path.toString();
+      var filename = file.name;
+      String? mimeType = mime(filename);
+      String mimee = mimeType!.split('/')[0];
+      String type = mimeType.split('/')[1];
+      print(file.name);
+      print(file.size);
+      print(file.extension);
+      print(file.path);
+      var formData = FormData.fromMap({
+        'userId': userId,
+        'filename': file.name,
+        'filesize': file.size,
+        'type': 'video',
+        'fileAlbum': await MultipartFile.fromFile(path,
+            filename: filename, contentType: new MediaType(mimee, type)),
+      });
+      Response response =
+          await Dio().post('${Config.album}/video', data: formData);
+      print(response.data.toString());
+    } else {
+      print('File not found');
+    }
+  }
+
+  void settingButton(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+              height: 70,
+              margin: EdgeInsets.only(left: 10, top: 10, right: 10),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(),
+                      onPressed: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text('Delete'), Icon(Icons.delete)],
+                      )),
+                ],
+              ),
+            ));
+  }
+
+  Widget imageDialog(String imageName, String imageNetwork) {
+    return Dialog(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 220,
+                      child: Text(
+                        '${imageName}',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                IconButton(
+                  onPressed: () {
+                    settingButton(context);
+                  },
+                  icon: Icon(Icons.more_horiz),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Container(
+              child: Image.network(
+                '${Config.apiURL}/${imageNetwork}',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Copy url : ',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Container(
+                    width: 220,
+                    child: SelectableText('${Config.apiURL}/${imageNetwork}',
+                        style: TextStyle(fontSize: 18)),
+                  )
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );

@@ -65,7 +65,7 @@ class _FriendPersonalInformationState extends State<FriendPersonalInformation> {
                             Align(
                               child: Container(
                                   padding: EdgeInsets.only(
-                                      right: 120, left: 10, top: 10, bottom: 10),
+                                      right: 10, left: 10, top: 10, bottom: 10),
                                   decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(10)),
@@ -74,74 +74,13 @@ class _FriendPersonalInformationState extends State<FriendPersonalInformation> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        RichText(
-                                            text: TextSpan(
-                                              style: DefaultTextStyle.of(context).style,
-                                              children: [
-                                                TextSpan(
-                                                  text: 'Name : ',
-                                                  style:
-                                                  TextStyle(fontWeight: FontWeight.bold),
-                                                ),
-                                                //TextSpan(text: username ?? ''),
-                                                TextSpan(text: snapshot.data!.username ?? '',),
-                                              ],
-                                            )),
-                                        RichText(
-                                            text: TextSpan(
-                                              style: DefaultTextStyle.of(context).style,
-                                              children: [
-                                                TextSpan(
-                                                    text: 'Student ID : ',
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
-                                                TextSpan(text: snapshot.data!.nim ?? ''),
-                                              ],
-                                            )),
-                                        RichText(
-                                            text: TextSpan(
-                                              style: DefaultTextStyle.of(context).style,
-                                              children: [
-                                                TextSpan(
-                                                    text: 'Major : ',
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
-                                                TextSpan(text: snapshot.data!.major ?? ''),
-                                              ],
-                                            )),
-                                        RichText(
-                                            text: TextSpan(
-                                              style: DefaultTextStyle.of(context).style,
-                                              children: [
-                                                TextSpan(
-                                                    text: 'City : ',
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
-                                                TextSpan(text: snapshot.data!.city ?? ''),
-                                              ],
-                                            )),
-                                        RichText(
-                                            text: TextSpan(
-                                              style: DefaultTextStyle.of(context).style,
-                                              children: [
-                                                TextSpan(
-                                                    text: 'Date of Birth : ',
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
-                                                TextSpan(text: snapshot.data!.dateBirth !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data!.dateBirth)) : ''),
-                                              ],
-                                            )),
-                                        RichText(
-                                            text: TextSpan(
-                                              style: DefaultTextStyle.of(context).style,
-                                              children: [
-                                                TextSpan(
-                                                    text: 'Gender : ',
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
-                                                TextSpan(text: snapshot.data!.gender ?? ''),
-                                              ],
-                                            )),
+                                        Text('Name : ${snapshot.data!.username}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+                                        Text('Organization : ${snapshot.data!.organization}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text('Student ID : ${snapshot.data!.nim}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text('Major : ${snapshot.data!.major}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text('City : ${snapshot.data!.city}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text('Date of Birth : ${snapshot.data!.dateBirth !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data!.dateBirth)) : ''}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                        Text('Gender : ${snapshot.data!.gender !=null ? snapshot.data!.gender : ''}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                                       ],
                                     ),
                                   )

@@ -1,12 +1,12 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../models/user_model.dart';
 
 class FriendAboutMeBlock extends StatefulWidget {
   FriendAboutMeBlock({required this.userId});
   String userId;
-
 
   @override
   State<FriendAboutMeBlock> createState() => _FriendAboutMeBlockState(userId);
@@ -74,12 +74,9 @@ class _FriendAboutMeBlockState extends State<FriendAboutMeBlock> {
                                     children: [
                                       Align(
                                         alignment: Alignment.topLeft,
-                                        child: Text(
-                                          snapshot.data!.about ?? '',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                        ),
+                                        child: MarkdownBody(
+                                          data: snapshot.data!.about,
+                                        )
                                       ),
                                     ],
                                   )

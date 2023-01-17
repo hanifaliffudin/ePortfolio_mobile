@@ -18,6 +18,7 @@ class _RegisterState extends State<Register> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController organizationController = TextEditingController();
   String? role;
+  String? gender;
 
   void displayDialog(context, title, text) => showDialog(
       context: context,
@@ -175,12 +176,15 @@ class _RegisterState extends State<Register> {
                           child: Column(
                             children: [
                               SizedBox(height: 5,),
-                              const Align(alignment :  Alignment.topLeft,child: Padding(padding : EdgeInsets.only(left: 10, top:5),child: Text('Role', style: TextStyle(
-                                  fontSize: 16
-                              ),))),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Text('Role', style: TextStyle(
+                                        fontSize: 16
+                                    ),),
+                                  ),
                                   Expanded(child: ListTile(
                                     title: const Text("Lecturer"),
                                     leading: Radio(
@@ -239,6 +243,9 @@ class _RegisterState extends State<Register> {
                               "OK",
                                   () {
                                 Navigator.of(context).pop();
+                                setState(() {
+                                  isAPIcallProcess = false;
+                                });
                               },
                             );
                           }
@@ -254,7 +261,6 @@ class _RegisterState extends State<Register> {
               ),
             ),
           ),
-
         ),
       ),
     );

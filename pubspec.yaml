@@ -29,7 +29,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  api_cache_manager: ^1.0.2
   snippet_coder_utils: ^1.0.9
   http: ^0.13.4
   flutter_secure_storage: ^4.2.1
@@ -40,7 +39,10 @@ dependencies:
   dio: ^4.0.6
   mime_type: ^1.0.0
   shared_preferences: ^2.0.16
+  file_picker: ^5.2.5
+  video_player: ^2.5.1
   readmore: ^2.1.0
+  video_thumbnail_imageview: ^0.0.5
   custom_switch:
     git:
       url: https://github.com/Shiba-Kar/CustomSwitch

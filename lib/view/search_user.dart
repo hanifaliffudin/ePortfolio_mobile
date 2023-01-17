@@ -43,39 +43,39 @@ class SearchUser extends SearchDelegate {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/friendprofile',
-                              arguments: data?[index].id);
-                        },
-                        child: CircleAvatar(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/friendprofile',
+                          arguments: data?[index].id);
+                    },
+                    child: Row(
+                      children: [
+                        CircleAvatar(
                           backgroundImage: NetworkImage(
                             (data?[index].profilePicture == null ||
-                                data?[index].profilePicture == "")
+                                    data?[index].profilePicture == "")
                                 ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
                                 : '${Config.apiURL}/${data?[index].profilePicture.toString()}',
                           ),
                           radius: 25,
                         ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            data?[index].username ?? '',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(data?[index].major ?? ''),
-                          /*Text(postList[index].updatedAt)*/
-                        ],
-                      ),
-                    ],
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data?[index].username ?? '',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text(data?[index].major ?? ''),
+                            /*Text(postList[index].updatedAt)*/
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               });
@@ -85,9 +85,10 @@ class SearchUser extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return Center(
-      child: Text('Discover user', style: TextStyle(
-        fontWeight: FontWeight.w100
-      ),),
+      child: Text(
+        'Discover user',
+        style: TextStyle(fontWeight: FontWeight.w100),
+      ),
     );
   }
 }

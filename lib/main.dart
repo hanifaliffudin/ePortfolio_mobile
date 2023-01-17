@@ -4,6 +4,7 @@ import 'package:eportfolio/login.dart';
 import 'package:eportfolio/view/friend/friend_profile.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
+import 'package:eportfolio/view/video_player.dart';
 import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
 import 'package:flutter/material.dart';

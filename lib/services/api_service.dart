@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
 import '../config.dart';
 import '../models/activity_model.dart';
+import '../models/album_model.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
 
@@ -34,13 +35,14 @@ class APIService {
     );
 
     var data = jsonDecode(response.body);
-    jwt = data['jwt'];
-    userId = data['userId'];
     if (response.statusCode != 200) {
+
       print('login failed');
       return false;
     } else {
       print('login success');
+      jwt = data['jwt'];
+      userId = data['userId'];
       storage.write(key: 'jwt', value: jwt.toString());
       storage.write(key: 'userId', value: userId.toString());
       return true;
@@ -51,7 +53,6 @@ class APIService {
   static Future<bool> register(String username, String email, String password,
       String organization, String role) async {
     var url = Uri.parse(Config.registerAPI);
-
     final request = {
       'username': username,
       'email': email,
@@ -85,7 +86,6 @@ class APIService {
     } else {
       url = Uri.parse('$urlUser/$userId');
     }
-
     final response = await client.get(url);
 
     if (response.statusCode == 200) {
@@ -511,7 +511,6 @@ class APIService {
   //-------------------------------ACTIVITY-----------------------------------------//
 
 
-
   //fetch badges by user
   Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async {
     var url;
@@ -565,8 +564,29 @@ class APIService {
     }
   }
 
+  //fetch album by user
+  Future<List<AlbumModel>> fetchAnyAlbum([String? userId]) async {
+    var url;
+    var urlAlbum = Config.album;
 
-//upload album by user
+    if (userId == null) {
+      final storage = FlutterSecureStorage();
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlAlbum/all/$userId');
+    } else {
+      url = Uri.parse('$urlAlbum/all/$userId');
+    }
 
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed
+          .map<AlbumModel>((json) => AlbumModel.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load article');
+    }
+  }
 
 }
