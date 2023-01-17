@@ -1,6 +1,7 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/view/add_badges.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../config.dart';
 import '../../models/badges_model.dart';
 
@@ -58,8 +59,8 @@ class _FriendBadgesState extends State<FriendBadges> {
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 200,
-                      childAspectRatio: 1.5 / 2,
+                      maxCrossAxisExtent: 300,
+                      childAspectRatio: 1.4 / 2,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20),
                   itemCount: snapshot.data!.length,
@@ -86,7 +87,7 @@ class _FriendBadgesState extends State<FriendBadges> {
                               height: 8,
                             ),
                             Image.network(
-                              '${Config.apiURL}/${snapshot.data![index].imgBadge.toString()}',
+                              '${snapshot.data![index].imgBadge.toString()}',
                               width: 80,
                               height: 80,
                               fit: BoxFit.scaleDown,
@@ -98,7 +99,7 @@ class _FriendBadgesState extends State<FriendBadges> {
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(left: 10, right: 10),
                               child: Text(
-                                snapshot.data![index].title,
+                                snapshot.data![index].title, overflow: TextOverflow.ellipsis, maxLines: 2,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -107,7 +108,7 @@ class _FriendBadgesState extends State<FriendBadges> {
                             ),
                             Container(
                                 padding: EdgeInsets.only(left: 10, right: 10),
-                                child: Text(snapshot.data![index].desc)),
+                                child: Text(snapshot.data![index].desc, overflow: TextOverflow.ellipsis, maxLines: 3,)),
                             SizedBox(height: 8,),
                             Container(
                                 alignment: Alignment.topLeft,
@@ -120,7 +121,7 @@ class _FriendBadgesState extends State<FriendBadges> {
                             ),
                             Container(
                                 padding: EdgeInsets.only(left: 10, right: 10),
-                                child: Text(snapshot.data![index].earnedDate))
+                                child: Text('Earned ${snapshot.data![index].earnedDate !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].earnedDate)) : ''}'))
                           ],
                         ));
                   });

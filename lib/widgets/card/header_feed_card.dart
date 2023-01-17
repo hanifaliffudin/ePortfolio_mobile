@@ -9,7 +9,7 @@ import '../../models/post_model.dart';
 import '../../services/api_service.dart';
 
 class HeaderFeedCard extends StatefulWidget {
-  HeaderFeedCard({required this.postData});
+  HeaderFeedCard({Key? key, required this.postData}) : super(key: key);
 
   PostModel postData;
 
@@ -98,7 +98,7 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
-                          Text('${major ?? ''} | ${organization ?? ''}', overflow: TextOverflow.ellipsis,),
+                          Text('${major ?? ''} | ${organization ?? ''}', overflow: TextOverflow.fade,),
                           Text(DateFormat.yMMMEd().format(DateTime.parse(postData.updatedAt)))
                           /*Text(postList[index].updatedAt)*/
                         ],
