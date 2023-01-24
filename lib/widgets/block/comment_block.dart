@@ -27,7 +27,6 @@ class _CommentBlockState extends State<CommentBlock> {
 
   List<dynamic> comments = [];
   late Future<UserModel> futureUser;
-  late Future<UserModel> futureFriend;
 
   final formKey = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
@@ -56,18 +55,17 @@ class _CommentBlockState extends State<CommentBlock> {
               withBorder: false,
               sendButtonMethod: () async {
                 if (formKey.currentState!.validate()) {
-                  print(commentController.text);
                   setState(() {
                     var value = {
                       'userId': snapshot.data!.id,
+                      'date' : DateTime.now().toString(),
                       'comment': commentController.text,
-                      'date' : DateTime.now().toString()
                     };
                     comments.insert(0, value);
                   });
                   commentController.clear();
                   FocusScope.of(context).unfocus();
-                  await APIService().updateComment(postData.userId.toString(), postData.id.toString(), comments).then((response) =>
+                  await APIService().updateCommentPost(postData.userId.toString(), postData.id.toString(), comments).then((response) =>
                   {
                     if(response){
                       print('berhasil')

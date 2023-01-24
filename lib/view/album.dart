@@ -1,14 +1,10 @@
-import 'dart:convert';
-
 import 'package:eportfolio/config.dart';
 import 'package:eportfolio/view/video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http_parser/http_parser.dart';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:mime_type/mime_type.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:video_thumbnail_imageview/video_thumbnail_imageview.dart';
 import '../models/album_model.dart';
 import '../models/post_model.dart';
@@ -135,7 +131,8 @@ class _AlbumState extends State<Album> {
                                         context: context,
                                         builder: (_) => imageDialog(
                                             snapshot.data![index].filename,
-                                            snapshot.data![index].fileAlbum));
+                                            snapshot.data![index].fileAlbum,
+                                            snapshot.data![index].id));
                                   },
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
@@ -207,24 +204,31 @@ class _AlbumState extends State<Album> {
       PlatformFile file = result.files.first;
       var path = file.path.toString();
       var filename = file.name;
-      String? mimeType = mime(filename);
-      String mimee = mimeType!.split('/')[0];
-      String type = mimeType.split('/')[1];
-      var name = file.name;
       var size = file.size;
-      var dataFile = {
-        'userId': userId,
-        'filename': name,
-        'filesize': size,
-        'type': 'image',
-      };
-      var formData = FormData.fromMap({
-        'data': json.encode(dataFile),
-        'fileAlbum': await MultipartFile.fromFile(path,
-            filename: filename, contentType: new MediaType(mimee, type)),
+      APIService().uploadAlbumImage(path, filename, size).then((response) {
+        if (response) {
+          FormHelper.showSimpleAlertDialog(
+            context,
+            "Success!",
+            "Success upload file!",
+            "OK",
+            () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/album', (route) => false);
+            },
+          );
+        } else {
+          FormHelper.showSimpleAlertDialog(
+            context,
+            "Error!",
+            "Failed upload image! Please try again",
+            "OK",
+            () {
+              Navigator.of(context).pop();
+            },
+          );
+        }
       });
-      Response response = await Dio().post(Config.album, data: formData);
-      print(response.data.toString());
     } else {
       print('File not found');
     }
@@ -239,30 +243,37 @@ class _AlbumState extends State<Album> {
       PlatformFile file = result.files.first;
       var path = file.path.toString();
       var filename = file.name;
-      String? mimeType = mime(filename);
-      String mimee = mimeType!.split('/')[0];
-      String type = mimeType.split('/')[1];
-      print(file.name);
-      print(file.size);
-      print(file.extension);
-      print(file.path);
-      var formData = FormData.fromMap({
-        'userId': userId,
-        'filename': file.name,
-        'filesize': file.size,
-        'type': 'video',
-        'fileAlbum': await MultipartFile.fromFile(path,
-            filename: filename, contentType: new MediaType(mimee, type)),
+      var size = file.size;
+      APIService().uploadAlbumVideo(path, filename, size).then((response) {
+        if (response) {
+          FormHelper.showSimpleAlertDialog(
+            context,
+            "Success!",
+            "Success upload file!",
+            "OK",
+            () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/album', (route) => false);
+            },
+          );
+        } else {
+          FormHelper.showSimpleAlertDialog(
+            context,
+            "Error!",
+            "Failed upload video! Please try again",
+            "OK",
+            () {
+              Navigator.of(context).pop();
+            },
+          );
+        }
       });
-      Response response =
-          await Dio().post('${Config.album}/video', data: formData);
-      print(response.data.toString());
     } else {
       print('File not found');
     }
   }
 
-  void settingButton(context) {
+  void settingButton(String id) {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
@@ -272,7 +283,32 @@ class _AlbumState extends State<Album> {
                 children: [
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(),
-                      onPressed: () {},
+                      onPressed: () {
+                        APIService().deleteAlbum(id).then((response) {
+                          if (response) {
+                            FormHelper.showSimpleAlertDialog(
+                              context,
+                              "Success!",
+                              "Success delete file!",
+                              "OK",
+                              () {
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, '/album', (route) => false);
+                              },
+                            );
+                          } else {
+                            FormHelper.showSimpleAlertDialog(
+                              context,
+                              "Error!",
+                              "Failed delete file! Please try again",
+                              "OK",
+                              () {
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          }
+                        });
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [Text('Delete'), Icon(Icons.delete)],
@@ -282,8 +318,12 @@ class _AlbumState extends State<Album> {
             ));
   }
 
-  Widget imageDialog(String imageName, String imageNetwork) {
+  Widget imageDialog(String imageName, String imageNetwork, String id) {
     return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -299,7 +339,7 @@ class _AlbumState extends State<Album> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 220,
+                      width: 200,
                       child: Text(
                         '${imageName}',
                         style: TextStyle(
@@ -310,7 +350,7 @@ class _AlbumState extends State<Album> {
                 ),
                 IconButton(
                   onPressed: () {
-                    settingButton(context);
+                    settingButton(id);
                   },
                   icon: Icon(Icons.more_horiz),
                 ),
@@ -319,14 +359,17 @@ class _AlbumState extends State<Album> {
             SizedBox(
               height: 8,
             ),
-            Container(
-              child: Image.network(
-                '${Config.apiURL}/${imageNetwork}',
-                fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: Image.network(
+                  '${Config.apiURL}/${imageNetwork}',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -334,7 +377,7 @@ class _AlbumState extends State<Album> {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   Container(
-                    width: 220,
+                    width: 200,
                     child: SelectableText('${Config.apiURL}/${imageNetwork}',
                         style: TextStyle(fontSize: 18)),
                   )

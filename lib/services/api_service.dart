@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart' as Dio;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
@@ -24,6 +25,8 @@ class APIService {
     final storage = FlutterSecureStorage();
     String? jwt;
     String? userId;
+    String? major;
+    String? organization;
 
     var url = Uri.parse(Config.loginAPI);
 
@@ -36,7 +39,6 @@ class APIService {
 
     var data = jsonDecode(response.body);
     if (response.statusCode != 200) {
-
       print('login failed');
       return false;
     } else {
@@ -45,6 +47,8 @@ class APIService {
       userId = data['userId'];
       storage.write(key: 'jwt', value: jwt.toString());
       storage.write(key: 'userId', value: userId.toString());
+      storage.write(key: 'major', value: major.toString());
+      storage.write(key: 'organization', value: organization.toString());
       return true;
     }
   }
@@ -79,9 +83,9 @@ class APIService {
   Future<UserModel> fetchAnyUser([String? userId]) async {
     var url;
     var urlUser = Config.users;
+    var userIdya = await storage.read(key: 'userId');
     if (userId == null) {
       final storage = FlutterSecureStorage();
-      var userIdya = await storage.read(key: 'userId');
       url = Uri.parse('$urlUser/$userIdya');
     } else {
       url = Uri.parse('$urlUser/$userId');
@@ -138,10 +142,10 @@ class APIService {
       'about': about,
       'socialMedia': {
         'linkedin': linkedin,
-        'github' : github,
-        'instagram' : instagram,
-        'facebook' : facebook,
-        'twitter' : twitter,
+        'github': github,
+        'instagram': instagram,
+        'facebook': facebook,
+        'twitter': twitter,
       }
     };
 
@@ -167,7 +171,7 @@ class APIService {
     var response = await uploadForm('${Config.users}/${userId}', {
       'userId': '${userId}',
     }, {
-      'profilePicture': profilePicture!
+      'profilePicture': profilePicture
     });
     if (response.statusCode != 200) {
       print('tidak berhasil');
@@ -206,6 +210,34 @@ class APIService {
         ));
   }
 
+  //search user
+  Future<Object> searchUser({String? query}) async {
+    var userId = await storage.read(key: 'userId');
+    List<dynamic> data = [];
+    var url = Uri.parse('${Config.users}/search/$userId/$query');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      data = jsonDecode(response.body);
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
+  //suggested user
+  Future<Object> sugesstedUser(String major, String organization) async {
+    var userId = await storage.read(key: 'userId');
+    List<dynamic> data = [];
+    var url = Uri.parse('${Config.users}/suggest/$major/$organization/$userId');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      data = jsonDecode(response.body);
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
   //get all user
   Future<List<UserModel>> getAllUser({String? query}) async {
     var data = [];
@@ -218,7 +250,8 @@ class APIService {
         results = data.map((e) => UserModel.fromJson(e)).toList();
         if (query != null) {
           results = results
-              .where((element) => element.username.toLowerCase()
+              .where((element) => element.username
+                  .toLowerCase()
                   .contains((query.toLowerCase())))
               .toList();
         }
@@ -244,6 +277,44 @@ class APIService {
     }
   }
 
+  Future<bool> follow(String following) async {
+    final storage = FlutterSecureStorage();
+    var urlUser = Config.users;
+    var url = Uri.parse('$urlUser/follow/$following');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userIdFollowing': userId};
+    var response = await client.put(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+
+    if (response.statusCode != 200) {
+      print('follow user failed');
+      return false;
+    } else {
+      print('follow user success');
+      return true;
+    }
+  }
+
+  Future<bool> unfollow(String following) async {
+    final storage = FlutterSecureStorage();
+    var urlUser = Config.users;
+    var url = Uri.parse('$urlUser/unfollow/$following');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userIdUnfollowing': userId};
+    var response = await client.put(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+
+    if (response.statusCode != 200) {
+      print('unfollow user failed');
+      return false;
+    } else {
+      print('unfollow user success');
+      return true;
+    }
+  }
+
   //-------------------------------POST---------------------------------------------//
 
   //fetch single post by id
@@ -260,8 +331,7 @@ class APIService {
   }
 
   //delete post
-  static Future<bool> deletePost(String postId) async {
-    final storage = FlutterSecureStorage();
+  Future<bool> deletePost(String postId) async {
     var urlPost = Config.post;
     var url = Uri.parse('$urlPost/$postId');
     var userId = await storage.read(key: 'userId');
@@ -271,10 +341,10 @@ class APIService {
         body: jsonEncode(request));
 
     if (response.statusCode != 200) {
-      print('create post failed');
+      print('delete post failed');
       return false;
     } else {
-      print('create post success');
+      print('delete post success');
       return true;
     }
   }
@@ -297,9 +367,11 @@ class APIService {
     }
   }
 
-  //fetch all post
+  //fetch post from followe friend
   Future<List<PostModel>> fetchPost() async {
-    var url = Uri.parse(Config.timelineApi);
+    var urlPost = Config.timelineApi;
+    var userId = await storage.read(key: 'userId');
+    var url = Uri.parse('$urlPost/$userId');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -340,6 +412,24 @@ class APIService {
     }
   }
 
+  //upateCommentPost
+  Future<bool> updateCommentPost(
+      String userId, String postId, var comment) async {
+    var urlPost = Config.post;
+    var url = Uri.parse('$urlPost/$postId');
+    final request = {'userId': userId, 'comments': comment};
+    var response = await client.put(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+    if (response.statusCode != 200) {
+      print(response.statusCode);
+      return false;
+    } else {
+      print('update comment success');
+      return true;
+    }
+  }
+
   //-------------------------------POST---------------------------------------------//
 
   //-------------------------------ARTICLE------------------------------------------//
@@ -369,14 +459,15 @@ class APIService {
     }
   }
 
-  //fetch all article
+  //fetch article from followed user
   Future<List<ArticleModel>> fetchArticle() async {
-    var url = Uri.parse(Config.timelineArticleApi);
+    var urlArticle = Config.timelineArticleApi;
+    var userId = await storage.read(key: 'userId');
+    var url = Uri.parse('${urlArticle}/${userId}');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-
       return parsed
           .map<ArticleModel>((json) => ArticleModel.fromMap(json))
           .toList();
@@ -387,7 +478,6 @@ class APIService {
 
   //fetch user article
   Future<List<ArticleModel>> userArticle() async {
-    final storage = FlutterSecureStorage();
     var url = Config.fetchUserArticle;
     var userId = await storage.read(key: 'userId');
     final response = await http.get(Uri.parse('${url}/${userId}'));
@@ -420,23 +510,48 @@ class APIService {
   }
 
   //fetch single article by id
-  Future<Map<String, dynamic>> fetchSingleArticle(String id) async {
-    var urlUser = Config.article;
-    var url = Uri.parse('$urlUser/$id');
+  Future<ArticleModel> fetchSingleArticle([String? id]) async {
+    var urlArticle = Config.article;
+    var url = Uri.parse('$urlArticle/$id');
     var response = await client.get(url);
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
+      var data = ArticleModel.fromMap(jsonDecode(response.body));
       return data;
     } else {
       return Future.error(Icons.error);
     }
   }
 
+  //update article by id
+  Future<bool> updateArticle(
+      String idArticle, String coverArticle, String desc, String title) async {
+    var urlArticle = Config.article;
+    var userId = await storage.read(key: 'userId');
+    var url = Uri.parse('$urlArticle/$idArticle');
+    final request = {
+      'userId': userId,
+      'title': title,
+      'desc': desc,
+      'coverArticle': coverArticle
+    };
+    final response = await http.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('update article failed');
+      return false;
+    } else {
+      print('update article success');
+      return true;
+    }
+  }
+
   //update comment
   Future<bool> updateComment(
       String userId, String articleId, var comment) async {
-    var urlPost = Config.article;
-    var url = Uri.parse('$urlPost/$articleId');
+    var urlArticle = Config.article;
+    var url = Uri.parse('$urlArticle/$articleId');
     final request = {'userId': userId, 'comments': comment};
     var response = await client.put(url,
         headers: {'Content-Type': 'application/json'},
@@ -446,6 +561,26 @@ class APIService {
       return false;
     } else {
       print('update comment success');
+      return true;
+    }
+  }
+
+  //delete article
+  static Future<bool> deleteArticle(String articleId) async {
+    final storage = FlutterSecureStorage();
+    var urlArticle = Config.article;
+    var url = Uri.parse('$urlArticle/$articleId');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.delete(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+
+    if (response.statusCode != 200) {
+      print('delete article failed');
+      return false;
+    } else {
+      print('delet article success');
       return true;
     }
   }
@@ -480,13 +615,13 @@ class APIService {
   }
 
   //create activity
-  Future<bool> createActivity(String title, String type, String image, String desc,
-      String startDate, String endDate) async {
+  Future<bool> createActivity(String title, String type, String image,
+      String desc, String startDate, String endDate) async {
     var url = Uri.parse(Config.activity);
     var userId = await storage.read(key: 'userId');
     final request = {
       'userId': userId,
-      'image' : image,
+      'image': image,
       'title': title,
       'type': type,
       'desc': desc,
@@ -506,10 +641,44 @@ class APIService {
     }
   }
 
+  //fetch single activities
+  Future<ActivityModel> fetchSingleActivity([String? id]) async {
+    var urlActivity = Config.activity;
+    var url = Uri.parse('$urlActivity/$id');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      var data = ActivityModel.fromMap(jsonDecode(response.body));
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
 
+  //create task
+  Future<bool> updateActivityTask(var tasks, String activityId) async{
+    var urlActivity = Config.activity;
+    var url = Uri.parse('$urlActivity/$activityId');
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'tasks' : tasks
+    };
+    final response = await http.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('create task failed');
+      return false;
+    } else {
+      print('create task success');
+      return true;
+    }
+  }
 
   //-------------------------------ACTIVITY-----------------------------------------//
 
+  //--------------------------------BADGES-----------------------------------------//
 
   //fetch badges by user
   Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async {
@@ -564,6 +733,10 @@ class APIService {
     }
   }
 
+  //--------------------------------BADGES-----------------------------------------//
+
+  //---------------------------------ALBUM-----------------------------------------//
+
   //fetch album by user
   Future<List<AlbumModel>> fetchAnyAlbum([String? userId]) async {
     var url;
@@ -588,5 +761,75 @@ class APIService {
       throw Exception('Failed to load article');
     }
   }
+
+  //upload image album
+  Future<bool> uploadAlbumImage(String path, var filename, var size) async {
+    var userId = await storage.read(key: 'userId');
+    String? mimeType = mime(filename);
+    String mimee = mimeType!.split('/')[0];
+    String type = mimeType.split('/')[1];
+    var formData = Dio.FormData.fromMap({
+      'userId': userId,
+      'filename': filename,
+      'filesize': size,
+      'type': 'image',
+      'fileAlbum': await Dio.MultipartFile.fromFile(path,
+          filename: filename, contentType: MediaType(mimee, type)),
+    });
+    Dio.Response response = await Dio.Dio().post(Config.album, data: formData);
+    if (response.statusCode != 200) {
+      print('tidak berhasil');
+      return false;
+    } else {
+      print(response.data.toString());
+      return true;
+    }
+  }
+
+  //upload video album
+  Future<bool> uploadAlbumVideo(String path, var filename, var size) async {
+    var userId = await storage.read(key: 'userId');
+    String? mimeType = mime(filename);
+    String mimee = mimeType!.split('/')[0];
+    String type = mimeType.split('/')[1];
+    var formData = Dio.FormData.fromMap({
+      'userId': userId,
+      'filename': filename,
+      'filesize': size,
+      'type': 'video',
+      'fileAlbum': await Dio.MultipartFile.fromFile(path,
+          filename: filename, contentType: MediaType(mimee, type)),
+    });
+    Dio.Response response =
+        await Dio.Dio().post('${Config.album}/video', data: formData);
+    if (response.statusCode != 200) {
+      print('tidak berhasil');
+      return false;
+    } else {
+      print(response.data.toString());
+      return true;
+    }
+  }
+
+  //delete file album
+  Future<bool> deleteAlbum(String albumId) async {
+    var urlAlbum = Config.album;
+    var url = Uri.parse('$urlAlbum/$albumId');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.delete(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+
+    if (response.statusCode != 200) {
+      print('delete post failed');
+      return false;
+    } else {
+      print('delete post success');
+      return true;
+    }
+  }
+
+//---------------------------------ALBUM-----------------------------------------//
 
 }

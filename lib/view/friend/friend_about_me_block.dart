@@ -75,7 +75,7 @@ class _FriendAboutMeBlockState extends State<FriendAboutMeBlock> {
                                       Align(
                                         alignment: Alignment.topLeft,
                                         child: MarkdownBody(
-                                          data: snapshot.data!.about,
+                                          data: snapshot.data!.about !=null ? snapshot.data!.about : '' ,
                                         )
                                       ),
                                     ],

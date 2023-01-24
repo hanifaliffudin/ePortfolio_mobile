@@ -41,7 +41,7 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
   }
 
   Future<bool> deletePost() async {
-    postId = await APIService.deletePost(postData.id);
+    postId = await APIService().deletePost(postData.id);
     return postId;
   }
 
@@ -90,18 +90,21 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                       const SizedBox(
                         width: 8,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            username ?? '',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text('${major ?? ''} | ${organization ?? ''}', overflow: TextOverflow.fade,),
-                          Text(DateFormat.yMMMEd().format(DateTime.parse(postData.updatedAt)))
-                          /*Text(postList[index].updatedAt)*/
-                        ],
+                      Container(
+                        width: 200,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              username ?? '',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            Text('${major ?? ''} | ${organization ?? ''}', overflow: TextOverflow.ellipsis,maxLines: 1,),
+                            Text(DateFormat.yMMMEd().format(DateTime.parse(postData.updatedAt)))
+                            /*Text(postList[index].updatedAt)*/
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -123,7 +126,6 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
 
   void settingButton(context) {
     bool status = false;
-    String value;
 
     showModalBottomSheet(
         context: context,

@@ -40,7 +40,7 @@ class _FriendActivityTabState extends State<FriendActivityTab> {
                   return Container(
                     child: InkWell(
                       onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const ActivityTask()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>ActivityTask(activityId: snapshot.data![index].id)));
                       },
                       child: Card(
                         child: Padding(

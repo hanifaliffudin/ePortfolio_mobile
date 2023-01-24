@@ -76,7 +76,7 @@ class _FriendPostsState extends State<FriendPosts> {
                                         .toString()),
                                 ),
                               ),
-                              Container(
+                              Container(//komentar box
                                 child: Container(
                                   padding: EdgeInsets.only(
                                       left: 5, right: 5, top: 15, bottom: 5),
@@ -112,6 +112,10 @@ class _FriendPostsState extends State<FriendPosts> {
                                                   CrossAxisAlignment.start,
                                                   children: <Widget>[
                                                     TextField(
+                                                      style: TextStyle(
+                                                          height: 0.7,
+                                                          fontSize: 15
+                                                      ),
                                                       readOnly: true,
                                                       onTap: (){
                                                         showModalBottomSheet(
@@ -130,7 +134,9 @@ class _FriendPostsState extends State<FriendPosts> {
                                                         );
                                                       },
                                                       decoration: InputDecoration(
-                                                        border: OutlineInputBorder(),
+                                                        border: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(30.0),
+                                                        ),
                                                         labelText: 'Add comment',
                                                         isDense: true, // Added this
                                                       ),
@@ -144,14 +150,6 @@ class _FriendPostsState extends State<FriendPosts> {
                                       ),
                                       SizedBox(
                                         width: 10,
-                                      ),
-                                      GestureDetector(
-                                        onTap: (){
-                                          comment(context);
-                                        },
-                                        child: Icon(
-                                            Icons.send_sharp,
-                                            size: 30, color: Colors.black),
                                       ),
                                     ],
                                   ),

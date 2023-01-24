@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:eportfolio/view/profile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,7 +47,10 @@ class _AddActivityState extends State<AddActivity> {
                     children: <Widget>[
                       Container(
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context , MaterialPageRoute(builder: (context) => ProfilePage(5)),
+                            );
+                          },
                           style: TextButton.styleFrom(
                               backgroundColor: Colors.blue),
                           child: Text('Album',
@@ -257,15 +261,5 @@ class _AddActivityState extends State<AddActivity> {
         ),
       ),
     );
-  }
-
-  _getFromGallery() async {
-    XFile? pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        logoActivity = XFile(pickedFile.path);
-      });
-    }
   }
 }

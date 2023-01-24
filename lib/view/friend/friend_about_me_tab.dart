@@ -1,6 +1,5 @@
 import 'package:eportfolio/widgets/block/newest_activity.dart';
 import 'package:flutter/material.dart';
-
 import 'friend_about_me_block.dart';
 import 'friend_personal_information.dart';
 

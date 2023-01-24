@@ -1,3 +1,4 @@
+import 'package:eportfolio/widgets/custom_appBar.dart';
 import 'package:flutter/material.dart';
 import 'package:eportfolio/widgets/profile_header_widget.dart';
 import 'package:eportfolio/widgets/about_me_content.dart';
@@ -6,23 +7,28 @@ import '../badges_tab.dart';
 import '../article_tab.dart';
 import '../widgets/post_tab.dart';
 import 'album.dart';
-import 'friend/friend_about_me_tab.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage(this.selectedIndex, {Key? key}) : super(key: key);
+  final int? selectedIndex;
 
   static const routeName = '/profile';
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState(selectedIndex!);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int? selectedIndex;
+  _ProfilePageState(this.selectedIndex);
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
+      appBar: CustomAppBar(),
       body: DefaultTabController(
+        initialIndex: selectedIndex!,
         length: 6,
         child: NestedScrollView(
             headerSliverBuilder: (context, _) {
@@ -76,7 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     ListView(
                       children: [
-                        //FriendAboutMeContent(),
                         AboutMeContent(),
                       ],
                     ),

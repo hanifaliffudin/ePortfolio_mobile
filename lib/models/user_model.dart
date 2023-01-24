@@ -3,15 +3,19 @@ class UserModel {
   SocialMedia? socialMedia;
   String organization;
   String id;
+  List<dynamic> skill;
   String role;
   String major;
   String nim;
+  List<dynamic> blockProfile;
   String profilePicture;
   String city;
   String gender;
   String dateBirth;
   String about;
   String interest;
+  List<String> followers;
+  List<String> following;
   String academicField;
 
   UserModel(
@@ -19,15 +23,19 @@ class UserModel {
       this.socialMedia,
       required this.organization,
       required this.id,
+        required this.skill,
       required this.role,
       required this.major,
       required this.nim,
+        required this.blockProfile,
       required this.profilePicture,
       required this.city,
       required this.gender,
       required this.dateBirth,
       required this.about,
       required this.interest,
+        required this.followers,
+        required this.following,
       required this.academicField});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -36,15 +44,19 @@ class UserModel {
         socialMedia: SocialMedia.fromJson(json['socialMedia']),
         organization: json['organization'],
         id: json['_id'],
+        skill : List.castFrom<dynamic, dynamic>(json['skill']),
         role: json['role'],
         major: json['major'],
         nim: json['nim'],
+        blockProfile : List.castFrom<dynamic, dynamic>(json['blockProfile']),
         profilePicture: json['profilePicture'],
         city: json['city'],
         gender: json['gender'],
         dateBirth: json['dateBirth'],
         about: json['about'],
         interest: json['interest'],
+        followers : List.castFrom<dynamic, String>(json['followers']),
+        following : List.castFrom<dynamic, String>(json['following']),
         academicField: json['academicField']
     );
   }

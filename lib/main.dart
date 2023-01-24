@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:eportfolio/login.dart';
+import 'package:eportfolio/view/add_articles.dart';
 import 'package:eportfolio/view/friend/friend_profile.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:eportfolio/view/video_player.dart';
+import 'package:eportfolio/widgets/card/activity_task.dart';
 import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +22,8 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   final storage = new FlutterSecureStorage();
-
   Future<String> get jwtOrEmpty async {
     var jwt = await storage.read(key: "jwt");
-    var userId = await storage.read(key: 'userId');
     if(jwt == null) return "";
     return jwt;
   }
@@ -31,10 +31,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
-    final storage = FlutterSecureStorage();
-    var jwt = storage.read(key: 'jwt');
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -46,7 +42,8 @@ class MyApp extends StatelessWidget {
         '/home' : (context) => HomePage(0),
         '/friendprofile':(context) => FriendProfilePage(),
         '/profile':(context) => HomePage(2),
-        '/openArticle':(context) => ArticleCardOpen(),
+        '/editArticle':(context) => AddArticles(),
+        '/album' : (context) => ProfilePage(5),
       },
 
       home: FutureBuilder(

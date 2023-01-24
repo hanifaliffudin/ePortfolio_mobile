@@ -1,7 +1,10 @@
 import 'package:custom_switch/custom_switch.dart';
 import 'package:eportfolio/models/article_model.dart';
+import 'package:eportfolio/view/add_articles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
 import '../../services/api_service.dart';
@@ -22,8 +25,9 @@ class _HeaderArticleState extends State<HeaderArticle> {
   String? username;
   String? profilePicture;
   String? major;
+  String? organization;
   var data;
-  var postId;
+  var articleId;
   var userId;
 
   Future<Map<String, dynamic>> getIdUser() async {
@@ -33,7 +37,13 @@ class _HeaderArticleState extends State<HeaderArticle> {
     username = data['username'];
     profilePicture = data['profilePicture'];
     major = data['major'];
+    organization = data['organization'];
     return data;
+  }
+
+  Future<bool> deleteArticle() async {
+    articleId = await APIService.deleteArticle(articleData.id);
+    return articleId;
   }
 
   @override
@@ -79,19 +89,21 @@ class _HeaderArticleState extends State<HeaderArticle> {
                       ),
                     ),
                     const SizedBox(width: 8,),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          username ?? '',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18
+                    Container(
+                      width: 200,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            username ?? '',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
                           ),
-                        ),
-                        Text(major ?? ''),
-                        /*Text(postList[index].updatedAt)*/
-                      ],
+                          Text('${major ?? ''} | ${organization ?? ''}', overflow: TextOverflow.ellipsis,),
+                          Text(DateFormat.yMMMEd().format(DateTime.parse(articleData.updatedAt)))
+                          /*Text(postList[index].updatedAt)*/
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -112,9 +124,6 @@ class _HeaderArticleState extends State<HeaderArticle> {
   }
 
   void settingButton(context) {
-    bool status = false;
-    String value;
-
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
@@ -124,38 +133,33 @@ class _HeaderArticleState extends State<HeaderArticle> {
             children: [
               ElevatedButton(
                   style: ElevatedButton.styleFrom(),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context , MaterialPageRoute(builder: (context) => AddArticles(id : articleData.id)),
+                    );
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [Text('Edit'), Icon(Icons.edit)],
                   )),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(),
-                  onPressed: () {},
+                  onPressed: () {
+                    deleteArticle().then((response) {
+                      FormHelper.showSimpleAlertDialog(
+                        context,
+                        "Success!",
+                        "Success delete article!",
+                        "OK",
+                            () {
+                          Navigator.pushNamed(context, '/home');
+                        },
+                      );
+                    });
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [Text('Delete'), Icon(Icons.remove)],
                   )),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Visibility'),
-                  CustomSwitch(
-                    activeColor: Colors.pinkAccent,
-                    value: status,
-                    onChanged: (value) {
-                      if(value == true){
-                        print("Public");
-                      } else{
-                        print("Private");
-                      }
-                      setState(() {
-                        status = value;
-                      });
-                    },
-                  ),
-                ],
-              )
             ],
           ),
         ));

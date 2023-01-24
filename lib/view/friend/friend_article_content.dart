@@ -53,7 +53,7 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                           onTap: () {
 
                             Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => ArticleCardOpen()));
+                                builder: (context) => ArticleCardOpen(articleData: snapshot.data![index])));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10),
@@ -78,7 +78,7 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                                     ),),
                                   ),
                                 ),
-                                Container(
+                                Container(//komentar box
                                   child: Container(
                                     padding: EdgeInsets.only(
                                         left: 5, right: 5, top: 15, bottom: 5),
@@ -114,6 +114,10 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                                                     CrossAxisAlignment.start,
                                                     children: <Widget>[
                                                       TextField(
+                                                        style: TextStyle(
+                                                            height: 0.7,
+                                                            fontSize: 15
+                                                        ),
                                                         readOnly: true,
                                                         onTap: (){
                                                           showModalBottomSheet(
@@ -132,7 +136,9 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                                                           );
                                                         },
                                                         decoration: InputDecoration(
-                                                          border: OutlineInputBorder(),
+                                                          border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(30.0),
+                                                          ),
                                                           labelText: 'Add comment',
                                                           isDense: true, // Added this
                                                         ),
@@ -146,27 +152,6 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                                         ),
                                         SizedBox(
                                           width: 10,
-                                        ),
-                                        GestureDetector(
-                                          onTap: (){
-                                            showModalBottomSheet(
-                                                isScrollControlled:true,
-                                                context: context,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-                                                builder: (context) => Padding(
-                                                  padding: EdgeInsets.only(
-                                                      bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                  child: Container(
-                                                      height: 500,
-                                                      child: CommentBlockArticle(articleData : snapshot.data![index])
-                                                  ),
-                                                )
-                                            );
-                                          },
-                                          child: Icon(
-                                              Icons.send_sharp,
-                                              size: 30, color: Colors.black),
                                         ),
                                       ],
                                     ),
