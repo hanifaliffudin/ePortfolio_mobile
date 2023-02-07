@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart' as Dio;
+import 'package:eportfolio/models/project_model.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
 import 'package:eportfolio/models/article_model.dart';
@@ -589,6 +590,30 @@ class APIService {
 
   //-------------------------------ACTIVITY-----------------------------------------//
 
+  //update activity
+
+  //delete activity
+
+  //get last by user activity
+  Future<ActivityModel> fetchLastActivity([String? userId]) async {
+    var url;
+    var urlActivity = Config.fetchUserActivities;
+    if (userId == null) {
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlActivity/last/$userId');
+    } else {
+      url = Uri.parse('$urlActivity/last/$userId');
+    }
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return ActivityModel.fromMap(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load activity');
+    }
+  }
+
   //fetch activity by user
   Future<List<ActivityModel>> fetchAnyActivity([String? userId]) async {
     var url;
@@ -597,9 +622,9 @@ class APIService {
     if (userId == null) {
       final storage = FlutterSecureStorage();
       var userId = await storage.read(key: 'userId');
-      url = Uri.parse('$urlActivity/$userId');
+      url = Uri.parse('$urlActivity/all/$userId');
     } else {
-      url = Uri.parse('$urlActivity/$userId');
+      url = Uri.parse('$urlActivity/all/$userId');
     }
 
     final response = await http.get(url);
@@ -680,6 +705,67 @@ class APIService {
 
   //--------------------------------BADGES-----------------------------------------//
 
+  //delete badges
+  Future<bool> deleteBadge(String badgeId) async {
+    var urlBadge = Config.badges;
+    var url = Uri.parse('$urlBadge/$badgeId');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.delete(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+    if (response.statusCode != 200) {
+      print('delete badge failed');
+      return false;
+    } else {
+      print('delete badge success');
+      return true;
+    }
+  }
+
+  //update badges
+  Future<bool> updateBadge(String idBadge, String imgBadge, String title, String issuer,
+      String urlLearn, String earnedDate, String desc, var skills) async {
+    final storage = FlutterSecureStorage();
+    var urlBadges =Config.badges;
+    var url = Uri.parse('$urlBadges/$idBadge');
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'imgBadge': imgBadge,
+      'title': title,
+      'issuer': issuer,
+      'url': urlLearn,
+      'earnedDate': earnedDate,
+      'desc': desc,
+      'skills' : skills
+    };
+    final response = await http.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('update badge failed');
+      return false;
+    } else {
+      print('update badge success');
+      return true;
+    }
+  }
+
+  //fetch single badges by id
+  Future<BadgesModel> fetchSingleBadges([String? id]) async {
+    var urlBagdes = Config.badges;
+    var url = Uri.parse('$urlBagdes/$id');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      var data = BadgesModel.fromMap(jsonDecode(response.body));
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
   //fetch badges by user
   Future<List<BadgesModel>> fetchAnyBadges([String? userId]) async {
     var url;
@@ -707,7 +793,7 @@ class APIService {
 
   //create badges by user
   Future<bool> createBadge(String imgBadge, String title, String issuer,
-      String urlLearn, String earnedDate, String desc) async {
+      String urlLearn, String earnedDate, String desc, var skills) async {
     final storage = FlutterSecureStorage();
     var url = Uri.parse(Config.badges);
     var userId = await storage.read(key: 'userId');
@@ -718,7 +804,8 @@ class APIService {
       'issuer': issuer,
       'url': urlLearn,
       'earnedDate': earnedDate,
-      'desc': desc
+      'desc': desc,
+      'skills' : skills
     };
     final response = await http.post(url,
         body: jsonEncode(request),
@@ -831,5 +918,119 @@ class APIService {
   }
 
 //---------------------------------ALBUM-----------------------------------------//
+
+//---------------------------------PROJECT-----------------------------------------//
+
+  //get suggessted project
+  Future<List<ProjectModel>> fetchSuggestProject([String? userId]) async {
+    var urlProject = Config.project;
+    var userId = await storage.read(key: 'userId');
+    var url = Uri.parse('$urlProject/suggest/$userId');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed
+          .map<ProjectModel>((json) => ProjectModel.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load project');
+    }
+  }
+
+  //get any projects
+  Future<List<ProjectModel>> fetchAnyProject([String? userId]) async {
+    var url;
+    var urlProject = Config.project;
+
+    if (userId == null) {
+      var userId = await storage.read(key: 'userId');
+      url = Uri.parse('$urlProject/all/$userId');
+    } else {
+      url = Uri.parse('$urlProject/all/$userId');
+    }
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed
+          .map<ProjectModel>((json) => ProjectModel.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load project');
+    }
+  }
+
+  //create project
+  Future<bool> createProject(String title, String type, String image,
+      String desc, String startDate, String endDate, bool isPublic) async {
+    var url = Uri.parse(Config.project);
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'image': image,
+      'title': title,
+      'type': type,
+      'desc': desc,
+      'startDate': startDate,
+      'endDate': endDate,
+      'isPublic' : isPublic
+    };
+    final response = await http.post(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('create project failed');
+      return false;
+    } else {
+      print('create project success');
+      return true;
+    }
+  }
+
+  //fetch single project
+  Future<ProjectModel> fetchSingleProject([String? id]) async {
+    var urlProject = Config.project;
+    var url = Uri.parse('$urlProject/$id');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      var data = ProjectModel.fromJson(jsonDecode(response.body));
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
+  //create roadmap
+  Future<bool> updateProjectRoadmap(var roadmap, String projectId) async{
+    var urlRoadmap= Config.project;
+    var url = Uri.parse('$urlRoadmap/$projectId');
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'roadmaps' : roadmap
+    };
+    final response = await http.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('create roadmap failed');
+      return false;
+    } else {
+      print('create roadmap success');
+      return true;
+    }
+  }
+
+  //create tasks roadmap
+
+
+
+//---------------------------------PROJECT-----------------------------------------//
+
 
 }

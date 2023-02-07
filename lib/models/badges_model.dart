@@ -7,6 +7,8 @@ class BadgesModel {
     required this.issuer,
     required this.earnedDate,
     required this.desc,
+    required this.url,
+    required this.skills,
     required this.createdAt,
     required this.updatedAt,
     required this.V,
@@ -19,6 +21,8 @@ class BadgesModel {
   late final String issuer;
   late final String earnedDate;
   late final String desc;
+  String url;
+  List<String> skills;
   late final String createdAt;
   late final String updatedAt;
   late final int V;
@@ -32,6 +36,8 @@ class BadgesModel {
           issuer: json['issuer'],
           earnedDate: json['earnedDate'],
           desc: json['desc'],
+          url: json['url'],
+          skills : List.castFrom<dynamic, String>(json['skills']),
           createdAt: json['createdAt'],
           updatedAt: json['updatedAt'],
           V: json['__v']);
@@ -46,6 +52,8 @@ class BadgesModel {
     _data['issuer'] = issuer;
     _data['earnedDate'] = earnedDate;
     _data['desc'] = desc;
+    _data['url'] = url;
+    _data['skills'] = skills;
     _data['createdAt'] = createdAt;
     _data['updatedAt'] = updatedAt;
     _data['__v'] = V;

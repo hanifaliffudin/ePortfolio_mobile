@@ -27,43 +27,47 @@ class _AboutMeContentState extends State<AboutMeContent> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UserModel>(
-      future: futureUser,
-      builder : (context, snapshot){
-        if(snapshot.hasData){
-          return Column(
-            children: [
-              SizedBox(height: 7,),
-              Container(
-                padding: EdgeInsets.only(left: 10),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: TextButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll<Color>(Colors.blue),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+    return Column(
+      children: [
+        FutureBuilder<UserModel>(
+          future: futureUser,
+          builder : (context, snapshot){
+            if(snapshot.hasData){
+              return Column(
+                children: [
+                  SizedBox(height: 7,),
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll<Color>(Colors.blue),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          AddBlock(context);
+                        },
+                        child: Text(
+                          'Add new block',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
-                    onPressed: () {
-                      AddBlock(context);
-                    },
-                    child: Text(
-                      'Add new block',
-                      style: TextStyle(color: Colors.white),
-                    ),
                   ),
-                ),
-              ),
-              FriendPersonalInformation(userId: snapshot.data!.id),
-              FriendAboutMeBlock(userId : snapshot.data!.id),
-              NewestAct()
-            ],
-          );
-        } else return CircularProgressIndicator();
-      }
+                  FriendPersonalInformation(userId: snapshot.data!.id),
+                  FriendAboutMeBlock(userId : snapshot.data!.id),
+                  NewestAct()
+                ],
+              );
+            } else return CircularProgressIndicator();
+          }
+        ),
+      ],
     );
   }
   void AddBlock(context){

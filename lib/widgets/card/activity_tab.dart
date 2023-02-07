@@ -38,6 +38,7 @@ class _ActivityCardState extends State<ActivityCard> {
                       Navigator.push(context, MaterialPageRoute(builder: (context)=> ActivityTask(activityId: snapshot.data![index].id)));
                     },
                     child: Card(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Column(
@@ -70,7 +71,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                         ),
                                         Row(
                                           children: [
-                                            Text('public',
+                                            Text(snapshot.data![index].isPublic == true ? 'Public':'Private',
                                               style: TextStyle(
                                                 color: Colors.grey[400],
                                               ),),

@@ -133,7 +133,6 @@ class _AddTaskState extends State<AddTask> {
                                 images.add({'imgurl': '${img[i]}'});
                               }
                             }
-                            print(images);
                             tasks.add({
                               'title': '${titleController.text}',
                               'date': '${DateTime.now()}',

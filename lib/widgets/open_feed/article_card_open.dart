@@ -56,12 +56,22 @@ class _ArticleCardOpenState extends State<ArticleCardOpen> {
                             SizedBox(
                               height: 10,
                             ),
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Container(
-                                margin: EdgeInsets.all(10),
-                                child: MarkdownBody(data: '![Image](${snapshot.data!.coverArticle})')),
-                              ),
+                            Container(
+                                child: snapshot.data!.coverArticle != null ?
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Container(
+                                    margin: EdgeInsets.all(1),
+                                    child: MarkdownBody(data: '![Image](${snapshot.data!.coverArticle})'),
+                                  ),
+                                ) :
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                  ),
+                                )
+                            ),
                             const SizedBox(
                               height: 10,
                             ),

@@ -1,44 +1,51 @@
-import 'dart:io';
 import 'package:eportfolio/view/profile.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
-import '../config.dart';
+import 'package:snippet_coder_utils/ProgressHUD.dart';
 import '../services/api_service.dart';
 import '../widgets/custom_appBar.dart';
+import '../view/home.dart';
 
-class AddActivity extends StatefulWidget {
-  const AddActivity({Key? key}) : super(key: key);
+class AddProject extends StatefulWidget {
+  const AddProject({Key? key}) : super(key: key);
 
   @override
-  State<AddActivity> createState() => _AddActivityState();
+  State<AddProject> createState() => _AddProjectState();
 }
 
-class _AddActivityState extends State<AddActivity> {
+class _AddProjectState extends State<AddProject> {
+  String? type;
+  bool? visibility;
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
   TextEditingController logoController = TextEditingController();
-  String? type;
+  bool isApiCallProcess = false;
+  GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.all(10),
+    return ProgressHUD(
+      color: Colors.black,
+      inAsyncCall: isApiCallProcess,
+      opacity: 0.6,
+      key: UniqueKey(),
+      child: Form(
+        key: globalFormKey,
+        child: Scaffold(
+          appBar: CustomAppBar(),
+          body: SingleChildScrollView(
+            child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: Color(0xFFF6F6F6),
               ),
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.all(5),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -74,7 +81,9 @@ class _AddActivityState extends State<AddActivity> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10,),
+                  SizedBox(height: 5,),
+                  Text('Project Title:'),
+                  SizedBox(height: 5,),
                   TextField(
                     controller: titleController,
                     keyboardType: TextInputType.text,
@@ -82,11 +91,63 @@ class _AddActivityState extends State<AddActivity> {
                       border: OutlineInputBorder(),
                       filled: true,
                       fillColor: Colors.white,
-                      labelText: 'Activity Title',
-                      isDense: true,
+                      hintText: 'title',
                     ),
                   ),
+                  SizedBox(height: 10,),
+                  Text('Project Type:'),
                   SizedBox(height: 5,),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                child: ListTile(
+                                  title: const Text("Non-academic",style: TextStyle(
+                                      fontSize: 12, fontWeight: FontWeight.bold
+                                  )),
+                                  leading: Radio(
+                                    fillColor: MaterialStateColor.resolveWith(
+                                            (states) => Color(0XFFB63728)),
+                                    value: "non-academic",
+                                    groupValue: type,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        type = value.toString();
+                                      });
+                                    },
+                                  ),
+                                )),
+                            Expanded(
+                                child: ListTile(
+                                  title: Text("Academic", style: TextStyle(
+                                      fontSize: 12, fontWeight: FontWeight.bold
+                                  ),),
+                                  leading: Radio(
+                                    fillColor: MaterialStateColor.resolveWith(
+                                            (states) => Color(0XFFB63728)),
+                                    value: "academic",
+                                    groupValue: type,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        type = value.toString();
+                                      });
+                                    },
+                                  ),
+                                ))
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -136,9 +197,23 @@ class _AddActivityState extends State<AddActivity> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 15,
+                  SizedBox(height: 10,),
+                  Text('Project description:'),
+                  SizedBox(height: 5,),
+                  TextField(
+                    controller: descController,
+                    keyboardType: TextInputType.text,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'description',
+                    ),
                   ),
+                  SizedBox(height: 10,),
+                  Text('Visibility:'),
+                  SizedBox(height: 5,),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -152,32 +227,50 @@ class _AddActivityState extends State<AddActivity> {
                           children: [
                             Expanded(
                                 child: ListTile(
-                                  title: const Text("Non-Academic"),
+                                  title:  Transform.translate(
+                                    offset: Offset(-25, 0),
+                                    child:  Text("Public",style: TextStyle(
+                                        fontSize: 12, fontWeight: FontWeight.bold
+                                    )),
+                                  ),
                                   leading: Radio(
                                     fillColor: MaterialStateColor.resolveWith(
                                             (states) => Color(0XFFB63728)),
-                                    value: "non-academic",
-                                    groupValue: type,
+                                    value: true,
+                                    groupValue: visibility,
                                     onChanged: (value) {
                                       setState(() {
-                                        type = value.toString();
+                                        visibility = true;
                                       });
                                     },
+                                  ),
+                                  trailing:  Transform.translate(
+                                    offset: Offset(-50, 0),
+                                    child: Icon(Icons.visibility),
                                   ),
                                 )),
                             Expanded(
                                 child: ListTile(
-                                  title: Text("Academic"),
+                                  title:  Transform.translate(
+                                    offset: Offset(-25, 0),
+                                    child:  Text("Private",style: TextStyle(
+                                        fontSize: 12, fontWeight: FontWeight.bold
+                                    )),
+                                  ),
                                   leading: Radio(
                                     fillColor: MaterialStateColor.resolveWith(
                                             (states) => Color(0XFFB63728)),
-                                    value: "academic",
-                                    groupValue: type,
+                                    value: false,
+                                    groupValue: visibility,
                                     onChanged: (value) {
                                       setState(() {
-                                        type = value.toString();
+                                        visibility = false;
                                       });
                                     },
+                                  ),
+                                  trailing:  Transform.translate(
+                                    offset: Offset(-45, 0),
+                                    child: Icon(Icons.visibility_off),
                                   ),
                                 ))
                           ],
@@ -185,24 +278,7 @@ class _AddActivityState extends State<AddActivity> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  TextField(
-                    controller: descController,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelText: 'Activity description',
-                      isDense : true,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -210,26 +286,19 @@ class _AddActivityState extends State<AddActivity> {
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.blue
                         ),
-                        onPressed: () {},
-                        child: Text(
-                          'Visibility',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10,),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.blue
-                        ),
                         onPressed: () {
-                          APIService().createActivity(titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text).then((response)
+                          APIService().createProject(titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text, visibility!).then((response)
                           {
                             if(response){
-                              setState(() {
-                              });
-                              Navigator.pushNamed(context, '/home');
+                              FormHelper.showSimpleAlertDialog(
+                                context,
+                                "Success!",
+                                "Success create project",
+                                "OK",
+                                    () {
+                                      Navigator.push(context , MaterialPageRoute(builder: (context) => HomePage(2)));
+                                },
+                              );
                             } else {
                               FormHelper.showSimpleAlertDialog(
                                 context,
@@ -245,7 +314,7 @@ class _AddActivityState extends State<AddActivity> {
                           );
                         },
                         child: Text(
-                          'Create Activity',
+                          'Add Project',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -256,9 +325,9 @@ class _AddActivityState extends State<AddActivity> {
                 ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      )
     );
   }
 }

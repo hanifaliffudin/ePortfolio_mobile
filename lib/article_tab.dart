@@ -1,6 +1,7 @@
 import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/widgets/block/comment_block.dart';
 import 'package:eportfolio/widgets/block/comment_block_article.dart';
+import 'package:eportfolio/widgets/card/custom_markdown_body.dart';
 import 'package:eportfolio/widgets/card/header_article_card.dart';
 import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,7 @@ class _ArticleTabState extends State<ArticleTab> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         child: Padding(
                           padding: const EdgeInsets.all(10),
                           child: Column(
@@ -60,40 +62,62 @@ class _ArticleTabState extends State<ArticleTab> {
                                 child: Column(
                                   children: [
                                     Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Container(
-                                        margin: EdgeInsets.only(top :10, left:10, right:10, bottom:5),
-                                        child: MarkdownBody(data: snapshot.data![index].desc),
+                                      alignment:
+                                      Alignment
+                                          .topLeft,
+                                      child:
+                                      Container(
+                                        margin:
+                                        EdgeInsets.all(10),
+                                        child:
+                                        Text(
+                                          snapshot.data![index]
+                                              .title,
+                                          style:
+                                          TextStyle(fontWeight: FontWeight.bold),
+                                        ),
                                       ),
                                     ),
                                     Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Container(
-                                        margin: EdgeInsets.all(10),
-                                        child: MarkdownBody(data: '![Image](${snapshot.data![index].coverArticle})'),
+                                      alignment:
+                                      Alignment
+                                          .topLeft,
+                                      child:
+                                      Container(
+                                        margin: EdgeInsets.only(left:10,right:10,bottom: 5),
+                                        child:
+                                        CustomMarkdownBody(
+                                          data:
+                                          snapshot.data![index].desc,
+                                          maxLines:
+                                          2,
+                                          shrinkWrap:
+                                          true,
+                                          overflow:
+                                          TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
-                                    SizedBox(height: 5,),
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Container(
-                                        margin: EdgeInsets.all(10),
-                                        child: Text(snapshot.data![index].title,style: TextStyle(
-                                            fontWeight: FontWeight.bold
-                                        ),),
-                                      ),
-                                    ),
+                                    Container(
+                                        child: snapshot.data![index].coverArticle !=
+                                            null
+                                            ? Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Container(
+                                            margin: EdgeInsets.all(1),
+                                            child: MarkdownBody(data: '![Image](${snapshot.data![index].coverArticle})'),
+                                          ),
+                                        )
+                                            : Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Container(
+                                            margin: EdgeInsets.all(10),
+                                          ),
+                                        )),
                                   ],
                                 ),
                               ),
                               SizedBox(height: 10,),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: new Text('Created : ${DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].updatedAt))}',
-                                  style: TextStyle(
-                                      fontSize: 12
-                                  ),),
-                              ),
                               Container(//komentar box
                                 child: Container(
                                   padding: EdgeInsets.only(

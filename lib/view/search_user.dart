@@ -29,69 +29,64 @@ class SearchUser extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return FutureBuilder(
-        future: _userList.searchUser(query: query),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: Container(
-                child: Text(
-                  'Discover user',
-                  style: TextStyle(fontWeight: FontWeight.w100),
-                ),
-              ),
-            );
-          }
-          List<dynamic>? data = snapshot.data as List?;
-          return ListView.builder(
-              itemCount: data?.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.all(10),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/friendprofile',
-                          arguments: data?[index]);
-                    },
-                    child: FutureBuilder<UserModel>(
-                      future: APIService().fetchAnyUser(data?[index]),
-                      builder: (context, snapshot){
-                        if(snapshot.hasData){
-                          return Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  (snapshot.data!.profilePicture == null ||
-                                      snapshot.data!.profilePicture == "")
-                                      ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
-                                      : '${Config.apiURL}/${snapshot.data!.profilePicture.toString()}',
-                                ),
-                                radius: 25,
-                              ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+    return Center(
+      child: FutureBuilder(
+          future: _userList.searchUser(query: query),
+          builder: (context, snapshot) {
+
+            List<dynamic>? data = snapshot.data as List?;
+            if(snapshot.hasData){
+              return ListView.builder(
+                  itemCount: data?.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.all(10),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/friendprofile',
+                              arguments: data?[index]);
+                        },
+                        child: FutureBuilder<UserModel>(
+                          future: APIService().fetchAnyUser(data?[index]),
+                          builder: (context, snapshot){
+                            if(snapshot.hasData){
+                              return Row(
                                 children: [
-                                  Text(
-                                    snapshot.data!.username ?? '',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 18),
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                      (snapshot.data!.profilePicture == null ||
+                                          snapshot.data!.profilePicture == "")
+                                          ? "https://ceblog.s3.amazonaws.com/wp-content/uploads/2018/08/20142340/best-homepage-9.png"
+                                          : '${Config.apiURL}/${snapshot.data!.profilePicture.toString()}',
+                                    ),
+                                    radius: 25,
                                   ),
-                                  Text(snapshot.data!.major ?? ''),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        snapshot.data!.username ?? '',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 18),
+                                      ),
+                                      Text(snapshot.data!.major ?? ''),
+                                    ],
+                                  ),
                                 ],
-                              ),
-                            ],
-                          );
-                        } else return Container(
-                        );
-                      },
-                    ),
-                  ),
-                );
-              });
-        });
+                              );
+                            } else return Container(
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  });
+            } else return CircularProgressIndicator();
+          }),
+    );
   }
 
   @override

@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'feeds.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage(this._selectedIndex ,{Key? key}) : super(key: key);
+  HomePage(this._selectedIndex, {Key? key}) : super(key: key);
 
   final int _selectedIndex;
 
@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex;
+
   _HomePageState(this._selectedIndex);
 
   final List<Widget> _widgetOptions = <Widget>[

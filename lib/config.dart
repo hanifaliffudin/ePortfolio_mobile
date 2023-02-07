@@ -11,9 +11,10 @@ class Config{
   static const badges ="$apiURL/api/badges";
   static const fetchUserArticle = "$apiURL/api/articles/all";
   static const fetchUserPost = "$apiURL/api/posts/all";
-  static const fetchUserActivities = "$apiURL/api/activities/all";
+  static const fetchUserActivities = "$apiURL/api/activities";
   static const fetchUserBadges = "$apiURL/api/badges/all";
   static const timelineArticleApi = "$apiURL/api/articles/timeline/all";
   static const timelineApi = "$apiURL/api/posts/timeline/all";
   static const album = "$apiURL/api/album";
+  static const project = "$apiURL/api/projects";
 }

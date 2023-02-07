@@ -34,6 +34,7 @@ class _FriendAboutMeBlockState extends State<FriendAboutMeBlock> {
             return Container(
               padding: EdgeInsets.all(8),
               child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 color: Colors.grey[200],
                 child: Padding(
                   padding: const EdgeInsets.all(10),

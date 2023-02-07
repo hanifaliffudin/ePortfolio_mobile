@@ -7,6 +7,7 @@ import '../models/post_model.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 import 'block/comment_block.dart';
+import 'card/custom_markdown_body.dart';
 import 'card/header_feed_card.dart';
 import 'package:readmore/readmore.dart';
 
@@ -48,6 +49,7 @@ class _PostTabState extends State<PostTab> {
                     itemBuilder: (context, index) {
                       String desc = snapshot.data![index].desc;
                       return Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         child: Container(
                           margin: EdgeInsets.all(10),
                           child: Column(
@@ -61,20 +63,22 @@ class _PostTabState extends State<PostTab> {
                               Align(
                                 alignment: Alignment.topLeft,
                                 child: Container(
-                                  margin: EdgeInsets.all(10),
-                                  child:  MarkdownBody(data: snapshot.data![index].desc,),
+                                  margin: EdgeInsets.only(left:10,right:10,bottom: 5),
+                                  child:
+                                  CustomMarkdownBody(
+                                    data:
+                                    snapshot.data![index].desc,
+                                    maxLines:
+                                    2,
+                                    shrinkWrap:
+                                    true,
+                                    overflow:
+                                    TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                               const SizedBox(
                                 height: 10,
-                              ),
-
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: new Text('Created : ${DateFormat.yMMMEd().format(DateTime.parse(snapshot.data![index].updatedAt))}',
-                                  style: TextStyle(
-                                      fontSize: 12
-                                  ),),
                               ),
                               Container(//komentar box
                                 child: Container(
@@ -169,10 +173,5 @@ class _PostTabState extends State<PostTab> {
 
   void comment(context) {
 
-  }
-
-  String getFormattedDate(String dtStr) {
-    var dt = DateTime.parse(dtStr);
-    return "${dt.day.toString().padLeft(2, '0')}-${dt.month.toString().padLeft(2, '0')}-${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}.${dt.millisecond.toString().padLeft(3, '0')}";
   }
 }

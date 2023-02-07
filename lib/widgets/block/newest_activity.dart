@@ -1,4 +1,9 @@
+import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../../models/activity_model.dart';
+import '../card/activity_task.dart';
 
 class NewestAct extends StatefulWidget {
   const NewestAct({Key? key}) : super(key: key);
@@ -8,7 +13,15 @@ class NewestAct extends StatefulWidget {
 }
 
 class _NewestActState extends State<NewestAct> {
-  
+  late Future<ActivityModel> futureActivity;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    futureActivity = APIService().fetchLastActivity();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,26 +53,104 @@ class _NewestActState extends State<NewestAct> {
                 ],
               ),
               SizedBox(height: 10,),
-              Container(
-                child: Column(
-                  children: <Widget>[
-                    Align(
-                      child: Container(
-                          padding: EdgeInsets.only(
-                              right: 350, left: 10, top: 100, bottom: 10),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
+              FutureBuilder<ActivityModel>(
+                future: futureActivity,
+                builder: (context, snapshot){
+                  if(snapshot.hasData){
+                    return Container(
+                      child: Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
                           child: Column(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage((snapshot.data!.image)),
+                                        radius: 25,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 240,
+                                            child: Text(snapshot.data!.title, overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: Colors.blue,
+                                              ),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text('public',
+                                                style: TextStyle(
+                                                  color: Colors.grey[400],
+                                                ),),
+                                              SizedBox(width: 5,),
+                                              Text(snapshot.data!.type,
+                                                style: TextStyle(
+                                                  color: Colors.grey[400],
+                                                ),),
+                                            ],
+                                          ),
 
-                              //add function here
+                                        ],
+                                      ),
+                                      SizedBox(width: 8,),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 8),
+                                child :Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Text(
+                                    snapshot.data!.desc,overflow: TextOverflow.ellipsis, maxLines: 3,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10,),
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'During ${snapshot.data!.startDate !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data!.startDate)) : ''} - ${snapshot.data!.endDate !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data!.endDate)) : ''}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                      color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 20,),
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text('Updated on ${snapshot.data!.updatedAt !=null ? DateFormat.yMMMEd().format(DateTime.parse(snapshot.data!.updatedAt)) : ''}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              )
                             ],
-                          )),
-                    ),
-                  ],
-                ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }else return CircularProgressIndicator();
+                },
               ),
               Divider(
                 thickness: 1,
@@ -80,8 +171,5 @@ class _NewestActState extends State<NewestAct> {
     );
   }
 
-  String getFormattedDate(String dtStr) {
-    var dt = DateTime.parse(dtStr);
-    return "${dt.day.toString().padLeft(2,'0')}-${dt.month.toString().padLeft(2,'0')}-${dt.year} ${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}:${dt.second.toString().padLeft(2,'0')}.${dt.millisecond .toString().padLeft(3,'0')}";
-  }
+
 }

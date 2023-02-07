@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import '../../config.dart';
 import '../../models/post_model.dart';
 import '../../models/user_model.dart';
@@ -46,6 +47,7 @@ class _FriendPostsState extends State<FriendPosts> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         child: Container(
                           margin: EdgeInsets.all(10),
                           child: Column(
@@ -67,14 +69,6 @@ class _FriendPostsState extends State<FriendPosts> {
                               ),
                               const SizedBox(
                                 height: 10,
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: new Text( 'Created : '+
-                                    getFormattedDate(snapshot
-                                        .data![index].updatedAt
-                                        .toString()),
-                                ),
                               ),
                               Container(//komentar box
                                 child: Container(
@@ -171,8 +165,5 @@ class _FriendPostsState extends State<FriendPosts> {
 
   }
 
-  String getFormattedDate(String dtStr) {
-    var dt = DateTime.parse(dtStr);
-    return "${dt.day.toString().padLeft(2, '0')}-${dt.month.toString().padLeft(2, '0')}-${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}.${dt.millisecond.toString().padLeft(3, '0')}";
-  }
+
 }

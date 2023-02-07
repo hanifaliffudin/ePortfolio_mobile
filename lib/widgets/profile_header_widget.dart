@@ -3,6 +3,7 @@ import 'package:eportfolio/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 
+import '../models/project_model.dart';
 import '../models/user_model.dart';
 
 class ProfileHeader extends StatefulWidget {
@@ -14,11 +15,13 @@ class ProfileHeader extends StatefulWidget {
 
 class _ProfileHeaderState extends State<ProfileHeader> {
   late Future<UserModel> futureUser;
+  late Future<List<ProjectModel>> futureProject;
 
   @override
   void initState() {
     super.initState();
     futureUser = APIService().fetchAnyUser();
+    futureProject = APIService().fetchAnyProject();
   }
 
   @override
@@ -146,15 +149,27 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          '9',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        Text('Projects', style: TextStyle(fontSize: 12))
-                      ],
+                    FutureBuilder<List<ProjectModel>>(
+                      future: futureProject,
+                      builder: (context, snapshot){
+                        if(snapshot.hasData){
+                          return InkWell(
+                            onTap: (){
+                              DefaultTabController.of(context)?.index =6;
+                            },
+                            child: Column(
+                              children: [
+                                Text(
+                                  snapshot.data!.length.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 18),
+                                ),
+                                Text('Projects', style: TextStyle(fontSize: 12))
+                              ],
+                            ),
+                          );
+                        }else return CircularProgressIndicator();
+                      },
                     ),
                     InkWell(
                       onTap: () async {

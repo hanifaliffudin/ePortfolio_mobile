@@ -49,6 +49,7 @@ class _FriendArticlesContentState extends State<FriendArticlesContent> {
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         child: InkWell(
                           onTap: () {
 

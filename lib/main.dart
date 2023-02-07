@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:eportfolio/login.dart';
 import 'package:eportfolio/view/add_articles.dart';
+import 'package:eportfolio/view/add_badges.dart';
 import 'package:eportfolio/view/friend/friend_profile.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
@@ -44,6 +45,8 @@ class MyApp extends StatelessWidget {
         '/profile':(context) => HomePage(2),
         '/editArticle':(context) => AddArticles(),
         '/album' : (context) => ProfilePage(5),
+        '/badge' : (context) => ProfilePage(4),
+        '/addBadge' : (context) => AddBadges(),
       },
 
       home: FutureBuilder(

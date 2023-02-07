@@ -172,25 +172,7 @@ class _AlbumState extends State<Album> {
                   })),
             ],
           );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 25,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text('Something Went Wrong')
-              ],
-            ),
-          );
-        } else
-          return CircularProgressIndicator();
+        } else return Center(child: CircularProgressIndicator());
       },
     );
   }

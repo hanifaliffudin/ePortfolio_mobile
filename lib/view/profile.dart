@@ -1,3 +1,4 @@
+import 'package:eportfolio/project/project_tab.dart';
 import 'package:eportfolio/widgets/custom_appBar.dart';
 import 'package:flutter/material.dart';
 import 'package:eportfolio/widgets/profile_header_widget.dart';
@@ -8,28 +9,27 @@ import '../article_tab.dart';
 import '../widgets/post_tab.dart';
 import 'album.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage(this.selectedIndex, {Key? key}) : super(key: key);
-  final int? selectedIndex;
 
-  static const routeName = '/profile';
+class ProfilePage extends StatefulWidget {
+  ProfilePage(this.selectedIndex, {Key? key}) : super(key: key);
+  int selectedIndex;
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState(selectedIndex!);
+  State<ProfilePage> createState() => _ProfilePageState(selectedIndex);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int? selectedIndex;
+  int selectedIndex;
   _ProfilePageState(this.selectedIndex);
+
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
       appBar: CustomAppBar(),
       body: DefaultTabController(
         initialIndex: selectedIndex!,
-        length: 6,
+        length: 7,
         child: NestedScrollView(
             headerSliverBuilder: (context, _) {
               return [
@@ -73,6 +73,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           'Album',
                           style: TextStyle(color: Colors.black),
                         ),
+                      ),
+                      Tab(
+                        child: Text(
+                          'Projects',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       )
                     ],
                   ),
@@ -99,11 +105,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                     ListView(
-                      children: [Badges()],
+                      children: [
+                        Badges()
+                      ],
                     ),
                     ListView(
                       children: [
                         Album()
+                      ],
+                    ),
+                    ListView(
+                      children: [
+                        Projects()
                       ],
                     ),
                   ],
