@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../view/add_activity.dart';
-import 'card/activity_tab.dart';
+import 'activity_item.dart';
+import 'add_activity.dart';
 
 class ActivityTab extends StatefulWidget {
   const ActivityTab({Key? key}) : super(key: key);
@@ -8,7 +8,7 @@ class ActivityTab extends StatefulWidget {
   @override
   State<ActivityTab> createState() => _ActivityTabState();
 }
-//
+
 class _ActivityTabState extends State<ActivityTab> {
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,11 @@ class _ActivityTabState extends State<ActivityTab> {
               minimumSize: const Size.fromHeight(35), // NEW
             ),
             onPressed: () {
-              Navigator.push(context , MaterialPageRoute(builder: (context) => const AddActivity()),
-            );
-              },
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  AddActivity()),
+              );
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -37,7 +39,7 @@ class _ActivityTabState extends State<ActivityTab> {
             ),
           ),
         ),
-        ActivityCard()
+        ActivityItem()
       ],
     );
   }

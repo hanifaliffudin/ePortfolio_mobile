@@ -7,24 +7,26 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 import '../models/project_model.dart';
 import '../services/api_service.dart';
 
-class AddRoadmap extends StatefulWidget {
-  AddRoadmap({Key? key, required this.projectData}) : super(key: key);
+class EditRoadmap extends StatefulWidget {
+  EditRoadmap({Key? key, required this.projectData, required this.roadmapData}) : super(key: key);
   ProjectModel projectData;
+  Roadmaps roadmapData;
 
   @override
-  State<AddRoadmap> createState() => _AddRoadmapState(projectData);
+  State<EditRoadmap> createState() => _EditRoadmapState(projectData,roadmapData);
 }
 
-class _AddRoadmapState extends State<AddRoadmap> {
+class _EditRoadmapState extends State<EditRoadmap> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
   List<dynamic> roadmaps = [];
   ProjectModel projectData;
+  Roadmaps roadmapData;
   final _formKey = GlobalKey<FormState>();
 
-  _AddRoadmapState(this.projectData);
+  _EditRoadmapState(this.projectData, this.roadmapData);
 
   @override
   void initState() {
@@ -38,9 +40,13 @@ class _AddRoadmapState extends State<AddRoadmap> {
 
   @override
   Widget build(BuildContext context) {
+    titleController.text = roadmapData.title ?? '';
+    descController.text = roadmapData.desc ?? '';
+    startDateController.text = roadmapData.startDate ?? '';
+    endDateController.text = roadmapData.endDate ?? '';
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Roadmap'),
+        title: Text('Edit ${roadmapData.title}'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -87,7 +93,7 @@ class _AddRoadmapState extends State<AddRoadmap> {
                                 icon: Icon(Icons.calendar_today),
                                 //icon of text field
                                 labelText: "Start Date" //label text of field
-                                ),
+                            ),
                             readOnly: true,
                             onTap: () async {
                               DateTime? pickedDate = await showDatePicker(
@@ -97,7 +103,7 @@ class _AddRoadmapState extends State<AddRoadmap> {
                                   lastDate: DateTime(2101));
                               if (pickedDate != null) {
                                 String formattedDate =
-                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                                DateFormat('yyyy-MM-dd').format(pickedDate);
                                 setState(() {
                                   startDateController.text = formattedDate;
                                 });
@@ -115,7 +121,7 @@ class _AddRoadmapState extends State<AddRoadmap> {
                                 icon: Icon(Icons.calendar_today),
                                 //icon of text field
                                 labelText: "End Date" //label text of field
-                                ),
+                            ),
                             readOnly: true,
                             onTap: () async {
                               DateTime? pickedDate = await showDatePicker(
@@ -125,7 +131,7 @@ class _AddRoadmapState extends State<AddRoadmap> {
                                   lastDate: DateTime(2101));
                               if (pickedDate != null) {
                                 String formattedDate =
-                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                                DateFormat('yyyy-MM-dd').format(pickedDate);
                                 setState(() {
                                   endDateController.text = formattedDate;
                                 });
@@ -173,22 +179,18 @@ class _AddRoadmapState extends State<AddRoadmap> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               setState(() {
-                                roadmaps.add({
-                                  'title': titleController.text,
-                                  'startDate': startDateController.text,
-                                  'endDate': endDateController.text,
-                                  'desc': descController.text,
-                                });
+                                projectData.roadmaps.removeWhere((element) => element.title == roadmapData.title);
+                                projectData.roadmaps.add(Roadmaps(id: roadmapData.id, title: titleController.text, desc: descController.text, endDate: endDateController.text, startDate: startDateController.text,tasks: roadmapData.tasks));
                                 APIService()
                                     .updateProjectRoadmap(
-                                    roadmaps, projectData.id)
+                                    projectData.roadmaps, projectData.id)
                                     .then((response) => {
                                   if (response)
                                     {
                                       FormHelper.showSimpleAlertDialog(
                                         context,
                                         "Success!",
-                                        "Success create Roadmap!",
+                                        "Success update Roadmap!",
                                         "OK",
                                             () {
                                           Navigator.pushReplacement(
@@ -207,7 +209,7 @@ class _AddRoadmapState extends State<AddRoadmap> {
                                       FormHelper.showSimpleAlertDialog(
                                         context,
                                         "Error!",
-                                        "Failed create Roadmap! Please try again",
+                                        "Failed update Roadmap! Please try again",
                                         "OK",
                                             () {
                                           Navigator.of(context).pop();
@@ -219,7 +221,7 @@ class _AddRoadmapState extends State<AddRoadmap> {
                             }
                           },
                           child: Text(
-                            'Create Roadmap',
+                            'Update Roadmap',
                             style: TextStyle(
                               color: Colors.white,
                             ),

@@ -1,17 +1,20 @@
+import 'package:eportfolio/view/home.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../models/activity_model.dart';
-import '../../services/api_service.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
+import '../models/activity_model.dart';
+import '../services/api_service.dart';
 import 'activity_task.dart';
+import 'add_activity.dart';
 
-class ActivityCard extends StatefulWidget {
-  const ActivityCard({Key? key}) : super(key: key);
+class ActivityItem extends StatefulWidget {
+  const ActivityItem({Key? key}) : super(key: key);
 
   @override
-  State<ActivityCard> createState() => _ActivityCardState();
+  State<ActivityItem> createState() => _ActivityItemState();
 }
 
-class _ActivityCardState extends State<ActivityCard> {
+class _ActivityItemState extends State<ActivityItem> {
 
   late Future<List<ActivityModel>> futureActivity;
 
@@ -89,7 +92,9 @@ class _ActivityCardState extends State<ActivityCard> {
                                   ],
                                 ),
                                 IconButton(
-                                    onPressed: (){},
+                                    onPressed: (){
+                                      settingButton(snapshot.data![index].id);
+                                    },
                                     icon: Icon(Icons.more_horiz)
                                 )
                               ],
@@ -136,5 +141,59 @@ class _ActivityCardState extends State<ActivityCard> {
         } else return CircularProgressIndicator();
       }
     );
+  }
+  void settingButton(String id) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+          height: 100,
+          margin: EdgeInsets.only(left: 10, top: 10, right: 10),
+          child: Column(
+            children: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(),
+                  onPressed: () {
+                    APIService().deleteActivity(id).then((response) {
+                      if (response) {
+                        FormHelper.showSimpleAlertDialog(
+                          context,
+                          "Success!",
+                          "Success delete activity!",
+                          "OK",
+                              () {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/activity', (route) => true);
+                          },
+                        );
+                      } else {
+                        FormHelper.showSimpleAlertDialog(
+                          context,
+                          "Error!",
+                          "Failed delete activity! Please try again",
+                          "OK",
+                              () {
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      }
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Delete'), Icon(Icons.delete)],
+                  )),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(),
+                  onPressed: () {
+                    Navigator.push(context , MaterialPageRoute(builder: (context) => AddActivity(id : id)),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Edit'), Icon(Icons.edit)],
+                  )),
+            ],
+          ),
+        ));
   }
 }

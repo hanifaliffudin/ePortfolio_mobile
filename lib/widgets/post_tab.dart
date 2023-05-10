@@ -1,7 +1,5 @@
 import 'package:eportfolio/widgets/box_add_post.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:intl/intl.dart';
 import '../config.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
@@ -9,8 +7,6 @@ import '../services/api_service.dart';
 import 'block/comment_block.dart';
 import 'card/custom_markdown_body.dart';
 import 'card/header_feed_card.dart';
-import 'package:readmore/readmore.dart';
-
 
 class PostTab extends StatefulWidget {
   const PostTab({Key? key}) : super(key: key);
@@ -169,9 +165,5 @@ class _PostTabState extends State<PostTab> {
             })
       ],
     );
-  }
-
-  void comment(context) {
-
   }
 }

@@ -16,10 +16,17 @@ import '../models/activity_model.dart';
 import '../models/album_model.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
+import '../project/notification_model.dart';
 
 class APIService {
   static var client = http.Client();
   final storage = FlutterSecureStorage();
+
+  Future fetchUserId() async{
+    final storage = FlutterSecureStorage();
+    String? userId = await storage.read(key: 'userId');
+    return userId;
+  }
 
   //login
   static Future<bool> login(String email, String password) async {
@@ -100,6 +107,19 @@ class APIService {
     }
   }
 
+  //fetcg project
+  static Future<Map<String, dynamic>> getOneProject(String idProject) async {
+    var urlUser = Config.project;
+    var url = Uri.parse('$urlUser/$idProject');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
+
   //fetch Id User
   static Future<Map<String, dynamic>> getIdUser(String userIdPosting) async {
     var urlUser = Config.users;
@@ -115,18 +135,20 @@ class APIService {
 
   //update user
   static Future<bool> updateUserData(
-    String nim,
-    String major,
-    String city,
-    String dateBirth,
-    String gender,
-    String interest,
-    String about,
-    String linkedin,
-    String github,
-    String instagram,
-    String facebook,
-    String twitter,
+    [String? nim,
+    String? major,
+    String? city,
+    String? dateBirth,
+    String? gender,
+    String? organization,
+    String? interest,
+    String? about,
+    String? linkedin,
+    String? github,
+    String? instagram,
+    String? facebook,
+    String? twitter,
+      String? academicField]
   ) async {
     final storage = FlutterSecureStorage();
     var userId = await storage.read(key: 'userId');
@@ -139,8 +161,10 @@ class APIService {
       'city': city,
       'dateBirth': dateBirth,
       'gender': gender,
+      'organization' : organization,
       'interest': interest,
       'about': about,
+      'academicField' : academicField,
       'socialMedia': {
         'linkedin': linkedin,
         'github': github,
@@ -319,16 +343,33 @@ class APIService {
   //-------------------------------POST---------------------------------------------//
 
   //fetch single post by id
-  static Future<Map<String, dynamic>> getSinglePost(String idPost) async {
+  Future<PostModel> fetchSinglePost([String? idPost]) async {
     var urlPost = Config.post;
     var url = Uri.parse('$urlPost/$idPost');
-
     var response = await client.get(url);
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
+      var data = PostModel.fromMap(jsonDecode(response.body));
       return data;
     } else
       return Future.error(Icons.error);
+  }
+
+  //update post
+  Future<bool> updatePost(String postId, String desc, bool isPublic) async {
+    var urlPost = Config.post;
+    var userId = await storage.read(key: 'userId');
+    var url = Uri.parse('$urlPost/$postId');
+    final req = {'userId': userId, 'desc': desc, 'isPublic' : isPublic};
+    final res = await http.put(url,
+        body: jsonEncode(req),
+        headers: {'Content-Type': 'application/json'});
+    if(res.statusCode!=200){
+      print('Update post failed');
+      return false;
+    } else{
+      print('update article success');
+      return true;
+    }
   }
 
   //delete post
@@ -437,7 +478,7 @@ class APIService {
 
   //create article
   Future<bool> createArticle(
-      String title, String desc, String coverArticle) async {
+      String title, String desc, String coverArticle, var tags) async {
     final storage = FlutterSecureStorage();
     var url = Uri.parse(Config.article);
     var userId = await storage.read(key: 'userId');
@@ -445,6 +486,7 @@ class APIService {
       'userId': userId,
       'title': title,
       'desc': desc,
+      'tags' : tags,
       'coverArticle': coverArticle
     };
     final response = await http.post(url,
@@ -525,7 +567,7 @@ class APIService {
 
   //update article by id
   Future<bool> updateArticle(
-      String idArticle, String coverArticle, String desc, String title) async {
+      String idArticle, String coverArticle, String desc, String title, var tags) async {
     var urlArticle = Config.article;
     var userId = await storage.read(key: 'userId');
     var url = Uri.parse('$urlArticle/$idArticle');
@@ -533,6 +575,7 @@ class APIService {
       'userId': userId,
       'title': title,
       'desc': desc,
+      'tags' : tags,
       'coverArticle': coverArticle
     };
     final response = await http.put(url,
@@ -591,8 +634,50 @@ class APIService {
   //-------------------------------ACTIVITY-----------------------------------------//
 
   //update activity
+  Future<bool> updateActivity(String idActivity, String title, String type,
+      String image, String desc, String startDate, String endDate) async {
+    var urlActivity = Config.activity;
+    var url = Uri.parse('$urlActivity/$idActivity');
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'image': image,
+      'title': title,
+      'type': type,
+      'desc': desc,
+      'startDate': startDate,
+      'endDate': endDate
+    };
+    final response = await http.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('update activity failed');
+      return false;
+    } else {
+      print('update activity success');
+      return true;
+    }
+  }
 
   //delete activity
+  Future<bool> deleteActivity(String activityId) async {
+    var urlActivity = Config.activity;
+    var url = Uri.parse('$urlActivity/$activityId');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.delete(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+    if (response.statusCode != 200) {
+      print('delete activity failed');
+      return false;
+    } else {
+      print('delete activity success');
+      return true;
+    }
+  }
 
   //get last by user activity
   Future<ActivityModel> fetchLastActivity([String? userId]) async {
@@ -679,24 +764,23 @@ class APIService {
     }
   }
 
-  //create task
-  Future<bool> updateActivityTask(var tasks, String activityId) async{
+  //create/update/delete task
+  Future<bool> updateActivityTask(var tasks, String activityId) async {
     var urlActivity = Config.activity;
     var url = Uri.parse('$urlActivity/$activityId');
     var userId = await storage.read(key: 'userId');
     final request = {
       'userId': userId,
-      'tasks' : tasks
+      'tasks': tasks
     };
-    final response = await http.put(url,
+    final response = await client.put(url,
         body: jsonEncode(request),
         headers: {'Content-Type': 'application/json'});
-
     if (response.statusCode != 200) {
-      print('create task failed');
+      print('update task failed ${response.persistentConnection}');
       return false;
     } else {
-      print('create task success');
+      print('update task success');
       return true;
     }
   }
@@ -724,10 +808,17 @@ class APIService {
   }
 
   //update badges
-  Future<bool> updateBadge(String idBadge, String imgBadge, String title, String issuer,
-      String urlLearn, String earnedDate, String desc, var skills) async {
+  Future<bool> updateBadge(
+      String idBadge,
+      String imgBadge,
+      String title,
+      String issuer,
+      String urlLearn,
+      String earnedDate,
+      String desc,
+      var skills) async {
     final storage = FlutterSecureStorage();
-    var urlBadges =Config.badges;
+    var urlBadges = Config.badges;
     var url = Uri.parse('$urlBadges/$idBadge');
     var userId = await storage.read(key: 'userId');
     final request = {
@@ -738,7 +829,7 @@ class APIService {
       'url': urlLearn,
       'earnedDate': earnedDate,
       'desc': desc,
-      'skills' : skills
+      'skills': skills
     };
     final response = await http.put(url,
         body: jsonEncode(request),
@@ -805,7 +896,7 @@ class APIService {
       'url': urlLearn,
       'earnedDate': earnedDate,
       'desc': desc,
-      'skills' : skills
+      'skills': skills
     };
     final response = await http.post(url,
         body: jsonEncode(request),
@@ -904,7 +995,7 @@ class APIService {
     var url = Uri.parse('$urlAlbum/$albumId');
     var userId = await storage.read(key: 'userId');
     final request = {'userId': userId};
-    var response = await client.delete(url,
+    var response = await http.delete(url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(request));
 
@@ -921,6 +1012,55 @@ class APIService {
 
 //---------------------------------PROJECT-----------------------------------------//
 
+  //delete project
+  Future<bool> deleteProject(String idProject) async {
+    var urlProject = Config.project;
+    var url = Uri.parse('$urlProject/$idProject');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.delete(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+    if (response.statusCode != 200) {
+      print('delete project failed');
+      return false;
+    } else {
+      print('delete project success');
+      return true;
+    }
+  }
+
+  //update project
+  Future<bool> updateProject(
+      String idProject,
+      String title, String type, String image,
+      String desc, String startDate, String endDate, bool isPublic) async {
+    var urlProject = Config.project;
+    var url = Uri.parse('$urlProject/$idProject');
+    var userId = await storage.read(key: 'userId');
+    final request = {
+      'userId': userId,
+      'image': image,
+      'title': title,
+      'type': type,
+      'desc': desc,
+      'startDate': startDate,
+      'endDate': endDate,
+      'isPublic': isPublic
+    };
+    final response = await http.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('update project failed');
+      return false;
+    } else {
+      print('update project success');
+      return true;
+    }
+  }
+
   //get suggessted project
   Future<List<ProjectModel>> fetchSuggestProject([String? userId]) async {
     var urlProject = Config.project;
@@ -936,6 +1076,26 @@ class APIService {
           .toList();
     } else {
       throw Exception('Failed to load project');
+    }
+  }
+
+  //request project
+  Future<bool> requestProject(String idProject) async {
+    final storage = FlutterSecureStorage();
+    var urlProject = Config.project;
+    var url = Uri.parse('$urlProject/request/$idProject');
+    var userId = await storage.read(key: 'userId');
+    final request = {'userId': userId};
+    var response = await client.put(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request));
+
+    if (response.statusCode != 200) {
+      print('request project failed');
+      return false;
+    } else {
+      print('request project success');
+      return true;
     }
   }
 
@@ -976,7 +1136,7 @@ class APIService {
       'desc': desc,
       'startDate': startDate,
       'endDate': endDate,
-      'isPublic' : isPublic
+      'isPublic': isPublic
     };
     final response = await http.post(url,
         body: jsonEncode(request),
@@ -1005,18 +1165,14 @@ class APIService {
   }
 
   //create roadmap
-  Future<bool> updateProjectRoadmap(var roadmap, String projectId) async{
-    var urlRoadmap= Config.project;
+  Future<bool> updateProjectRoadmap(var roadmap, String projectId) async {
+    var urlRoadmap = Config.project;
     var url = Uri.parse('$urlRoadmap/$projectId');
     var userId = await storage.read(key: 'userId');
-    final request = {
-      'userId': userId,
-      'roadmaps' : roadmap
-    };
+    final request = {'userId': userId, 'roadmaps': roadmap};
     final response = await http.put(url,
-        body: jsonEncode(request),
+        body: json.encode(request),
         headers: {'Content-Type': 'application/json'});
-
     if (response.statusCode != 200) {
       print('create roadmap failed');
       return false;
@@ -1026,11 +1182,61 @@ class APIService {
     }
   }
 
-  //create tasks roadmap
+  //fetch all request project
+  Future<List<Notify>> fetchRequestedProject() async {
+    var urlProject = Config.project;
+    var userId = await storage.read(key: 'userId');
+    var url = Uri.parse('$urlProject/allrequest/$userId');
+    var response = await client.get(url);
+    if (response.statusCode == 200) {
+      final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+      return parsed.map<Notify>((json) => Notify.fromJson(json)).toList();
+    } else {
+      return Future.error(Icons.error);
+    }
+  }
 
+  //accept request project
+  Future<bool> acceptProjectParticipant(String projectId, String userId) async {
+    var urlProject = Config.project;
+    var url = Uri.parse('$urlProject/accept/$projectId');
+    final request = {
+      'userId': userId,
+    };
+    final response = await client.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
 
+    if (response.statusCode != 200) {
+      print('failed add participant!');
+      return false;
+    } else {
+      print('Participant added!');
+      return true;
+    }
+  }
+
+  //decline request project
+  Future<bool> declineProjectParticipant(
+      String projectId, String userId) async {
+    var urlProject = Config.project;
+    var url = Uri.parse('$urlProject/cancelrequest/$projectId');
+    final request = {
+      'userId': userId,
+    };
+    final response = await client.put(url,
+        body: jsonEncode(request),
+        headers: {'Content-Type': 'application/json'});
+
+    if (response.statusCode != 200) {
+      print('failed decline participant!');
+      return false;
+    } else {
+      print('Participant declined!');
+      return true;
+    }
+  }
 
 //---------------------------------PROJECT-----------------------------------------//
-
 
 }

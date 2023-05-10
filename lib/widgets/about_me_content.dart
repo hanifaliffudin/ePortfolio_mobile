@@ -36,32 +36,9 @@ class _AboutMeContentState extends State<AboutMeContent> {
               return Column(
                 children: [
                   SizedBox(height: 7,),
-                  Container(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll<Color>(Colors.blue),
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          AddBlock(context);
-                        },
-                        child: Text(
-                          'Add new block',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
                   FriendPersonalInformation(userId: snapshot.data!.id),
                   FriendAboutMeBlock(userId : snapshot.data!.id),
-                  NewestAct()
+                  NewestAct(userId : snapshot.data!.id)
                 ],
               );
             } else return CircularProgressIndicator();
@@ -69,72 +46,6 @@ class _AboutMeContentState extends State<AboutMeContent> {
         ),
       ],
     );
-  }
-  void AddBlock(context){
-    showModalBottomSheet(context: context, builder: (context)=>
-        Container(
-          height: 200,
-          margin: EdgeInsets.only(left: 10, top: 10,right: 10),
-          child: Column(
-            children: [
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                  ),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSkill()));
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Add Skill Block'),
-                      Icon(Icons.add)
-                    ],
-                  )
-              ),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                  ),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddInterest()));
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Add Interest Block'),
-                      Icon(Icons.add)
-                    ],
-                  )
-              ),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                  ),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSocialMedia()));
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Add Social Media Block'),
-                      Icon(Icons.add)
-                    ],
-                  )
-              ),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                  ),
-                  onPressed: () {
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Add Custom Block'),
-                      Icon(Icons.add)
-                    ],
-                  )
-              ),
-            ],
-          ),
-        ));
   }
 }
 

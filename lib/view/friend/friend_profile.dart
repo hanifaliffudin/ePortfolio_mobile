@@ -1,33 +1,36 @@
 import 'package:eportfolio/widgets/custom_appBar.dart';
 import 'package:flutter/material.dart';
-import 'package:eportfolio/widgets/activity_tab.dart';
-
-import '../../badges_tab.dart';
 import '../album.dart';
 import 'friend_about_me_tab.dart';
 import 'friend_activity_tab.dart';
+import 'friend_album_tab.dart';
 import 'friend_posts_content.dart';
 import 'friend_article_content.dart';
 import 'friend_badge_tab.dart';
 import 'friend_profile_header.dart';
+import 'friend_project_tab.dart';
 
 class FriendProfilePage extends StatefulWidget {
-  const FriendProfilePage({Key? key}) : super(key: key);
-
+  FriendProfilePage(this.selectedIndex, {Key? key}) : super(key: key);
+  int selectedIndex;
   static const routeName = '/friendprofile';
 
   @override
-  State<FriendProfilePage> createState() => _FriendProfilePageState();
+  State<FriendProfilePage> createState() => _FriendProfilePageState(selectedIndex!);
 }
 
 class _FriendProfilePageState extends State<FriendProfilePage> {
+  int selectedIndex;
+  _FriendProfilePageState(this.selectedIndex);
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
       appBar: CustomAppBar(),
       body: DefaultTabController(
-        length: 6,
+        initialIndex: selectedIndex!,
+        length: 7,
         child: NestedScrollView(
             headerSliverBuilder: (context, _) {
               return [
@@ -70,6 +73,12 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                           style: TextStyle(color: Colors.black),
                         ),
                       ),
+                      Tab(
+                        child: Text(
+                          'Projects',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -100,7 +109,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                       children: [FriendBadges(userId: args.toString())],
                     ),
                     ListView(
-                      children: [Album()],
+                      children: [FriendAlbum(userId: args.toString())],
+                    ),
+                    ListView(
+                      children: [FriendProjectsTab(userId: args.toString())],
                     ),
                   ],
                 ))

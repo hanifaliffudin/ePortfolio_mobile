@@ -11,7 +11,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      actions: [
+      actions: <Widget>[
+        Padding(
+            padding: EdgeInsets.only(right: 10.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: Icon(
+                Icons.home,
+                size: 33.0,
+              ),
+            )
+        ),
         IconButton(
             onPressed: (){
               Navigator.of(context)
@@ -26,7 +38,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
-          Text('STUDENT E-PORTFOLIO'),
+          Text('E-PORTFOLIO'),
         ],
       ),
     );

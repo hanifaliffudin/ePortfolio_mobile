@@ -1,6 +1,7 @@
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
 import '../../models/post_model.dart';
@@ -8,8 +9,7 @@ import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 
 class CommentBlock extends StatefulWidget {
-  const CommentBlock({Key? key,  required this.postData}) : super(key: key);
-
+  const CommentBlock({Key? key, required this.postData}) : super(key: key);
   final PostModel postData;
 
   @override
@@ -19,7 +19,6 @@ class CommentBlock extends StatefulWidget {
 class _CommentBlockState extends State<CommentBlock> {
   final PostModel postData;
   _CommentBlockState(this.postData);
-
   var data;
   String? username;
   String? profilePicture;
@@ -34,22 +33,23 @@ class _CommentBlockState extends State<CommentBlock> {
   @override
   void initState() {
     super.initState();
-    if(postData.comments.isNotEmpty){
-      for(int i = 0;i<postData.comments.length;i++){
+    futureUser = APIService().fetchAnyUser();
+    if (postData.comments.isNotEmpty) {
+      for (int i = 0; i < postData.comments.length; i++) {
         comments.add(postData.comments[i].toJson());
       }
     }
-    futureUser = APIService().fetchAnyUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<UserModel>(
         future: futureUser,
-        builder: (context,snapshot){
-          if(snapshot.hasData){
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
             return CommentBox(
-              userImage: CommentBox.commentImageParser(imageURLorPath: '${Config.apiURL}/${snapshot.data!.profilePicture}'),
+              userImage: CommentBox.commentImageParser(imageURLorPath: '${Config
+                  .apiURL}/${snapshot.data!.profilePicture}'),
               labelText: 'Write a comment...',
               errorText: 'Comment cannot be blank',
               withBorder: false,
@@ -58,24 +58,32 @@ class _CommentBlockState extends State<CommentBlock> {
                   setState(() {
                     var value = {
                       'userId': snapshot.data!.id,
-                      'date' : DateTime.now().toString(),
+                      'date': DateTime.now().toString(),
                       'comment': commentController.text,
                     };
                     comments.insert(0, value);
                   });
                   commentController.clear();
                   FocusScope.of(context).unfocus();
-                  await APIService().updateCommentPost(postData.userId.toString(), postData.id.toString(), comments).then((response) =>
+                  await APIService().updateCommentPost(
+                      postData.userId.toString(), postData.id.toString(),
+                      comments).then((response) =>
                   {
-                    if(response){
-                      print('berhasil')
-                    } else{
-                      print('tidak berhasil')
-                    }
-                  }
-                  );
+                  if(response){
+                  } else{
+                    FormHelper.showSimpleAlertDialog(
+                    context,
+                    "Error!",
+                    "Failed create comment! Please try again",
+                    "OK",
+                        () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                }
+              });
                 } else {
-                  print("Not validated");
+                print("Not validated");
                 }
               },
               formKey: formKey,
@@ -89,9 +97,10 @@ class _CommentBlockState extends State<CommentBlock> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
                       child: FutureBuilder<UserModel>(
-                        future: APIService().fetchAnyUser(comments[i]['userId']),
-                        builder: (context, snapshot){
-                          if(snapshot.hasData){
+                        future: APIService().fetchAnyUser(
+                            comments[i]['userId']),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
                             return ListTile(
                               leading: GestureDetector(
                                 onTap: () async {
@@ -103,11 +112,15 @@ class _CommentBlockState extends State<CommentBlock> {
                                   decoration: new BoxDecoration(
                                       color: Colors.blue,
                                       borderRadius:
-                                      new BorderRadius.all(Radius.circular(50))),
+                                      new BorderRadius.all(
+                                          Radius.circular(50))),
                                   child: CircleAvatar(
                                       radius: 50,
-                                      backgroundImage: CommentBox.commentImageParser(
-                                          imageURLorPath: '${Config.apiURL}/${snapshot.data!.profilePicture}')),
+                                      backgroundImage: CommentBox
+                                          .commentImageParser(
+                                          imageURLorPath: '${Config
+                                              .apiURL}/${snapshot.data!
+                                              .profilePicture}')),
                                 ),
                               ),
                               title: Text(
@@ -116,16 +129,20 @@ class _CommentBlockState extends State<CommentBlock> {
                               ),
                               subtitle: Text(comments[i]['comment']),
                               trailing:
-                              Text(DateFormat.yMMMEd().format(DateTime.parse(comments[i]['date'])), style: TextStyle(fontSize: 10)),
+                              Text(DateFormat.yMMMEd().format(
+                                  DateTime.parse(comments[i]['date'])),
+                                  style: TextStyle(fontSize: 10)),
                             );
-                          } else return CircularProgressIndicator();
+                          } else
+                            return CircularProgressIndicator();
                         },
                       ),
                     )
                 ],
               ),
             );
-          } else return CircularProgressIndicator();
+          } else
+            return CircularProgressIndicator();
         }
     );
   }

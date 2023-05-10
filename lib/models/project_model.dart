@@ -93,7 +93,7 @@ class Roadmaps {
   late final String startDate;
   late final String endDate;
   late final String desc;
-  late final List<Tasks> tasks;
+  late final List<Task> tasks;
   late final String id;
 
   Roadmaps.fromJson(Map<String, dynamic> json) {
@@ -101,7 +101,7 @@ class Roadmaps {
     startDate = json['startDate'];
     endDate = json['endDate'];
     desc = json['desc'];
-    tasks = List.from(json['tasks']).map((e) => Tasks.fromJson(e)).toList();
+    tasks = List.from(json['tasks']).map((e) => Task.fromJson(e)).toList();
     id = json['_id'];
   }
 
@@ -117,14 +117,14 @@ class Roadmaps {
   }
 }
 
-class Tasks {
-  Tasks({
+class Task {
+  Task({
     required this.title,
     required this.date,
     required this.status,
     required this.images,
     required this.desc,
-    this.id,
+    required this.id,
     required this.todos,
   });
 
@@ -133,17 +133,17 @@ class Tasks {
   late final String status;
   late final List<dynamic> images;
   late final String desc;
-  String? id;
-  late final List<dynamic> todos;
+  late final String id;
+  late final List<Todos> todos;
 
-  factory Tasks.fromJson(Map<String, dynamic> json) => Tasks(
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
         title: json['title'],
         date: json['date'],
         status: json['status'],
         images: List.castFrom<dynamic, dynamic>(json['images']),
         desc: json['desc'],
         id: json['_id'],
-        todos: List.castFrom<dynamic, dynamic>(json['todos']),
+        todos: List.from(json['todos']).map((e) => Todos.fromJson(e)).toList(),
       );
 
   Map<String, dynamic> toJson() {
@@ -154,7 +154,41 @@ class Tasks {
     _data['images'] = images;
     _data['desc'] = desc;
     _data['_id'] = id;
-    _data['todos'] = todos;
+    _data['todos'] = todos.map((e) => e.toJson()).toList();
+    return _data;
+  }
+}
+
+class Todos {
+  Todos({
+    required this.title,
+    required this.done,
+    required this.assignee,
+    required this.report,
+    required this.id,
+  });
+
+  late final String title;
+  late final bool done;
+  late final List<dynamic> assignee;
+  late final String report;
+  late final String id;
+
+  factory Todos.fromJson(Map<String, dynamic> json) => Todos(
+        title: json['title'],
+        done: json['done'],
+        report: json['report'],
+        assignee: List.castFrom<dynamic, dynamic>(json['assignee']),
+        id: json['_id'],
+      );
+
+  Map<String, dynamic> toJson() {
+    final _data = <String, dynamic>{};
+    _data['title'] = title;
+    _data['done'] = done;
+    _data['assignee'] = assignee;
+    _data['report'] = report;
+    _data['_id'] = id;
     return _data;
   }
 }

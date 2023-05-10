@@ -9,6 +9,7 @@ import 'package:video_thumbnail_imageview/video_thumbnail_imageview.dart';
 import '../models/album_model.dart';
 import '../models/post_model.dart';
 import '../services/api_service.dart';
+import 'package:snippet_coder_utils/ProgressHUD.dart';
 
 class Album extends StatefulWidget {
   @override
@@ -60,44 +61,44 @@ class _AlbumState extends State<Album> {
                             borderRadius: BorderRadius.vertical(
                                 top: Radius.circular(10.0))),
                         builder: (context) => Padding(
-                              padding: EdgeInsets.only(
-                                  bottom:
-                                      MediaQuery.of(context).viewInsets.bottom),
-                              child: Container(
-                                  height: 120,
-                                  margin: EdgeInsets.only(
-                                      left: 10, top: 10, right: 10),
-                                  child: Column(
-                                    children: [
-                                      ElevatedButton(
-                                          style: ElevatedButton.styleFrom(),
-                                          onPressed: () {
-                                            uploadFile();
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Add photo'),
-                                              Icon(Icons.photo)
-                                            ],
-                                          )),
-                                      ElevatedButton(
-                                          style: ElevatedButton.styleFrom(),
-                                          onPressed: () {
-                                            uploadFileVideo();
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('Add video'),
-                                              Icon(Icons.ondemand_video)
-                                            ],
-                                          )),
-                                    ],
-                                  )),
-                            ));
+                          padding: EdgeInsets.only(
+                              bottom:
+                              MediaQuery.of(context).viewInsets.bottom),
+                          child: Container(
+                              height: 120,
+                              margin: EdgeInsets.only(
+                                  left: 10, top: 10, right: 10),
+                              child: Column(
+                                children: [
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(),
+                                      onPressed: () {
+                                        uploadFile();
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Add photo'),
+                                          Icon(Icons.photo)
+                                        ],
+                                      )),
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(),
+                                      onPressed: () {
+                                        uploadFileVideo();
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Add video'),
+                                          Icon(Icons.ondemand_video)
+                                        ],
+                                      )),
+                                ],
+                              )),
+                        ));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -126,46 +127,47 @@ class _AlbumState extends State<Album> {
                         children: [
                           snapshot.data![index].type == 'image'
                               ? GestureDetector(
-                                  onTap: () async {
-                                    await showDialog(
-                                        context: context,
-                                        builder: (_) => imageDialog(
-                                            snapshot.data![index].filename,
-                                            snapshot.data![index].fileAlbum,
-                                            snapshot.data![index].id));
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.network(
-                                      '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
-                                      fit: BoxFit.cover,
-                                      width: 200,
-                                      height: 175,
-                                    ),
-                                  ),
-                                )
+                            onTap: () async {
+                              await showDialog(
+                                  context: context,
+                                  builder: (_) => imageDialog(
+                                      snapshot.data![index].filename,
+                                      snapshot.data![index].fileAlbum,
+                                      snapshot.data![index].id));
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.network(
+                                '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
+                                fit: BoxFit.cover,
+                                width: 200,
+                                height: 175,
+                              ),
+                            ),
+                          )
                               : GestureDetector(
-                                  onTap: () async {
-                                    await showDialog(
-                                      context: context,
-                                      builder: (_) => PlayVid(
-                                        urlVideo:
-                                            '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
-                                        nameVideo:
-                                            '${snapshot.data![index].filename}',
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: VTImageView(
-                                      videoUrl:
-                                          '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
-                                      assetPlaceHolder:
-                                          'assets/images/video-playe.jpeg',
-                                    ),
-                                  ),
+                            onTap: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (_) => PlayVid(
+                                  urlVideo:
+                                  '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
+                                  nameVideo:
+                                  '${snapshot.data![index].filename}',
+                                  idVideo: snapshot.data![index].id,
                                 ),
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: VTImageView(
+                                videoUrl:
+                                '${Config.apiURL}/${snapshot.data![index].fileAlbum}',
+                                assetPlaceHolder:
+                                'assets/images/video-playe.jpeg',
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     );

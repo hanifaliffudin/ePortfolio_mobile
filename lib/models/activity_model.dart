@@ -50,6 +50,21 @@ class ActivityModel {
           updatedAt: json['updatedAt'],
           V: json['__v']
       );
+  Map<String, dynamic> toJson() {
+    final _data = <String, dynamic>{};
+    _data['userId'] = userId;
+    _data['title'] = title;
+    _data['type'] = type;
+    _data['image'] = image;
+    _data['startDate'] = startDate;
+    _data['endDate'] = endDate;
+    _data['desc'] = desc;
+    _data['id'] = id;
+    _data['tasks'] = tasks;
+    _data['createdAt'] = createdAt;
+    _data['updatedAt'] = updatedAt;
+    return _data;
+  }
 }
 
 class Tasks {
@@ -63,14 +78,14 @@ class Tasks {
   late final String title;
   late final String date;
   late final String desc;
-  late final List<Images> images;
+  late final List<dynamic> images;
   late final String id;
 
   Tasks.fromJson(Map<String, dynamic> json){
     title = json['title'];
     date = json['date'];
     desc = json['desc'];
-    images = List.from(json['images']).map((e)=>Images.fromJson(e)).toList();
+    images = List.castFrom<dynamic, dynamic>(json['images']);
     id = json['_id'];
   }
 
@@ -79,33 +94,7 @@ class Tasks {
     _data['title'] = title;
     _data['date'] = date;
     _data['desc'] = desc;
-    _data['images'] = images.map((e)=>e.toJson()).toList();
-    _data['_id'] = id;
-    return _data;
-  }
-}
-
-class Images {
-  Images({
-    required this.name,
-    required this.imgurl,
-    required this.id,
-  });
-
-  late final String name;
-  late final String imgurl;
-  late final String id;
-
-  Images.fromJson(Map<String, dynamic> json){
-    name = json['name'];
-    imgurl = json['imgurl'];
-    id = json['_id'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['name'] = name;
-    _data['imgurl'] = imgurl;
+    _data['images'] = images;
     _data['_id'] = id;
     return _data;
   }

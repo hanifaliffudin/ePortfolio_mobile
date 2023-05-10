@@ -128,7 +128,7 @@ class _HeaderArticleState extends State<HeaderArticle> {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-          height: 150,
+          height: 100,
           margin: EdgeInsets.only(left: 10, top: 10, right: 10),
           child: Column(
             children: [

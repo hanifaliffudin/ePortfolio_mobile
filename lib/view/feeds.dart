@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 
+import '../component/notification.dart';
 import '../config.dart';
 import '../models/article_model.dart';
 import '../models/user_model.dart';
+import '../project/notification_model.dart';
 import '../services/api_service.dart';
 import '../widgets/block/comment_block.dart';
 import '../widgets/block/comment_block_article.dart';
@@ -89,64 +91,99 @@ class _FeedsState extends State<Feeds> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Selamat Datang \n${snapshot.data!.username}',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/profile');
-                                  },
-                                  child: Stack(children: [
-                                    Icon(
-                                      Icons.notifications_rounded,
-                                      color: Colors.black,
-                                      size: 38,
-                                    ),
-                                    Positioned(
-                                      top: 1,
-                                      right: 1,
-                                      child: Container(
+                            child: FutureBuilder<List<Notify>>(
+                              future : APIService().fetchRequestedProject(),
+                              builder : (BuildContext context, AsyncSnapshot<List<Notify>?> snapshoty){
+                                if(snapshoty.hasData){
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
                                         child: Text(
-                                          '10',
+                                          'Selamat Datang \n${snapshot.data!.username}',
                                           style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
                                         ),
-                                        /*Icon(Icons.notifications_rounded, color: Colors.black)*/
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                              width: 3,
-                                              color: Colors.red,
-                                            ),
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(
-                                                50,
-                                              ),
-                                            ),
-                                            color: Colors.red,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                offset: Offset(2, 4),
-                                                color: Colors.black.withOpacity(
-                                                  0.3,
-                                                ),
-                                                blurRadius: 3,
-                                              ),
-                                            ]),
                                       ),
-                                    ),
-                                  ]),
-                                )
-                              ],
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(context, MaterialPageRoute(builder: (context)=> Nofitication()));
+                                        },
+                                        child: Stack(children: [
+                                          Icon(
+                                            Icons.notifications_rounded,
+                                            color: Colors.black,
+                                            size: 38,
+                                          ),
+                                          Positioned(
+                                            top: 1,
+                                            right: 1,
+                                            child:  snapshoty.data?.length != 0 ?
+                                            Container(
+                                              child: Text(
+                                                '${snapshoty.data?.length}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    width: 3,
+                                                    color: Colors.red,
+                                                  ),
+                                                  borderRadius: BorderRadius.all(
+                                                    Radius.circular(
+                                                      50,
+                                                    ),
+                                                  ),
+                                                  color: Colors.red,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      offset: Offset(2, 4),
+                                                      color: Colors.black.withOpacity(
+                                                        0.3,
+                                                      ),
+                                                      blurRadius: 3,
+                                                    ),
+                                                  ]),
+                                            ) : Container(
+                                              child: Text(
+                                                '${snapshoty.data?.length}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 11,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    width: 3,
+                                                    color: Colors.black38,
+                                                  ),
+                                                  borderRadius: BorderRadius.all(
+                                                    Radius.circular(
+                                                      50,
+                                                    ),
+                                                  ),
+                                                  color: Colors.black38,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      offset: Offset(2, 4),
+                                                      color: Colors.black.withOpacity(
+                                                        0.3,
+                                                      ),
+                                                      blurRadius: 3,
+                                                    ),
+                                                  ]),
+                                            ),
+                                          ),
+                                        ]),
+                                      )
+                                    ],
+                                  );
+                                } else return CircularProgressIndicator();
+                                },
                             ),
                           ),
                           BoxAddPost(),
@@ -168,7 +205,7 @@ class _FeedsState extends State<Feeds> {
                   ),
                   Tab(
                     child:
-                        Text('Projects', style: TextStyle(color: Colors.black)),
+                        Text('Projects Suggestion', style: TextStyle(color: Colors.black)),
                   ),
                 ],
               ),
@@ -194,8 +231,7 @@ class _FeedsState extends State<Feeds> {
                                         children: [
                                           Container(
                                               child:
-                                                  feeds[index].runtimeType ==
-                                                          ArticleModel
+                                                  feeds[index].runtimeType == ArticleModel
                                                       ? Visibility(
                                                           visible: feeds[index]
                                                               .isPublic,
@@ -203,8 +239,7 @@ class _FeedsState extends State<Feeds> {
                                                             children: [
                                                               HeaderArticle(
                                                                   articleData:
-                                                                      feeds[
-                                                                          index]),
+                                                                      feeds[index]),
                                                               const SizedBox(
                                                                 height: 10,
                                                               ),
@@ -280,11 +315,45 @@ class _FeedsState extends State<Feeds> {
                                                                                   margin: EdgeInsets.all(10),
                                                                                 ),
                                                                               )),
+                                                                    SizedBox(height: 5,),
+                                                                    Align(
+                                                                      alignment: Alignment.topLeft,
+                                                                      child: Container(
+                                                                        height: 35,
+                                                                        child: ListView.builder(
+                                                                            itemCount: feeds[index].tags.length,
+                                                                            shrinkWrap: true,
+                                                                            scrollDirection: Axis.horizontal,
+                                                                            itemBuilder: (context, i){
+                                                                              return Padding(
+                                                                                padding: const EdgeInsets.all(3.0),
+                                                                                child: Container(
+                                                                                  child: Padding(
+                                                                                    padding: const EdgeInsets.all(2.0),
+                                                                                    child: Text('${feeds[index].tags[i]}', style: TextStyle(
+                                                                                        color: Colors.black,
+                                                                                        fontSize: 15
+                                                                                    ),),
+                                                                                  ), /*Icon(Icons.notifications_rounded, color: Colors.black)*/
+                                                                                  decoration: BoxDecoration(
+                                                                                    border: Border.all(
+                                                                                      width: 1,
+                                                                                      color: Colors.black12,
+                                                                                    ),
+                                                                                    borderRadius: BorderRadius.all(
+                                                                                      Radius.circular(
+                                                                                        10,
+                                                                                      ),
+                                                                                    ),
+                                                                                    color: Colors.black12,
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                            }),
+                                                                      ),
+                                                                    ),
                                                                   ],
                                                                 ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: 10,
                                                               ),
                                                               Container(
                                                                 //komentar box
@@ -514,7 +583,7 @@ class _FeedsState extends State<Feeds> {
                                   return Container(
                                     child: InkWell(
                                       onTap: (){
-                                        /*Navigator.push(context, MaterialPageRoute(builder: (context)=> ActivityTask(activityId: snapshot.data![index].id)));*/
+                                        Navigator.pushNamed(context, '/friendProject', arguments: snapshot.data![index].userId);
                                       },
                                       child: Card(
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

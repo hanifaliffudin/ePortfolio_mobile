@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 
+import '../../models/project_model.dart';
 import '../../models/user_model.dart';
 
 class FriendProfileHeader extends StatefulWidget {
@@ -17,11 +18,11 @@ class FriendProfileHeader extends StatefulWidget {
 class _FriendProfileHeaderState extends State<FriendProfileHeader> {
 
   late Future<UserModel> futureFriend;
+  late Future<List<ProjectModel>> futureProject;
   String userId;
   var userIdLogin;
   var data;
   var followers;
-  late bool followed;
   _FriendProfileHeaderState(this.userId);
 
   Future<Map<String, dynamic>> getIdUser() async {
@@ -36,7 +37,7 @@ class _FriendProfileHeaderState extends State<FriendProfileHeader> {
   void initState() {
     super.initState();
     futureFriend = APIService().fetchAnyUser(userId);
-
+    futureProject = APIService().fetchAnyProject(userId);
   }
 
   @override
@@ -132,15 +133,25 @@ class _FriendProfileHeaderState extends State<FriendProfileHeader> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          '9',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        Text('Projects', style: TextStyle(fontSize: 12))
-                      ],
+                    FutureBuilder<List<ProjectModel>>(
+                      future: APIService().fetchAnyProject(userId),
+                      builder: (context, snapshot){
+                        if(snapshot.hasData){
+                          return InkWell(
+                            onTap:  (){ DefaultTabController.of(context)?.index =6;},
+                            child: Column(
+                              children: [
+                                Text(
+                                  snapshot.data!.length.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 18),
+                                ),
+                                Text('Projects', style: TextStyle(fontSize: 12))
+                              ],
+                            ),
+                          );
+                        }else return CircularProgressIndicator();
+                      },
                     ),
                     InkWell(
                       onTap: () async {
@@ -194,8 +205,8 @@ class _FriendProfileHeaderState extends State<FriendProfileHeader> {
                                     .then((response) {
                                   if (response) {
                                     setState(() {
-                                      followed = false;
-                                      print(followed);
+                                      // followed = false;
+                                      // print(followed);
                                     });
                                     FormHelper.showSimpleAlertDialog(
                                       context,
@@ -218,7 +229,6 @@ class _FriendProfileHeaderState extends State<FriendProfileHeader> {
                                     );
                                   }
                                 });
-
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Colors.grey,
@@ -245,8 +255,8 @@ class _FriendProfileHeaderState extends State<FriendProfileHeader> {
                                     .then((response) {
                                   if (response) {
                                     setState(() {
-                                      followed = true;
-                                      print(followed);
+                                      // followed = true;
+                                      // print(followed);
                                     });
                                     FormHelper.showSimpleAlertDialog(
                                       context,

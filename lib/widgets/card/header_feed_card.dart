@@ -1,3 +1,4 @@
+import 'package:eportfolio/post/edit_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
@@ -125,18 +126,18 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
   }
 
   void settingButton(context) {
-    bool status = false;
-
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
-              height: 150,
+              height: 100,
               margin: EdgeInsets.only(left: 10, top: 10, right: 10),
               child: Column(
                 children: [
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>EditPost(idPost: postData.id,)));
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [Text('Edit'), Icon(Icons.edit)],
@@ -160,26 +161,6 @@ class _HeaderFeedCardState extends State<HeaderFeedCard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [Text('Delete'), Icon(Icons.delete)],
                       )),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Visibility'),
-                      CustomSwitch(
-                        activeColor: Colors.pinkAccent,
-                        value: status,
-                        onChanged: (value) {
-                          if (value == true) {
-                            print("Public");
-                          } else {
-                            print("Private");
-                          }
-                          setState(() {
-                            status = value;
-                          });
-                        },
-                      ),
-                    ],
-                  )
                 ],
               ),
             ));

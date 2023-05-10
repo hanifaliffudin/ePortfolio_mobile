@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../models/activity_model.dart';
 import '../../services/api_service.dart';
-import '../../widgets/card/activity_tab.dart';
-import '../../widgets/card/activity_task.dart';
+import '../../activity/activity_item.dart';
+import '../../activity/activity_task.dart';
 
 class FriendActivityTab extends StatefulWidget {
   FriendActivityTab({Key? key, required this.userId}) : super(key: key);

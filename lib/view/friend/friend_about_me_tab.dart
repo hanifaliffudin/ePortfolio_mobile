@@ -23,7 +23,7 @@ class _FriendAboutMeContentState extends State<FriendAboutMeContent> {
         SizedBox(height: 7,),
         FriendPersonalInformation(userId: userId,),
         FriendAboutMeBlock(userId : userId),
-        NewestAct()
+        NewestAct(userId : userId)
       ],
     );
   }

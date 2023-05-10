@@ -21,7 +21,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
   void initState() {
     super.initState();
     futureUser = APIService().fetchAnyUser();
-    // TODO: implement initState
   }
 
   @override
@@ -46,7 +45,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     ),
                   ),
                   Text(
-                    'posts, articles, and activities',
+                    '',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -88,7 +87,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           children: List.generate(data!.length, (index) {
                             return InkWell(
                               onTap: (){Navigator.pushNamed(context, '/friendprofile',
-                                  arguments: data![index]);},
+                                  arguments: data[index]);},
                               child: FutureBuilder<UserModel>(
                                 future: APIService().fetchAnyUser(data[index]),
                                 builder: (context, snapshot){
@@ -155,7 +154,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   ),
                 ],
               );
-            } else return CircularProgressIndicator();
+            } else return Center(child: CircularProgressIndicator());
           },
         ),
       ),

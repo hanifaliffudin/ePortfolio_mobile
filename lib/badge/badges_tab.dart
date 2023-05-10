@@ -1,10 +1,10 @@
 import 'package:eportfolio/services/api_service.dart';
-import 'package:eportfolio/view/add_badges.dart';
+import 'package:eportfolio/badge/add_badges.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
-import 'config.dart';
-import 'models/badges_model.dart';
+import '../config.dart';
+import '../models/badges_model.dart';
 
 class Badges extends StatefulWidget {
   const Badges({Key? key}) : super(key: key);

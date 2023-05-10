@@ -3,8 +3,10 @@ import 'package:eportfolio/services/api_service.dart';
 import 'package:eportfolio/project/add_project.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../models/project_model.dart';
+import '../view/home.dart';
 
 class Projects extends StatefulWidget {
   const Projects({Key? key}) : super(key: key);
@@ -114,7 +116,9 @@ class _ProjectsState extends State<Projects> {
                                       ],
                                     ),
                                     IconButton(
-                                        onPressed: (){},
+                                        onPressed: (){
+                                          settingButton(snapshot.data![index].id);
+                                        },
                                         icon: Icon(Icons.more_horiz)
                                     )
                                   ],
@@ -163,5 +167,58 @@ class _ProjectsState extends State<Projects> {
         )
       ],
     );
+  }
+  void settingButton(String id) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) => Container(
+          height: 100,
+          margin: EdgeInsets.only(left: 10, top: 10, right: 10),
+          child: Column(
+            children: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(),
+                  onPressed: () {
+                    APIService().deleteProject(id).then((response) {
+                      if (response) {
+                        FormHelper.showSimpleAlertDialog(
+                          context,
+                          "Success!",
+                          "Success delete project!",
+                          "OK",
+                              () {
+                                Navigator.push(context , MaterialPageRoute(builder: (context) => HomePage(2)));
+                          },
+                        );
+                      } else {
+                        FormHelper.showSimpleAlertDialog(
+                          context,
+                          "Error!",
+                          "Failed delete activity! Please try again",
+                          "OK",
+                              () {
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      }
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Delete'), Icon(Icons.delete)],
+                  )),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(),
+                  onPressed: () {
+                    Navigator.push(context , MaterialPageRoute(builder: (context) => AddProject(idProject : id)),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text('Edit'), Icon(Icons.edit)],
+                  )),
+            ],
+          ),
+        ));
   }
 }

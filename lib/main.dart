@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:eportfolio/login.dart';
 import 'package:eportfolio/view/add_articles.dart';
-import 'package:eportfolio/view/add_badges.dart';
+import 'package:eportfolio/badge/add_badges.dart';
 import 'package:eportfolio/view/friend/friend_profile.dart';
 import 'package:eportfolio/view/home.dart';
 import 'package:eportfolio/view/profile.dart';
 import 'package:eportfolio/view/video_player.dart';
-import 'package:eportfolio/widgets/card/activity_task.dart';
+import 'package:eportfolio/activity/activity_task.dart';
 import 'package:eportfolio/widgets/open_feed/article_card_open.dart';
 import 'package:eportfolio/widgets/update_page/user_profile_edit.dart';
 import 'package:flutter/material.dart';
@@ -41,11 +41,14 @@ class MyApp extends StatelessWidget {
         '/editUser' : (context) => EditUserProfile(),
         '/login' : (context) => Login(),
         '/home' : (context) => HomePage(0),
-        '/friendprofile':(context) => FriendProfilePage(),
+        '/friendprofile':(context) => FriendProfilePage(0),
         '/profile':(context) => HomePage(2),
         '/editArticle':(context) => AddArticles(),
         '/album' : (context) => ProfilePage(5),
         '/badge' : (context) => ProfilePage(4),
+        '/activity' : (context) => ProfilePage(3),
+        '/project' : (context) => ProfilePage(6),
+        '/friendProject' : (context) => FriendProfilePage(6),
         '/addBadge' : (context) => AddBadges(),
       },
 

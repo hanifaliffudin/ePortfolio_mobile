@@ -18,7 +18,11 @@ class _AddArticlesState extends State<AddArticles> {
   TextEditingController descController = TextEditingController();
   TextEditingController titleController = TextEditingController();
   TextEditingController coverArticleController = TextEditingController();
+  TextEditingController tagsController = TextEditingController();
+  List<String> tags = [];
   String? idArticle;
+  String? visibility;
+  late String choice;
   late Future<ArticleModel> futureArticle;
   _AddArticlesState(this.idArticle);
 
@@ -27,6 +31,7 @@ class _AddArticlesState extends State<AddArticles> {
     super.initState();
     futureArticle = APIService().fetchSingleArticle(idArticle);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +44,8 @@ class _AddArticlesState extends State<AddArticles> {
               descController.text = snapshot.data!.desc ?? '';
               titleController.text = snapshot.data!.title?? '';
               coverArticleController.text = snapshot.data!.coverArticle ?? '';
+              tagsController.text = snapshot.data!.tags.join(',') ?? '';
+              visibility = snapshot.data!.isPublic.toString();
               return Column(
                 children: [
                   Container(
@@ -65,7 +72,7 @@ class _AddArticlesState extends State<AddArticles> {
                         TextField(
                           controller: descController,
                           keyboardType: TextInputType.multiline,
-                          maxLines: 5,
+                          maxLines: 2,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             filled: true,
@@ -88,6 +95,18 @@ class _AddArticlesState extends State<AddArticles> {
                     margin: EdgeInsets.all(5),
                     child: Column(
                       children: [
+                        TextField(
+                          controller: tagsController,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: 'Tags',
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text('Add cover image')),
@@ -126,30 +145,88 @@ class _AddArticlesState extends State<AddArticles> {
                             ),
                           ],
                         ),
+                        Align(alignment : Alignment.topLeft,child: Text('Visibility:')),
+                        SizedBox(height: 5,),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                      child: ListTile(
+                                        title:  Transform.translate(
+                                          offset: Offset(-25, 0),
+                                          child:  Text("Public",style: TextStyle(
+                                              fontSize: 12, fontWeight: FontWeight.bold
+                                          )),
+                                        ),
+                                        leading: Radio(
+                                          fillColor: MaterialStateColor.resolveWith(
+                                                  (states) => Color(0XFFB63728)),
+                                          value: "true",
+                                          groupValue: visibility.toString(),
+                                          onChanged: (value) {
+                                         setState(() {
+                                           visibility = value.toString();
+                                         });
+                                          },
+                                        ),
+                                        trailing:  Transform.translate(
+                                          offset: Offset(-50, 0),
+                                          child: Icon(Icons.visibility),
+                                        ),
+                                      )),
+                                  Expanded(
+                                      child: ListTile(
+                                        title:  Transform.translate(
+                                          offset: Offset(-25, 0),
+                                          child:  Text("Private",style: TextStyle(
+                                              fontSize: 12, fontWeight: FontWeight.bold
+                                          )),
+                                        ),
+                                        leading: Radio(
+                                          fillColor: MaterialStateColor.resolveWith(
+                                                  (states) => Color(0XFFB63728)),
+                                          value: "false",
+                                          groupValue: visibility.toString(),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              visibility = value.toString();
+                                            });
+                                          },
+                                        ),
+                                        trailing:  Transform.translate(
+                                          offset: Offset(-45, 0),
+                                          child: Icon(Icons.visibility_off),
+                                        ),
+                                      ))
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton(
                               style:
                               TextButton.styleFrom(backgroundColor: Colors.blue),
-                              onPressed: () {},
-                              child: Text(
-                                'Visibility',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 7,
-                            ),
-                            TextButton(
-                              style:
-                              TextButton.styleFrom(backgroundColor: Colors.blue),
                               onPressed: () {
-                                APIService().updateArticle(idArticle!.toString(), coverArticleController.text, descController.text, titleController.text).then((response) {
+                                List<String> tag = tagsController.text.split(',');
+                                if (tag.isNotEmpty) {
+                                  for (int i = 0; i < tag.length; i++) {
+                                    tags.add(tag[i]);
+                                  }
+                                }
+                                APIService().updateArticle(idArticle!.toString(), coverArticleController.text, descController.text, titleController.text, tags).then((response) {
                                   if (response) {
-                                    Navigator.push(context , MaterialPageRoute(builder: (context) => HomePage(2)),
+                                    Navigator.push(context , MaterialPageRoute(builder: (context) => HomePage(0)),
                                     );
                                   } else {
                                     FormHelper.showSimpleAlertDialog(
@@ -178,7 +255,8 @@ class _AddArticlesState extends State<AddArticles> {
                   ),
                 ],
               );
-            } else return Column(
+            } else {
+              return Column(
               children: [
                 Container(
                   margin: const EdgeInsets.all(5),
@@ -228,6 +306,18 @@ class _AddArticlesState extends State<AddArticles> {
                   margin: EdgeInsets.all(5),
                   child: Column(
                     children: [
+                      TextField(
+                        controller: tagsController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: 'Tags',
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
                       Align(
                           alignment: Alignment.topLeft,
                           child: Text('Add cover image')),
@@ -266,29 +356,88 @@ class _AddArticlesState extends State<AddArticles> {
                           ),
                         ],
                       ),
+                      Align(alignment : Alignment.topLeft,child: Text('Visibility:')),
+                      SizedBox(height: 5,),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                    child: ListTile(
+                                      title:  Transform.translate(
+                                        offset: Offset(-25, 0),
+                                        child:  Text("Public",style: TextStyle(
+                                            fontSize: 12, fontWeight: FontWeight.bold
+                                        )),
+                                      ),
+                                      leading: Radio(
+                                        fillColor: MaterialStateColor.resolveWith(
+                                                (states) => Color(0XFFB63728)),
+                                        value: "true",
+                                        groupValue: visibility,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            visibility = value.toString();
+                                          });
+                                        },
+                                      ),
+                                      trailing:  Transform.translate(
+                                        offset: Offset(-50, 0),
+                                        child: Icon(Icons.visibility),
+                                      ),
+                                    )),
+                                Expanded(
+                                    child: ListTile(
+                                      title:  Transform.translate(
+                                        offset: Offset(-25, 0),
+                                        child:  Text("Private",style: TextStyle(
+                                            fontSize: 12, fontWeight: FontWeight.bold
+                                        )),
+                                      ),
+                                      leading: Radio(
+                                        fillColor: MaterialStateColor.resolveWith(
+                                                (states) => Color(0XFFB63728)),
+                                        value: "false",
+                                        groupValue: visibility,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            visibility = value.toString();
+
+                                          });
+                                        },
+                                      ),
+                                      trailing:  Transform.translate(
+                                        offset: Offset(-45, 0),
+                                        child: Icon(Icons.visibility_off),
+                                      ),
+                                    ))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
                             style:
                             TextButton.styleFrom(backgroundColor: Colors.blue),
-                            onPressed: () {},
-                            child: Text(
-                              'Visibility',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 7,
-                          ),
-                          TextButton(
-                            style:
-                            TextButton.styleFrom(backgroundColor: Colors.blue),
                             onPressed: () {
+                              List<String> tag = tagsController.text.split(',');
+                              if (tag.isNotEmpty) {
+                                for (int i = 0; i < tag.length; i++) {
+                                  tags.add(tag[i]);
+                                }
+                              }
                                 APIService().createArticle(
-                                    titleController.text, descController.text, coverArticleController.text)
+                                    titleController.text, descController.text, coverArticleController.text, tags)
                                     .then((response) {
                                   if (response) {
                                     Navigator.pushNamed(context, '/home');
@@ -320,9 +469,15 @@ class _AddArticlesState extends State<AddArticles> {
                 ),
               ],
             );
+            }
           },
         ),
       ),
     );
+  }
+  void buttonValue(String? v) {
+    setState(() {
+      visibility = v;
+    });
   }
 }

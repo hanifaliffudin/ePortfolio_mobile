@@ -1,76 +1,62 @@
+import 'package:eportfolio/models/activity_model.dart';
 import 'package:eportfolio/view/profile.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
-import 'package:snippet_coder_utils/ProgressHUD.dart';
-import '../models/project_model.dart';
 import '../services/api_service.dart';
 import '../widgets/custom_appBar.dart';
-import '../view/home.dart';
 
-class AddProject extends StatefulWidget {
-  AddProject({Key? key, this.idProject}) : super(key: key);
-  String? idProject;
+class AddActivity extends StatefulWidget {
+  AddActivity({Key? key, this.id}) : super(key: key);
+  String? id;
 
   @override
-  State<AddProject> createState() => _AddProjectState(this.idProject ?? '');
+  State<AddActivity> createState() => _AddActivityState(id ?? '');
 }
-enum SingingCharacter { nonacademic, academic }
-class _AddProjectState extends State<AddProject> {
-  String? type;
-  bool? visibility;
+
+class _AddActivityState extends State<AddActivity> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
   TextEditingController logoController = TextEditingController();
-  bool isApiCallProcess = false;
-  GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
-  late Future<ProjectModel> futureProject;
-  String? idProject;
-  _AddProjectState(this.idProject);
-  SingingCharacter? _character = SingingCharacter.nonacademic;
-
+  String? type;
+  String? idActivity;
+  _AddActivityState(this.idActivity);
+  late Future<ActivityModel> futureActivity;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureProject = APIService().fetchSingleProject(idProject);
+    futureActivity = APIService().fetchSingleActivity(idActivity);
   }
-
   @override
   Widget build(BuildContext context) {
-    return ProgressHUD(
-      color: Colors.black,
-      inAsyncCall: isApiCallProcess,
-      opacity: 0.6,
-      key: UniqueKey(),
-      child: Form(
-        key: globalFormKey,
-        child: Scaffold(
-          appBar: CustomAppBar(),
-          body: SingleChildScrollView(
-            child: FutureBuilder<ProjectModel>(
-              future: futureProject,
-              builder : (context, snapshot){
-                if(snapshot.hasData){
-                  titleController.text = snapshot.data!.title ?? '';
-                  descController.text = snapshot.data!.desc ?? '';
-                  startDateController.text = snapshot.data!.startDate ?? '';
-                  endDateController.text = snapshot.data!.endDate ?? '';
-                  logoController.text = snapshot.data!.image ?? '';
-                  visibility = snapshot.data!.isPublic;
-                  type = snapshot.data!.type ??'';
-                  return Container(
+    return Scaffold(
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        child: FutureBuilder<ActivityModel>(
+          future: futureActivity,
+          builder: (context, snapshot){
+            if(snapshot.hasData){
+              titleController.text = snapshot.data!.title ?? '';
+              descController.text = snapshot.data!.desc ?? '';
+              startDateController.text = snapshot.data!.startDate ?? '';
+              endDateController.text = snapshot.data!.endDate ?? '';
+              logoController.text = snapshot.data!.image ?? '';
+              type = snapshot.data!.type ??'';
+              return Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: Color(0xFFF6F6F6),
                     ),
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.all(5),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -106,9 +92,7 @@ class _AddProjectState extends State<AddProject> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 5,),
-                        Text('Project Title:'),
-                        SizedBox(height: 5,),
+                        SizedBox(height: 10,),
                         TextField(
                           controller: titleController,
                           keyboardType: TextInputType.text,
@@ -116,63 +100,11 @@ class _AddProjectState extends State<AddProject> {
                             border: OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
-                            hintText: 'title',
+                            labelText: 'Activity Title',
+                            isDense: true,
                           ),
                         ),
-                        SizedBox(height: 10,),
-                        Text('Project Type:'),
                         SizedBox(height: 5,),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.black54),
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                      child: ListTile(
-                                        title: Text("Non-academic",style: TextStyle(
-                                            fontSize: 12, fontWeight: FontWeight.bold
-                                        )),
-                                        leading: Radio(
-                                          fillColor: MaterialStateColor.resolveWith(
-                                                  (states) => Color(0XFFB63728)),
-                                          value: 'non-academic',
-                                          groupValue: type,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              type = 'non-academic';
-                                            });
-                                          },
-                                        ),
-                                      )),
-                                  Expanded(
-                                      child: ListTile(
-                                        title: Text("Academic", style: TextStyle(
-                                            fontSize: 12, fontWeight: FontWeight.bold
-                                        ),),
-                                        leading: Radio(
-                                          fillColor: MaterialStateColor.resolveWith(
-                                                  (states) => Color(0XFFB63728)),
-                                          value: 'academic',
-                                          groupValue: type,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              type = 'academic';
-                                            });
-                                          },
-                                        ),
-                                      ))
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -222,23 +154,9 @@ class _AddProjectState extends State<AddProject> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10,),
-                        Text('Project description:'),
-                        SizedBox(height: 5,),
-                        TextField(
-                          controller: descController,
-                          keyboardType: TextInputType.text,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            filled: true,
-                            fillColor: Colors.white,
-                            hintText: 'description',
-                          ),
+                        SizedBox(
+                          height: 15,
                         ),
-                        SizedBox(height: 10,),
-                        Text('Visibility:'),
-                        SizedBox(height: 5,),
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -252,50 +170,32 @@ class _AddProjectState extends State<AddProject> {
                                 children: [
                                   Expanded(
                                       child: ListTile(
-                                        title:  Transform.translate(
-                                          offset: Offset(-25, 0),
-                                          child:  Text("Public",style: TextStyle(
-                                              fontSize: 12, fontWeight: FontWeight.bold
-                                          )),
-                                        ),
+                                        title: const Text("Non-Academic"),
                                         leading: Radio(
                                           fillColor: MaterialStateColor.resolveWith(
                                                   (states) => Color(0XFFB63728)),
-                                          value: true,
-                                          groupValue: visibility,
+                                          value: "non-academic",
+                                          groupValue: type,
                                           onChanged: (value) {
                                             setState(() {
-                                              visibility = true;
+                                              type = value.toString();
                                             });
                                           },
-                                        ),
-                                        trailing:  Transform.translate(
-                                          offset: Offset(-50, 0),
-                                          child: Icon(Icons.visibility),
                                         ),
                                       )),
                                   Expanded(
                                       child: ListTile(
-                                        title:  Transform.translate(
-                                          offset: Offset(-25, 0),
-                                          child:  Text("Private",style: TextStyle(
-                                              fontSize: 12, fontWeight: FontWeight.bold
-                                          )),
-                                        ),
+                                        title: Text("Academic"),
                                         leading: Radio(
                                           fillColor: MaterialStateColor.resolveWith(
                                                   (states) => Color(0XFFB63728)),
-                                          value: false,
-                                          groupValue: visibility,
+                                          value: "academic",
+                                          groupValue: type,
                                           onChanged: (value) {
                                             setState(() {
-                                              visibility = false;
+                                              type = value.toString();
                                             });
                                           },
-                                        ),
-                                        trailing:  Transform.translate(
-                                          offset: Offset(-45, 0),
-                                          child: Icon(Icons.visibility_off),
                                         ),
                                       ))
                                 ],
@@ -303,7 +203,24 @@ class _AddProjectState extends State<AddProject> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        TextField(
+                          controller: descController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: 'Activity description',
+                            isDense : true,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -311,24 +228,31 @@ class _AddProjectState extends State<AddProject> {
                               style: TextButton.styleFrom(
                                   backgroundColor: Colors.blue
                               ),
+                              onPressed: () {},
+                              child: Text(
+                                'Visibility',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10,),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.blue
+                              ),
                               onPressed: () {
-                                APIService().updateProject(idProject!, titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text, visibility!).then((response)
+                                APIService().updateActivity(idActivity!, titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text).then((response)
                                 {
                                   if(response){
-                                    FormHelper.showSimpleAlertDialog(
-                                      context,
-                                      "Success!",
-                                      "Success update project",
-                                      "OK",
-                                          () {
-                                        Navigator.push(context , MaterialPageRoute(builder: (context) => HomePage(2)));
-                                      },
-                                    );
+                                    setState(() {
+                                    });
+                                    Navigator.pushNamed(context, '/home');
                                   } else {
                                     FormHelper.showSimpleAlertDialog(
                                       context,
                                       "Error!",
-                                      "Failed upddate activity! Please try again",
+                                      "Failed update activity! Please try again",
                                       "OK",
                                           () {
                                         Navigator.of(context).pop();
@@ -339,7 +263,7 @@ class _AddProjectState extends State<AddProject> {
                                 );
                               },
                               child: Text(
-                                'Update Project',
+                                'Update Activity',
                                 style: TextStyle(
                                   color: Colors.white,
                                 ),
@@ -349,16 +273,20 @@ class _AddProjectState extends State<AddProject> {
                         ),
                       ],
                     ),
-                  );
-                }else return Container(
+                  ),
+                ],
+              );
+            }
+            else return Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     color: Color(0xFFF6F6F6),
                   ),
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(5),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -394,9 +322,7 @@ class _AddProjectState extends State<AddProject> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 5,),
-                      Text('Project Title:'),
-                      SizedBox(height: 5,),
+                      SizedBox(height: 10,),
                       TextField(
                         controller: titleController,
                         keyboardType: TextInputType.text,
@@ -404,63 +330,11 @@ class _AddProjectState extends State<AddProject> {
                           border: OutlineInputBorder(),
                           filled: true,
                           fillColor: Colors.white,
-                          hintText: 'title',
+                          labelText: 'Activity Title',
+                          isDense: true,
                         ),
                       ),
-                      SizedBox(height: 10,),
-                      Text('Project Type:'),
                       SizedBox(height: 5,),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child: ListTile(
-                                      title: const Text("Non-academic",style: TextStyle(
-                                          fontSize: 12, fontWeight: FontWeight.bold
-                                      )),
-                                      leading: Radio(
-                                        fillColor: MaterialStateColor.resolveWith(
-                                                (states) => Color(0XFFB63728)),
-                                        value: "non-academic",
-                                        groupValue: type,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            type = value.toString();
-                                          });
-                                        },
-                                      ),
-                                    )),
-                                Expanded(
-                                    child: ListTile(
-                                      title: Text("Academic", style: TextStyle(
-                                          fontSize: 12, fontWeight: FontWeight.bold
-                                      ),),
-                                      leading: Radio(
-                                        fillColor: MaterialStateColor.resolveWith(
-                                                (states) => Color(0XFFB63728)),
-                                        value: "academic",
-                                        groupValue: type,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            type = value.toString();
-                                          });
-                                        },
-                                      ),
-                                    ))
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 10,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -510,23 +384,9 @@ class _AddProjectState extends State<AddProject> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10,),
-                      Text('Project description:'),
-                      SizedBox(height: 5,),
-                      TextField(
-                        controller: descController,
-                        keyboardType: TextInputType.text,
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          filled: true,
-                          fillColor: Colors.white,
-                          hintText: 'description',
-                        ),
+                      SizedBox(
+                        height: 15,
                       ),
-                      SizedBox(height: 10,),
-                      Text('Visibility:'),
-                      SizedBox(height: 5,),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -540,50 +400,32 @@ class _AddProjectState extends State<AddProject> {
                               children: [
                                 Expanded(
                                     child: ListTile(
-                                      title:  Transform.translate(
-                                        offset: Offset(-25, 0),
-                                        child:  Text("Public",style: TextStyle(
-                                            fontSize: 12, fontWeight: FontWeight.bold
-                                        )),
-                                      ),
+                                      title: const Text("Non-Academic"),
                                       leading: Radio(
                                         fillColor: MaterialStateColor.resolveWith(
                                                 (states) => Color(0XFFB63728)),
-                                        value: true,
-                                        groupValue: visibility,
+                                        value: "non-academic",
+                                        groupValue: type,
                                         onChanged: (value) {
                                           setState(() {
-                                            visibility = true;
+                                            type = value.toString();
                                           });
                                         },
-                                      ),
-                                      trailing:  Transform.translate(
-                                        offset: Offset(-50, 0),
-                                        child: Icon(Icons.visibility),
                                       ),
                                     )),
                                 Expanded(
                                     child: ListTile(
-                                      title:  Transform.translate(
-                                        offset: Offset(-25, 0),
-                                        child:  Text("Private",style: TextStyle(
-                                            fontSize: 12, fontWeight: FontWeight.bold
-                                        )),
-                                      ),
+                                      title: Text("Academic"),
                                       leading: Radio(
                                         fillColor: MaterialStateColor.resolveWith(
                                                 (states) => Color(0XFFB63728)),
-                                        value: false,
-                                        groupValue: visibility,
+                                        value: "academic",
+                                        groupValue: type,
                                         onChanged: (value) {
                                           setState(() {
-                                            visibility = false;
+                                            type = value.toString();
                                           });
                                         },
-                                      ),
-                                      trailing:  Transform.translate(
-                                        offset: Offset(-45, 0),
-                                        child: Icon(Icons.visibility_off),
                                       ),
                                     ))
                               ],
@@ -591,7 +433,24 @@ class _AddProjectState extends State<AddProject> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      TextField(
+                        controller: descController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: 'Activity description',
+                          isDense : true,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -599,19 +458,26 @@ class _AddProjectState extends State<AddProject> {
                             style: TextButton.styleFrom(
                                 backgroundColor: Colors.blue
                             ),
+                            onPressed: () {},
+                            child: Text(
+                              'Visibility',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10,),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor: Colors.blue
+                            ),
                             onPressed: () {
-                              APIService().createProject(titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text, visibility!).then((response)
+                              APIService().createActivity(titleController.text, type!, logoController.text, descController.text, startDateController.text, endDateController.text).then((response)
                               {
                                 if(response){
-                                  FormHelper.showSimpleAlertDialog(
-                                    context,
-                                    "Success!",
-                                    "Success create project",
-                                    "OK",
-                                        () {
-                                      Navigator.push(context , MaterialPageRoute(builder: (context) => HomePage(2)));
-                                    },
-                                  );
+                                  setState(() {
+                                  });
+                                  Navigator.pushNamed(context, '/home');
                                 } else {
                                   FormHelper.showSimpleAlertDialog(
                                     context,
@@ -627,7 +493,7 @@ class _AddProjectState extends State<AddProject> {
                               );
                             },
                             child: Text(
-                              'Add Project',
+                              'Create Activity',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -637,12 +503,12 @@ class _AddProjectState extends State<AddProject> {
                       ),
                     ],
                   ),
-                );
-              }
-            ),
-          ),
+                ),
+              ],
+            );
+          },
         ),
-      )
+      ),
     );
   }
 }

@@ -3,23 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/activity_model.dart';
-import '../card/activity_task.dart';
+import '../../activity/activity_task.dart';
 
 class NewestAct extends StatefulWidget {
-  const NewestAct({Key? key}) : super(key: key);
+  NewestAct({Key? key, required this.userId}) : super(key: key);
+  String userId;
 
   @override
-  State<NewestAct> createState() => _NewestActState();
+  State<NewestAct> createState() => _NewestActState(userId);
 }
 
 class _NewestActState extends State<NewestAct> {
   late Future<ActivityModel> futureActivity;
+  String userId;
+  _NewestActState(this.userId);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    futureActivity = APIService().fetchLastActivity();
+    futureActivity = APIService().fetchLastActivity(userId);
   }
 
   @override
@@ -149,7 +152,7 @@ class _NewestActState extends State<NewestAct> {
                         ),
                       ),
                     );
-                  }else return CircularProgressIndicator();
+                  }else return Container();
                 },
               ),
               Divider(

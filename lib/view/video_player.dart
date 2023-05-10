@@ -1,22 +1,27 @@
 import 'package:eportfolio/widgets/custom_appBar.dart';
 import 'package:flutter/material.dart';
+import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:video_player/video_player.dart';
 
+import '../services/api_service.dart';
+
 class PlayVid extends StatefulWidget {
-  PlayVid({Key? key, required this.urlVideo, required this.nameVideo}) : super(key: key);
+  PlayVid({Key? key, required this.urlVideo, required this.nameVideo, required this.idVideo}) : super(key: key);
+  String idVideo;
   String urlVideo;
   String nameVideo;
 
   @override
-  _PlayVidState createState() => _PlayVidState(urlVideo, nameVideo);
+  _PlayVidState createState() => _PlayVidState(urlVideo, nameVideo, idVideo);
 }
 
 class _PlayVidState extends State<PlayVid> {
   late VideoPlayerController _controller;
   String urlVideo;
   String nameVideo;
+  String idVideo;
 
-  _PlayVidState(this.urlVideo, this.nameVideo);
+  _PlayVidState(this.urlVideo, this.nameVideo, this.idVideo);
 
   String _videoDuration(Duration duration) {
     String twoDigit(int n) => n.toString().padLeft(2, '0');
@@ -80,7 +85,7 @@ class _PlayVidState extends State<PlayVid> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  settingButton(context);
+                                  settingButton(idVideo);
                                 },
                                 icon: Icon(Icons.more_horiz),
                               ),
@@ -174,7 +179,7 @@ class _PlayVidState extends State<PlayVid> {
       ),
     );
   }
-  void settingButton(context) {
+  void settingButton(String idVideo) {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
@@ -184,7 +189,32 @@ class _PlayVidState extends State<PlayVid> {
             children: [
               ElevatedButton(
                   style: ElevatedButton.styleFrom(),
-                  onPressed: () {},
+                  onPressed: () {
+                    APIService().deleteAlbum(idVideo).then((response) {
+                      if (response) {
+                        FormHelper.showSimpleAlertDialog(
+                          context,
+                          "Success!",
+                          "Success delete file!",
+                          "OK",
+                              () {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/album', (route) => false);
+                          },
+                        );
+                      } else {
+                        FormHelper.showSimpleAlertDialog(
+                          context,
+                          "Error!",
+                          "Failed delete file! Please try again",
+                          "OK",
+                              () {
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      }
+                    });
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [Text('Delete'), Icon(Icons.delete)],

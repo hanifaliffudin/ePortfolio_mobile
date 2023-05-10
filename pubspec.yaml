@@ -42,6 +42,7 @@ dependencies:
   file_picker: ^5.2.5
   video_player: ^2.5.1
   readmore: ^2.1.0
+  objectid: 2.0.0
   video_thumbnail_imageview: ^0.0.5
   custom_switch:
     git:
